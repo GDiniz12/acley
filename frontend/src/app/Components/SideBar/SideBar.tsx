@@ -5,11 +5,11 @@ import Image from "next/image";
 import acleyIcon from "../../assets/sorteador.com.png";
 import { useState } from "react";
 
-export default function SideBar() {
+export default function SideBar(props: any) {
     const [isOpenMenu, setIsOpenMenu] = useState(false);
 
-    function toggleMenu() {
-        setIsOpenMenu((prev) => !prev);
+    function toggleMenu(): void {
+        setIsOpenMenu((prev: boolean) => !prev);
     }
     return (
         <>
@@ -18,7 +18,10 @@ export default function SideBar() {
                     <Image src={acleyIcon} alt="acley logo" className={styles.acleyLogo}/>
                     <div className={styles.openMenu} onClick={toggleMenu}><div></div></div>
                 </div>
-                <div className={`${styles.menu} ${isOpenMenu ? styles.show : styles.hide}`}></div>
+                <div className={`${styles.menu} ${isOpenMenu ? styles.show : styles.hide}`}>
+                    <h3 className={styles.titleDeck}>Decks</h3>
+                    <span className={styles.addDeck}>+</span>
+                </div>
             </aside>
         </>
     );

@@ -4,7 +4,31 @@
     border: solid #fff;
     border-bottom-right-radius: 10px;
     border-top-right-radius: 10px;
+    color: #fff;
     transition: .5s;
+    display: flex;
+}
+
+.titleDeck {
+    margin-left: 1rem;
+}
+
+.addDeck {
+    margin-left: 6rem;
+    font-size: 1.5rem;
+    font-weight: bolder;
+    margin-top: 1rem;
+    cursor: pointer;
+    height: 1.8rem;
+    width: 1.2rem;
+    text-align: center;
+    border: solid transparent;
+    border-radius: 10px;
+    transition: .5s;
+}
+
+.addDeck:hover {
+    background-color: #3f3e3e;
 }
 
 .acleyLogo {
@@ -38,12 +62,12 @@
 
 .show {
     opacity: 1;
-    transform: translateX(0); /* slide in */
+    transform: translateX(0);
 }
 
 .hide {
     opacity: 0;
-    transform: translateX(-100%); /* slide out */
+    transform: translateX(-100%);
 }
 
 .top {
