@@ -4,4 +4,50 @@
     border: solid #fff;
     border-bottom-right-radius: 10px;
     border-top-right-radius: 10px;
+    transition: .5s;
+}
+
+.acleyLogo {
+    width: 4rem;
+    height: 4rem;
+    margin-top: -1.2rem;
+}
+
+.openMenu {
+    width: 2rem;
+    height: 1rem;
+    border: solid #fff;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: .5s;
+}
+
+.openMenu:hover {
+    background-color: #3f3e3e;
+}
+
+.openMenu > div {
+    width: 1rem;
+    height: 1rem;
+    border: solid #fff;
+    border-radius: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    margin: -2px;
+}
+
+.show {
+    opacity: 1;
+    transform: translateX(0); /* slide in */
+}
+
+.hide {
+    opacity: 0;
+    transform: translateX(-100%); /* slide out */
+}
+
+.top {
+    display: flex;
+    position: absolute;
+    margin-top: -8rem;
 }
