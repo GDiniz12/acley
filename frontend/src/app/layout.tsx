@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-
+import { Geist, Geist_Mono, Raleway } from "next/font/google";
+import "./globalStyle.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -11,6 +11,11 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
+const raleway = Raleway({
+  variable: "--font-raleway",
+  subsets: ["latin"]
+})
 
 export const metadata: Metadata = {
   title: "Acley",
@@ -24,7 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body className={raleway.className}>
         {children}
       </body>
     </html>
