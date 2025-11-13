@@ -1,5 +1,5 @@
 import { pool } from "../db.js";
-import { type QueryResult } from "mysql2";
+import type { Request, Response } from "express";
 
 class User {
     username: string;
@@ -12,13 +12,24 @@ class User {
         this.password = password;
     }
 
-    static async allUsers(req: Request, res: Response) {
+    static async allUsers() {
         try {
-            const [users] = await pool.query("SELECT * FROM users");
+            const [users] = await pool.query("SELECT id, username, created_at FROM users");
 
-            return res.status(200).json({ users });
+            return {users};
         } catch(err) {
-            return res.status(500).json({ message: "Fail database", error: err})
+            return { error: err }
+        }
+    }
+
+    static async createUser(username: string, email: string, password: string) {
+        try {
+            await pool.query("INSERT INTO users(username, email, password) VALUES(?, ?, ?)", [username, email, password]);
+            return true;
+        } catch(err) {
+            return { status: false, error: err}
         }
     }
 }
+
+export default User;

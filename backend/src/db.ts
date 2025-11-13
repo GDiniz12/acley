@@ -1,7 +1,7 @@
-import { createPool, type Pool } from "mysql2";
+import mysql from "mysql2/promise"
 import "dotenv/config";
 
-export const pool: Pool = createPool({
+export const pool: mysql.Pool = mysql.createPool({
     host: 'localhost',
     user: 'root',
     database: 'db_acley',
