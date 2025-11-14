@@ -19,6 +19,21 @@ const usersController = {
             return res.status(200).json(result.users);
         }
         return res.status(500).json(result.error)
+    },
+    userById: async (req: Request, res: Response) => {
+        const { idParam } = req.params;
+
+        let id = 0;
+
+        if (typeof idParam === 'string') id = parseInt(idParam);
+
+        const result = await User.userByID(id);
+
+        if (result === false) return res.status(404).json({ message: "User not found"});
+
+        if (result.user) return res.status(200).json(result.user);
+
+        return res.status(500).json({ message: "Database error", error: result.error});
     }
 }
 

@@ -1,14 +1,15 @@
 import { pool } from "../db.js";
+import bcrypt from "bcrypt";
 
 class User {
+    id: number;
     username: string;
-    email: string;
-    password: string;
+    createdAt: Date;
 
-    constructor(username: string, email: string, password: string) {
+    constructor(id: number, username: string, createdAt: Date) {
+        this.id = id;
         this.username = username;
-        this.email = email;
-        this.password = password;
+        this.createdAt = createdAt;
     }
 
     static async allUsers() {
@@ -23,10 +24,22 @@ class User {
 
     static async createUser(username: string, email: string, password: string) {
         try {
-            await pool.query("INSERT INTO users(username, email, password) VALUES(?, ?, ?)", [username, email, password]);
+            const newPassword: string = bcrypt.hashSync(password, 12);
+            await pool.query("INSERT INTO users(username, email, password) VALUES(?, ?, ?)", [username, email, newPassword]);
             return true;
         } catch(err) {
             return { status: false, error: err}
+        }
+    }
+
+    static async userByID(id: number) {
+        try {
+            const [user] = await pool.query<User[]>("SELECT id, username, created_at FROM users WHERE id = ?", [id]);
+
+            if (user.length === 0) return false;
+            return { user };
+        } catch(err) {
+            return { error: err}
         }
     }
 }
