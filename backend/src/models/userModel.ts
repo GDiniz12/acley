@@ -1,5 +1,4 @@
 import { pool } from "../db.js";
-import type { Request, Response } from "express";
 
 class User {
     username: string;

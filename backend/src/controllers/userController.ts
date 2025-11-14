@@ -21,3 +21,5 @@ const usersController = {
         return res.status(500).json(result.error)
     }
 }
+
+export default usersController;

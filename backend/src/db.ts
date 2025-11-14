@@ -4,7 +4,7 @@ import "dotenv/config";
 export const pool: mysql.Pool = mysql.createPool({
     host: 'localhost',
     user: 'root',
-    database: 'db_acley',
+    database: 'acley',
     password: 'Gabigol12345',
     waitForConnections: true,
     connectionLimit: 10
