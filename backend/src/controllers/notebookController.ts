@@ -11,5 +11,18 @@ const notebookController = {
             return res.status(500).json({ error: notebook.error});
         }
         return res.status(201).json("Notebook was created!");
+    },
+    notebooksByUser: async (req: Request, res: Response) => {
+        const { idUser } = req.params;
+
+        let id = 0;
+
+        if (typeof idUser === 'string') id = parseInt(idUser);
+        const notebooks = await Notebook.notebooksByUser(id);
+
+        if (notebooks.error) {
+            return res.status(500).json({ error: notebooks.error });
+        }
+        return res.status(200).json({ notebooks });
     }
 }

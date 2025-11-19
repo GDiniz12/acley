@@ -1,4 +1,5 @@
 import { pool } from "../db.js";
+import User from "./userModel.js";
 
 class Notebook {
     name: string;
@@ -24,6 +25,21 @@ class Notebook {
             return { notebooks };
         } catch (err) {
             return { error: err };
+        }
+    }
+
+    static async updateNotebook(idUser: number, idNotebook: number) {
+        try {
+            // search the user
+            const user = await User.userByID(idUser);
+            if (!user) {
+                return { message: "User not found"};
+            }
+            if (user.error) {
+                return { error: user.error}
+            }
+        } catch (err) {
+
         }
     }
 }
