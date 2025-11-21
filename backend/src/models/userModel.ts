@@ -42,6 +42,15 @@ class User {
             return { error: err}
         }
     }
+
+    static async deleteUser(idUser: number) {
+        try {
+            await pool.query("DELETE FROM users FROM id = ?", [idUser]);
+            return true;
+        } catch(err) {
+            return { error: err };
+        }
+    }
 }
 
 export default User;

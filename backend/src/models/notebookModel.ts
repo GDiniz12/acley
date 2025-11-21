@@ -27,19 +27,22 @@ class Notebook {
             return { error: err };
         }
     }
-
-    static async updateNotebook(idUser: number, idNotebook: number) {
+    
+    static async updateNameNotebook(idNotebook: number, newName: string) {
         try {
-            // search the user
-            const user = await User.userByID(idUser);
-            if (!user) {
-                return { message: "User not found"};
-            }
-            if (user.error) {
-                return { error: user.error}
-            }
+            await pool.query("UPDATE notebooks SET name = ? WHERE id = ?", [newName, idNotebook]);
+            return true;
         } catch (err) {
+            return { error: err };
+        }
+    }
 
+    static async deleteNotebook(idNotebook: number) {
+        try {
+            await pool.query("DELETE FROM notebooks WHERE id = ?", [idNotebook]);
+            return true;
+        } catch(err) {
+            return { error: err };
         }
     }
 }
