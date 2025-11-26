@@ -25,4 +25,24 @@ class Matter {
             return { error: err };
         }
     }
+
+    static async updateMatter(idMatter: number, newName: string) {
+        try {
+            await pool.query("UPDATE matters SET name = ? WHERE id = ?", [newName, idMatter]);
+            return true;
+        } catch(err) {
+            return { error: err };
+        }
+    }
+
+    static async deleteMatter(idMatter: number) {
+        try {
+            await pool.query("DELETE FROM matters WHERE id = ?", [idMatter]);
+            return true;
+        } catch(err) {
+            return { error: err };
+        }
+    }
 }
+
+export default Matter;
