@@ -7,7 +7,7 @@ const notebookController = {
 
         const notebook = await Notebook.createNotebook(nameNotebook, idUser);
 
-        if (!notebook) {
+        if (notebook !== true) {
             return res.status(500).json({ error: notebook.error});
         }
         return res.status(201).json("Notebook was created!");
@@ -24,5 +24,23 @@ const notebookController = {
             return res.status(500).json({ error: notebooks.error });
         }
         return res.status(200).json({ notebooks });
+    },
+    updateNotebook: async (req: Request, res: Response) => {
+        const { idNotebook, newName } = req.body;
+
+        const result = await Notebook.updateNameNotebook(idNotebook, newName);
+
+        if (result !== true) return res.status(500).json({ error: result.error });
+
+        return res.status(200).json({ message: "Updated successfuly"});
+    },
+    deleteNotebook: async (req: Request, res: Response) => {
+        const { idNotebook } = req.body;
+
+        const result = await Notebook.deleteNotebook(idNotebook);
+
+        if (result !== true) return res.status(500).json({ message: result.error });
+
+        return res.status(200).json({ message: "Deleted Notebook"});
     }
 }
