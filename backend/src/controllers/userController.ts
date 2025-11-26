@@ -34,6 +34,24 @@ const usersController = {
         if (result.user) return res.status(200).json(result.user);
 
         return res.status(500).json({ message: "Database error", error: result.error});
+    },
+    updateUser: async (req: Request, res: Response) => {
+        const { username, email, password, idUser } = req.body;
+
+        const result = await User.updateUser(username, email, password, idUser);
+        if (result.error) {
+            return res.status(500).json({ error: result.error });
+        }
+        return res.status(200).json({ message: result.message });
+    },
+    deleteUser: async (req: Request, res: Response) => {
+        const { idUser } = req.body;
+
+        const result = await User.deleteUser(idUser);
+
+        if (result !== true) res.status(500).json({ message: result.error });
+
+        return res.status(200).json({ message: "Deleted user"});
     }
 }
 

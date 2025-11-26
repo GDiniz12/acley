@@ -43,6 +43,38 @@ class User {
         }
     }
 
+    static async updateUser(username: string, email: string, password: string, idUser: number) {
+        try {
+            const [user] = await pool.query<User[]>("SELECT username FROM users WHERE id = ?", [idUser]);
+            if (user.length === 0) return { message: "User not found"};
+
+            const fields = [];
+            const values = [];
+
+            if (username !== undefined) {
+                fields.push("username = ?");
+                values.push(username);
+            }
+            if (email !== undefined) {
+                fields.push("email = ?");
+                values.push(email);
+            }
+            if (password !== undefined) {
+                fields.push("password = ?");
+                values.push(password);
+            }
+
+            const sql = `UPDATE users SET ${fields.join(", ")} WHERE id = ?`;
+            values.push(idUser);
+
+            await pool.query(sql, values);
+
+            return { message: "Updated successfuly"};
+        } catch(err) {
+            return { error: err };
+        }
+    }
+
     static async deleteUser(idUser: number) {
         try {
             await pool.query("DELETE FROM users FROM id = ?", [idUser]);
