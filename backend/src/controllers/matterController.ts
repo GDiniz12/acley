@@ -39,3 +39,5 @@ const matterController = {
         return res.status(200).json({ message: "Deleted successfuly"});
     }
 }
+
+export default matterController;

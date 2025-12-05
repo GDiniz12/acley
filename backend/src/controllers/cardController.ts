@@ -42,3 +42,5 @@ const cardsController = {
         return res.status(200).json({ message: result.success });
     }
 }
+
+export default cardsController;

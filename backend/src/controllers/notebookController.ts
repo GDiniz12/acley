@@ -44,3 +44,5 @@ const notebookController = {
         return res.status(200).json({ message: "Deleted Notebook"});
     }
 }
+
+export default notebookController;
