@@ -1,15 +1,15 @@
 import { pool } from "../db.js";
-import type { Request, Response } from "express";
+import bcrypt from "bcrypt";
 
 class User {
+    id: number;
     username: string;
-    email: string;
-    password: string;
+    createdAt: Date;
 
-    constructor(username: string, email: string, password: string) {
+    constructor(id: number, username: string, createdAt: Date) {
+        this.id = id;
         this.username = username;
-        this.email = email;
-        this.password = password;
+        this.createdAt = createdAt;
     }
 
     static async allUsers() {
@@ -24,10 +24,63 @@ class User {
 
     static async createUser(username: string, email: string, password: string) {
         try {
-            await pool.query("INSERT INTO users(username, email, password) VALUES(?, ?, ?)", [username, email, password]);
+            const newPassword: string = bcrypt.hashSync(password, 12);
+            await pool.query("INSERT INTO users(username, email, password) VALUES(?, ?, ?)", [username, email, newPassword]);
             return true;
         } catch(err) {
             return { status: false, error: err}
+        }
+    }
+
+    static async userByID(id: number) {
+        try {
+            const [user] = await pool.query<User[]>("SELECT id, username, created_at FROM users WHERE id = ?", [id]);
+
+            if (user.length === 0) return false;
+            return { user };
+        } catch(err) {
+            return { error: err}
+        }
+    }
+
+    static async updateUser(username: string, email: string, password: string, idUser: number) {
+        try {
+            const [user] = await pool.query<User[]>("SELECT username FROM users WHERE id = ?", [idUser]);
+            if (user.length === 0) return { message: "User not found"};
+
+            const fields = [];
+            const values = [];
+
+            if (username !== undefined) {
+                fields.push("username = ?");
+                values.push(username);
+            }
+            if (email !== undefined) {
+                fields.push("email = ?");
+                values.push(email);
+            }
+            if (password !== undefined) {
+                fields.push("password = ?");
+                values.push(password);
+            }
+
+            const sql = `UPDATE users SET ${fields.join(", ")} WHERE id = ?`;
+            values.push(idUser);
+
+            await pool.query(sql, values);
+
+            return { message: "Updated successfuly"};
+        } catch(err) {
+            return { error: err };
+        }
+    }
+
+    static async deleteUser(idUser: number) {
+        try {
+            await pool.query("DELETE FROM users FROM id = ?", [idUser]);
+            return true;
+        } catch(err) {
+            return { error: err };
         }
     }
 }
