@@ -15,7 +15,7 @@ export default function SignUp() {
         ev.preventDefault();
 
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
