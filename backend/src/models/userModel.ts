@@ -1,14 +1,18 @@
 import { pool } from "../db.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import "dotenv/config";
 
 class User {
     id: number;
     username: string;
+    password: string
     createdAt: Date;
 
-    constructor(id: number, username: string, createdAt: Date) {
+    constructor(id: number, username: string, password: string, createdAt: Date) {
         this.id = id;
         this.username = username;
+        this.password = password;
         this.createdAt = createdAt;
     }
 
@@ -29,6 +33,24 @@ class User {
             return true;
         } catch(err) {
             return { status: false, error: err}
+        }
+    }
+
+    static async login(email: string, password: string) {
+        try {
+            const [user] = await pool.query<User[]>("SELECT id, username, password FROM users WHERE email = ?", [email]);
+
+            const isValidPassword = bcrypt.compareSync(password, user[0]?.password!);
+
+            if (user.length === 0 || !isValidPassword) return { message: "invalid crendentials"};
+
+            const payload = { id: user[0]?.id, username: user[0]?.username }
+
+            const token = jwt.sign(payload, process.env.JWT_SECRET!, { expiresIn: "1d"});
+
+            return { token };
+        } catch(err) {
+            return { error: err}
         }
     }
 
