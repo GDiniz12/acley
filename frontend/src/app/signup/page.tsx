@@ -4,6 +4,7 @@ import styles from "./signup.module.css";
 import acleyLogo from "../assets/newAcleyLogo-removebg-preview.png";
 import Image from "next/image";
 import { useState } from "react";
+import Link from "next/link";
 
 export default function SignUp() {
     const [username, setUsername] = useState("");
@@ -14,7 +15,7 @@ export default function SignUp() {
         ev.preventDefault();
 
         try {
-            const res = await fetch("http://localhost:4000/createUser", {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
