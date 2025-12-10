@@ -19,7 +19,7 @@ class Notebook {
         }
     }
 
-    static async notebooksByUser(idUser: number) {
+    static async notebooksByUser(idUser: number | undefined) {
         try {
             const [notebooks] = await pool.query("SELECT id, name FROM notebooks WHERE id_user = ?", [idUser]);
             return { notebooks };
