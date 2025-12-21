@@ -5,6 +5,7 @@ import Image from "next/image";
 import acleyLogo from "../assets/newAcleyLogo-removebg-preview.png";
 import { useState } from "react";
 import Link from "next/link";
+import { setToken } from "./auth";
 
 export default function SignIn() {
     const [email, setEmail] = useState("");
@@ -14,7 +15,7 @@ export default function SignIn() {
         ev.preventDefault();
 
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/signin`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -32,7 +33,8 @@ export default function SignIn() {
                 return;
             }
 
-            alert("Login efetuado com sucesso!");
+            const data: string = await res.json();
+            setToken(data);
         } catch(err) {
             alert("Error: " + err);
         }

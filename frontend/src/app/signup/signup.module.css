@@ -37,12 +37,16 @@
     margin-right: 2.5rem;
     background-color: transparent;
     border: solid #ffffff16;
-    color: #fff;
     padding: 10px;
     border-radius: 10px;
     width: 4rem;
     border-width: 1.5px;
     cursor: pointer;
+}
+
+.fixedBar > span > button > a {
+    color: #fff;
+    text-decoration: none;
 }
 
 .content {

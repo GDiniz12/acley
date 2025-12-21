@@ -48,7 +48,7 @@ export default function SignUp() {
                     <span className={styles.logoAcley}>
                         <Image src={acleyLogo} alt="Acley logo" className={styles.imgAcley}/>
                     </span>
-                    <span><button>Entrar</button></span>
+                    <span><button><Link href={"/signin"}>Entrar</Link></button></span>
                 </div>
                 <div className={styles.content}>
                     <div className={styles.registerContainer}>
