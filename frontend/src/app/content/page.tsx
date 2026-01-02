@@ -1,9 +1,10 @@
 import MainDeck from "../Components/MainDeck/MainDeck";
+import ProtectedRoute from "../Components/ProtectedRoute";
 import SideBar from "../Components/SideBar/SideBar";
 import styles from "./style.module.css";
 import "./style.module.css";
 
-export default function PageContent() {
+function PageContent() {
     return (
         <>
             <div className={styles.content}>
@@ -17,4 +18,12 @@ export default function PageContent() {
             </div>            
         </>
     );
+}
+
+export default function PageContentProtected() {
+    return (
+        <ProtectedRoute>
+            <PageContent />
+        </ProtectedRoute>
+    )
 }
