@@ -12,6 +12,16 @@ const usersController = {
         }
         return res.status(201).json({ message: "User created successfully"})
     },
+    login: async (req: Request, res: Response) => {
+        const { email, password } = req.body;
+
+        const result = await User.login(email, password);
+
+        if (result.message) return res.status(409).json({ message: result.message });
+        if (result.error) return res.status(500).json({ message: result.error });
+
+        return res.status(201).json(result.token);
+    },
     allUsers: async (req: Request, res: Response) => {
         const result = await User.allUsers();
 

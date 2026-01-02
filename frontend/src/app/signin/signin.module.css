@@ -37,12 +37,16 @@
     margin-right: 2.5rem;
     background-color: transparent;
     border: solid #ffffff16;
-    color: #fff;
     padding: 10px;
     border-radius: 10px;
-    width: 4rem;
+    width: 6rem;
     border-width: 1.5px;
     cursor: pointer;
+}
+
+.fixedBar > span > button > a {
+    color: #fff;
+    text-decoration: none;
 }
 
 .content {
@@ -59,17 +63,17 @@
     color: #fff;
 }
 
-.registerContainer > form{
+.containerSignIn > form{
     display: flex;
     flex-direction: column;
     margin-bottom: 2rem;
 }
 
-.registerContainer > form > h3 {
+.containerSignIn > form > h3 {
     font-size: 2.2rem;
 }
 
-.registerContainer > form > input {
+.containerSignIn > form > input {
     background-color: transparent;
     border: solid #ffffff16;
     border-radius: 10px;
@@ -80,7 +84,7 @@
     width: 25rem;
 }
 
-.registerContainer > form > button {
+.containerSignIn > form > button {
     border-radius: 10px;
     background-color: #fff;
     font-weight: 700;
