@@ -11,9 +11,12 @@ function PageContent() {
                 <div className={styles.leftSide}>
                     <SideBar />
                 </div>
-                <div className={styles.centerRigthSide}>
+                <div className={styles.centerSide}>
                     <MainDeck />
                     <button className={styles.btnCreate}>Criar matéria</button>
+                </div>
+                <div className={styles.RigthSide}>
+                    <button>Sinalizando</button>
                 </div>
             </div>            
         </>

@@ -4,13 +4,20 @@ body {
 
 .content {
     display: grid;
-    grid-template-columns: 250px 1fr;
+    grid-template-columns: 20% 60% 20%;
     height: 100vh;
 }
 
 .leftSide {
     margin-left: -1rem;
     margin-top: 8rem;
+}
+
+.centerSide {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }
 
 .btnCreate {
@@ -22,7 +29,6 @@ body {
     border-radius: 10px;
     cursor: pointer;
     margin-top: 3rem;
-    margin-left: 20rem;
 }
 
 .acleyLogo {
