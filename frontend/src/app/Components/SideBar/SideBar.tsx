@@ -43,11 +43,15 @@ export default function SideBar(props: any) {
                     <div className={styles.openMenu} onClick={toggleMenu}><div></div></div>
                 </div>
                 <div className={`${styles.menu} ${isOpenMenu ? styles.show : styles.hide}`}>
-                    <h3 className={styles.titleDeck}>Decks</h3>
-                    <span className={styles.addDeck} onClick={addInput}>+</span>
-                    {inputs.map((value, index) => (
-                        <input key={index} type="text" value={value} onChange={(e) => handleInputChange(index, e.target.value)} className={styles.inpDeck} ref={index === inputs.length - 1 ? lastInputRef : null} onBlur={() => handleBlur(index)}/>
-                    ))}
+                    <div className={styles.topSide}>
+                        <h3 className={styles.titleDeck}>Decks</h3>
+                        <span className={styles.addDeck} onClick={addInput}>+</span>
+                    </div>
+                    <div className={styles.bottomSide}>
+                        {inputs.map((value, index) => (
+                            <input key={index} type="text" value={value} onChange={(e) => handleInputChange(index, e.target.    value)} className={styles.inpDeck} ref={index === inputs.length - 1 ? lastInputRef : null} onBlur=  {() => handleBlur(index)}/>
+                        ))}
+                    </div>
                 </div>
             </aside>
         </>
