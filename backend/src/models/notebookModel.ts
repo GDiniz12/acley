@@ -1,5 +1,4 @@
 import { pool } from "../db.js";
-import User from "./userModel.js";
 
 class Notebook {
     name: string;
@@ -12,8 +11,9 @@ class Notebook {
 
     static async createNotebook(name: string, idUser: number) {
         try {
-            await pool.query("INSERT INTO notebook(name, id_user) VALUES (?, ?)", [name, idUser]);
-            return true;
+            const notebook = await pool.query("INSERT INTO notebooks(name, id_user) VALUES (?, ?)", [name, idUser]);
+            const [notebookResult] = await pool.query("SELECT * FROM notebooks WHERE id = ?", [notebook[0].insertId]);
+            return notebookResult;
         } catch(err) {
             return { error: err };
         }
@@ -22,7 +22,7 @@ class Notebook {
     static async notebooksByUser(idUser: number | undefined) {
         try {
             const [notebooks] = await pool.query("SELECT id, name FROM notebooks WHERE id_user = ?", [idUser]);
-            return { notebooks };
+            return notebooks;
         } catch (err) {
             return { error: err };
         }

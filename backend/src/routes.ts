@@ -19,7 +19,7 @@ router.post("/card", cardsController.createCard);
 
 // Get routes
 router.get("/users", usersController.allUsers);
-router.get("/user/:idParam", usersController.userById);
+router.get("/user", authMiddleware, usersController.userById);
 
 router.get("/notebook/user/", authMiddleware, notebookController.notebooksByUser);
 

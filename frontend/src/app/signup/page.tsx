@@ -5,11 +5,40 @@ import acleyLogo from "../assets/newAcleyLogo-removebg-preview.png";
 import Image from "next/image";
 import { useState } from "react";
 import Link from "next/link";
+import { getToken } from "../signin/auth";
 
 export default function SignUp() {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+
+    async function createFirstNotebook(idUser: number) {
+        try {
+            const token = getToken();
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notebook`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    "nameNotebook": "Sem título",
+                    "idUser": idUser
+                })
+            });
+            
+            if (!res.ok) {
+                throw new Error('Erro ao criar notebook');
+            }
+                        
+            const newNotebook = await res.json();
+            console.log("Notebook criado!", newNotebook);
+                        
+            return newNotebook;
+        } catch(err) {
+            console.error(err);
+            alert("Erro ao criar notebook!");
+        }
+    }
 
     async function handleSubmit(ev: React.FormEvent) {
         ev.preventDefault();
@@ -34,6 +63,8 @@ export default function SignUp() {
                 return;
             }
 
+            const result = await res.json();
+            await createFirstNotebook(result[0].id);
             alert("Cadastro efetuado com sucesso!");
         } catch(err) {
             alert("Error: " + err);

@@ -29,8 +29,12 @@ class User {
     static async createUser(username: string, email: string, password: string) {
         try {
             const newPassword: string = bcrypt.hashSync(password, 12);
+            
             await pool.query("INSERT INTO users(username, email, password) VALUES(?, ?, ?)", [username, email, newPassword]);
-            return true;
+
+            const [user] = await pool.query("SELECT id, username FROM users WHERE username = ?", [username]);
+
+            return { user };
         } catch(err) {
             return { status: false, error: err}
         }
@@ -54,12 +58,12 @@ class User {
         }
     }
 
-    static async userByID(id: number) {
+    static async userByID(id: number | undefined) {
         try {
             const [user] = await pool.query<User[]>("SELECT id, username, created_at FROM users WHERE id = ?", [id]);
 
             if (user.length === 0) return false;
-            return { user };
+            return user;
         } catch(err) {
             return { error: err}
         }

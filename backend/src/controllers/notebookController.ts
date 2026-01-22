@@ -5,12 +5,12 @@ const notebookController = {
     createNotebook: async (req: Request, res: Response) => {
         const { nameNotebook, idUser } = req.body;
 
-        const notebook = await Notebook.createNotebook(nameNotebook, idUser);
+        const result = await Notebook.createNotebook(nameNotebook, idUser);
 
-        if (notebook !== true) {
-            return res.status(500).json({ error: notebook.error});
+        if (result.error) {
+            return res.status(500).json({ error: result});
         }
-        return res.status(201).json("Notebook was created!");
+        return res.status(201).json(result);
     },
     notebooksByUser: async (req: Request, res: Response) => {
         const idUser = req.user && req.user.id;
@@ -20,7 +20,7 @@ const notebookController = {
         if (notebooks.error) {
             return res.status(500).json({ error: notebooks.error });
         }
-        return res.status(200).json({ notebooks });
+        return res.status(200).json(notebooks);
     },
     updateNotebook: async (req: Request, res: Response) => {
         const { idNotebook, newName } = req.body;
