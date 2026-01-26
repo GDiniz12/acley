@@ -1,0 +1,117 @@
+.container {
+    width: 100%;
+    height: auto;
+    min-height: 40px;
+    padding: 0.75rem 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    position: relative;
+    border-radius: 10px;
+    transition: background-color 0.3s;
+}
+
+.container:hover {
+    background-color: #3a3a3a;
+}
+
+.container > p {
+    flex: 1;
+    margin: 0;
+    overflow: hidden;
+}
+
+.container > p > a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: large;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.menuWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.dotsMenu {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    transition: background-color 0.3s;
+    user-select: none;
+    flex-shrink: 0;
+}
+
+.dotsMenu:hover {
+    background-color: #4a4a4a;
+}
+
+.dotsMenu span {
+    color: #fff;
+    font-size: 1.2rem;
+    line-height: 0.2rem;
+    font-weight: bold;
+}
+
+.optionsMenu {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    margin-top: 0.25rem;
+    background-color: #2d2d2d;
+    border: 2px solid #444;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    z-index: 100;
+    min-width: 150px;
+    overflow: hidden;
+    animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.optionButton {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: none;
+    border: none;
+    color: #fff;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.optionButton:hover {
+    background-color: #3a3a3a;
+}
+
+.optionButton:last-child:hover {
+    background-color: #5a2020;
+}
+
+.icon {
+    font-size: 1rem;
+}

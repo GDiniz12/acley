@@ -30,7 +30,7 @@ router.get("/card/matter", cardsController.cardsByMatter);
 // Put routes
 router.put("/user", usersController.updateUser);
 
-router.put("/notebook", notebookController.updateNotebook);
+router.put("/notebook/:id", notebookController.updateNotebook);
 
 router.put("/matter", matterController.updateMatter);
 
@@ -39,7 +39,7 @@ router.put("/card", cardsController.updateCard);
 // Delete routes
 router.delete("/user", usersController.deleteUser);
 
-router.delete("/notebook", notebookController.deleteNotebook);
+router.delete("/notebook/:idNotebook", notebookController.deleteNotebook);
 
 router.delete("/matter", matterController.deleteMatter);
 

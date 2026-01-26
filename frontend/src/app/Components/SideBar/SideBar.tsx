@@ -6,10 +6,10 @@ import acleyIcon from "../../assets/sorteador.com.png";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { getToken } from "../../signin/auth";
-import Link from "next/link";
+import NotebookComponent from "../NotebookComponent/NotebookComponent";
 
 interface TypeNotebooks{
-    id: number;
+    id: string;
     name: string;
 }
 
@@ -21,12 +21,13 @@ interface TypeUser {
 
 export default function SideBar() {
     const [isOpenMenu, setIsOpenMenu] = useState(false);
-    const [inputs, setInputs] = useState<string[]>([]);
     const [notebooks, setNotebooks] = useState<TypeNotebooks[]>([]);
     const [dataUser, setDataUser] = useState<TypeUser[]>([]);
-    const [click, setClick] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const [modalType, setModalType] = useState<'rename' | 'delete'>('rename');
+    const [selectedNotebook, setSelectedNotebook] = useState<TypeNotebooks | null>(null);
+    const [newName, setNewName] = useState('');
     const router = useRouter();
-    const lastInputRef = useRef<HTMLInputElement | null>(null);
 
     useEffect(() => {
         async function userData() {
@@ -44,7 +45,6 @@ export default function SideBar() {
 
                 const result: TypeUser[] = await res.json();
                 setDataUser(result);
-                console.log("Dados do usuário: ", dataUser);
             } catch(err) {
                 console.error(err);
                 alert("Erro ao carregar dados do usuário!");
@@ -55,7 +55,7 @@ export default function SideBar() {
     }, []);
 
     useEffect(() => {
-        const fecthNotebook = async () => {
+        const fetchNotebook = async () => {
             try {
                 const token = getToken();
                 const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notebook/user/`, {
@@ -75,28 +75,17 @@ export default function SideBar() {
             }
         }
 
-        fecthNotebook();
+        fetchNotebook();
     }, []);
-
-    function createModelNotebook() {
-        return (
-            <>
-                <div className={styles.containerNameNotebook}>
-                    <p>Digite o novo nome do notebook</p>
-                    <input type="text" />
-                    <button>Confirmar</button>
-                    <button>Cancelar</button>
-                </div>
-            </>
-        )
-    }
 
     async function createNotebook() {
         try {
+            const token = getToken();
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notebook`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     "nameNotebook": "Sem título",
@@ -105,7 +94,7 @@ export default function SideBar() {
             });
 
             const data = await res.json();
-
+            setNotebooks(prev => [...prev, data[0]]);
             router.push(`/content/${data[0].id}`);
         } catch(err) {
             alert("Erro na criação do notebook: " + err);
@@ -117,16 +106,81 @@ export default function SideBar() {
         setIsOpenMenu((prev: boolean) => !prev);
     }
 
-    function addInput() {
-        setInputs((prev) => [...prev, ""])
+    function handleOpenRenameModal(notebook: TypeNotebooks) {
+        setSelectedNotebook(notebook);
+        setNewName(notebook.name);
+        setModalType('rename');
+        setShowModal(true);
     }
 
-    useEffect(() => {
-        if (lastInputRef.current) {
-            lastInputRef.current.focus();
+    function handleOpenDeleteModal(notebook: TypeNotebooks) {
+        setSelectedNotebook(notebook);
+        setModalType('delete');
+        setShowModal(true);
+    }
+
+    function handleCloseModal() {
+        setShowModal(false);
+        setSelectedNotebook(null);
+        setNewName('');
+    }
+
+    async function handleRenameNotebook() {
+        if (!selectedNotebook || !newName.trim()) {
+            alert("Por favor, insira um nome válido!");
+            return;
         }
-        
-    }, [inputs]);
+
+        try {
+            const token = getToken();
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notebook/${selectedNotebook.id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    newName: newName.trim()
+                })
+            });
+
+            if (!res.ok) {
+                throw new Error('Erro ao renomear notebook');
+            }
+
+            setNotebooks(prev => 
+                prev.map(nb => 
+                    nb.id === selectedNotebook.id 
+                        ? { ...nb, name: newName.trim() }
+                        : nb
+                )
+            );
+
+            handleCloseModal();
+        } catch(err) {
+            console.error(err);
+            alert("Erro ao renomear notebook!");
+        }
+    }
+
+    async function handleDeleteNotebook() {
+        if (!selectedNotebook) return;
+
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notebook/${selectedNotebook.id}`, {
+                method: "DELETE"
+            });
+
+            if (!res.ok) {
+                throw new Error('Erro ao excluir notebook');
+            }
+
+            setNotebooks(prev => prev.filter(nb => nb.id !== selectedNotebook.id));
+            handleCloseModal();
+        } catch(err) {
+            console.error(err);
+            alert("Erro ao excluir notebook!");
+        }
+    }
 
     return (
         <>
@@ -141,16 +195,76 @@ export default function SideBar() {
                         <span className={styles.addDeck} onClick={async () => await createNotebook()}>+</span>
                     </div>
                     <div className={styles.bottomSide}>
-                        {notebooks?.map((element, index) => {
+                        {notebooks?.map((element) => {
                             return (
-                                <>
-                                    <p><Link href={`/content/${element.id}`}>{element.name}</Link></p>
-                                </>
+                                <NotebookComponent 
+                                    key={element.id}
+                                    link={element.id} 
+                                    title={element.name}
+                                    onRename={() => handleOpenRenameModal(element)}
+                                    onDelete={() => handleOpenDeleteModal(element)}
+                                />
                             )
                         })}
                     </div>
                 </div>
             </aside>
+
+            {/* Modal */}
+            {showModal && (
+                <div className={styles.modalOverlay} onClick={handleCloseModal}>
+                    <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+                        {modalType === 'rename' ? (
+                            <>
+                                <h2>Renomear Notebook</h2>
+                                <p>Digite o novo nome do notebook</p>
+                                <input 
+                                    type="text" 
+                                    value={newName}
+                                    onChange={(e) => setNewName(e.target.value)}
+                                    placeholder="Nome do notebook"
+                                    className={styles.modalInput}
+                                    autoFocus
+                                />
+                                <div className={styles.modalButtons}>
+                                    <button 
+                                        onClick={handleRenameNotebook}
+                                        className={styles.confirmButton}
+                                    >
+                                        Confirmar
+                                    </button>
+                                    <button 
+                                        onClick={handleCloseModal}
+                                        className={styles.cancelButton}
+                                    >
+                                        Cancelar
+                                    </button>
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <h2>Excluir Notebook</h2>
+                                <p>Tem certeza que deseja excluir o notebook "<strong>{selectedNotebook?.name}</strong>"?</p>
+                                <p className={styles.warningText}>Esta ação não pode ser desfeita.</p>
+                                <div className={styles.modalButtons}>
+                                    <button 
+                                        onClick={handleDeleteNotebook}
+                                        className={styles.deleteButton}
+                                    >
+                                        Excluir
+                                    </button>
+                                    <button 
+                                        onClick={handleCloseModal}
+                                        className={styles.cancelButton}
+                                    >
+                                        Cancelar
+                                    </button>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                </div>
+            )}
         </>
     );
 }

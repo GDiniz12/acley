@@ -14,7 +14,6 @@ export default function SignUp() {
 
     async function createFirstNotebook(idUser: number) {
         try {
-            const token = getToken();
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notebook`, {
                 method: "POST",
                 headers: {
