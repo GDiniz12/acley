@@ -92,3 +92,26 @@
     padding: 17px;
     cursor: pointer;
 }
+
+@media (max-width: 480px) {
+    .fixedBar {
+        width: 100%;
+    }
+
+    .content {
+        width: 80%;
+    }
+
+    .containerSignIn {
+        width: 100%;
+        height: 100%;
+        padding: 3rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .containerSignIn > form > input {
+        width: 85%;
+    }
+}

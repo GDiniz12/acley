@@ -1,5 +1,5 @@
 import { pool } from "../db.js";
-import User from "./userModel.js";
+import { v4 as uuidv4 } from 'uuid';
 
 class Notebook {
     name: string;
@@ -12,32 +12,43 @@ class Notebook {
 
     static async createNotebook(name: string, idUser: number) {
         try {
-            await pool.query("INSERT INTO notebook(name, id_user) VALUES (?, ?)", [name, idUser]);
-            return true;
+            const id: string = uuidv4();
+            await pool.query("INSERT INTO notebooks(id, name, id_user) VALUES (?, ?, ?)", [id, name, idUser]);
+            const [notebookResult] = await pool.query("SELECT * FROM notebooks WHERE id = ?", [id]);
+            return { notebook: notebookResult}
         } catch(err) {
-            return { error: err };
+            return { error: err}
         }
     }
 
     static async notebooksByUser(idUser: number | undefined) {
         try {
             const [notebooks] = await pool.query("SELECT id, name FROM notebooks WHERE id_user = ?", [idUser]);
-            return { notebooks };
+            return notebooks;
         } catch (err) {
-            return { error: err };
+            return err;
         }
     }
     
-    static async updateNameNotebook(idNotebook: number, newName: string) {
+    static async updateNameNotebook(idNotebook: string | undefined, newName: string) {
         try {
-            await pool.query("UPDATE notebooks SET name = ? WHERE id = ?", [newName, idNotebook]);
+            const [result]: any = await pool.query(
+                "UPDATE notebooks SET name = ? WHERE id = ?", 
+                [newName, idNotebook]
+            );
+        
+            if (result.affectedRows === 0) {
+                return { error: "Notebook não encontrado", notFound: true };
+            }
+        
             return true;
         } catch (err) {
-            return { error: err };
+            console.error("Erro ao atualizar notebook:", err);
+            return { error: "Erro ao atualizar notebook" };
         }
     }
 
-    static async deleteNotebook(idNotebook: number) {
+    static async deleteNotebook(idNotebook: string | undefined) {
         try {
             await pool.query("DELETE FROM notebooks WHERE id = ?", [idNotebook]);
             return true;

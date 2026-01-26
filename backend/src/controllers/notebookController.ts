@@ -5,12 +5,12 @@ const notebookController = {
     createNotebook: async (req: Request, res: Response) => {
         const { nameNotebook, idUser } = req.body;
 
-        const notebook = await Notebook.createNotebook(nameNotebook, idUser);
+        const result = await Notebook.createNotebook(nameNotebook, idUser);
 
-        if (notebook !== true) {
-            return res.status(500).json({ error: notebook.error});
+        if (result.error) {
+            return res.status(500).json({ error: result});
         }
-        return res.status(201).json("Notebook was created!");
+        return res.status(201).json(result.notebook);
     },
     notebooksByUser: async (req: Request, res: Response) => {
         const idUser = req.user && req.user.id;
@@ -20,19 +20,27 @@ const notebookController = {
         if (notebooks.error) {
             return res.status(500).json({ error: notebooks.error });
         }
-        return res.status(200).json({ notebooks });
+        return res.status(200).json(notebooks);
     },
     updateNotebook: async (req: Request, res: Response) => {
-        const { idNotebook, newName } = req.body;
+        const { id } = req.params;
+        const { newName } = req.body;
 
-        const result = await Notebook.updateNameNotebook(idNotebook, newName);
+        if (!newName || typeof newName !== "string" || newName.trim() === "") {
+            return res.status(400).json({ error: "Nome é obrigatório" });
+        }
 
-        if (result !== true) return res.status(500).json({ error: result.error });
+        const result = await Notebook.updateNameNotebook(id, newName.trim());
 
-        return res.status(200).json({ message: "Updated successfuly"});
+        if (result !== true) {
+            const status = result.notFound ? 404 : 500;
+            return res.status(status).json({ error: result.error });
+        }
+
+        return res.status(200).json({ message: "Updated successfully" });
     },
     deleteNotebook: async (req: Request, res: Response) => {
-        const { idNotebook } = req.body;
+        const { idNotebook } = req.params;
 
         const result = await Notebook.deleteNotebook(idNotebook);
 

@@ -7,10 +7,10 @@ const usersController = {
 
         const user = await User.createUser(username, email, password);
 
-        if (!user) {
-            return res.status(500).json({ message: "Database error"})
+        if (user.error) {
+            return res.status(500).json({ message: "Database error", error: user.error})
         }
-        return res.status(201).json({ message: "User created successfully"})
+        return res.status(201).json(user.user)
     },
     login: async (req: Request, res: Response) => {
         const { email, password } = req.body;
@@ -31,19 +31,15 @@ const usersController = {
         return res.status(500).json(result.error)
     },
     userById: async (req: Request, res: Response) => {
-        const { idParam } = req.params;
+        const idUser = req.user && req.user.id;
 
-        let id = 0;
-
-        if (typeof idParam === 'string') id = parseInt(idParam);
-
-        const result = await User.userByID(id);
+        const result = await User.userByID(idUser);
 
         if (result === false) return res.status(404).json({ message: "User not found"});
 
-        if (result.user) return res.status(200).json(result.user);
+        if (result) return res.status(200).json(result);
 
-        return res.status(500).json({ message: "Database error", error: result.error});
+        return res.status(500).json({ message: "Database error", error: result});
     },
     updateUser: async (req: Request, res: Response) => {
         const { username, email, password, idUser } = req.body;

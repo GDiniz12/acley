@@ -6,11 +6,31 @@ import acleyLogo from "../assets/newAcleyLogo-removebg-preview.png";
 import { useState } from "react";
 import Link from "next/link";
 import { setToken } from "./auth";
+import { useRouter } from "next/navigation";
 
 export default function SignIn() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const router = useRouter();
 
+    async function allNotebooks(theToken: string) {
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notebook/user/`, {
+                headers: {
+                    'Authorization': `Bearer ${theToken}`
+                }
+            });        
+            if (!res.ok) {
+                throw new Error('Erro ao carregar notebooks');
+            }
+        
+            const result = await res.json();
+            return result;
+        } catch(err) {
+            console.error(err);
+            alert("Erro ao carregar notebooks!");
+        }
+    }
     async function handleSubmit(ev: React.FormEvent) {
         ev.preventDefault();
 
@@ -33,8 +53,13 @@ export default function SignIn() {
                 return;
             }
 
-            const data: string = await res.json();
-            setToken(data);
+            const token: string = await res.json();
+
+            setToken(token);
+
+            const dataNotebooks = await allNotebooks(token);
+
+            router.push(`/content/${dataNotebooks[0].id}`);
         } catch(err) {
             alert("Error: " + err);
         }
