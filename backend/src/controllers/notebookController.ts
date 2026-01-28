@@ -12,6 +12,17 @@ const notebookController = {
         }
         return res.status(201).json(result.notebook);
     },
+    notebookById: async (req: Request, res: Response) => {
+        const { id } = req.params;
+
+        const result = await Notebook.notebooksById(id);
+
+        if (result.err) {
+            return res.status(500).json({ message: result.err});
+        }
+
+        return res.status(200).json(result.notebooks);
+    },
     notebooksByUser: async (req: Request, res: Response) => {
         const idUser = req.user && req.user.id;
 

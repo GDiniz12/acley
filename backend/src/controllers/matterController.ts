@@ -12,11 +12,11 @@ const matterController = {
         return res.status(201).json({ message: "Created matter"});
     },
     mattersByNotebook: async (req: Request, res: Response) => {
-        const { idNotebook } = req.body;
+        const { id } = req.params;
 
-        const result = await Matter.mattersByNotebook(idNotebook);
+        const result = await Matter.mattersByNotebook(id);
 
-        if (result.error) return res.status(500).json({ message: result.error });
+        if (result.err) return res.status(500).json({ message: result.err });
 
         return res.status(200).json(result.matters);
     },
