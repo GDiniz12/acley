@@ -1,8 +1,8 @@
 .matterCard {
     width: 100%;
     height: auto;
-    min-height: 60px;
-    padding: 1rem 1.5rem;
+    min-height: 45px;
+    padding: 0.75rem 2rem;
     display: grid;
     grid-template-columns: 1fr auto;
     align-items: center;
@@ -12,6 +12,7 @@
     border-width: 1px;
     cursor: pointer;
     transition: background-color 0.3s, transform 0.2s;
+    box-sizing: border-box;
 }
 
 .matterCard:hover {
@@ -21,7 +22,7 @@
 
 .matterName {
     color: #fff;
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 600;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -30,25 +31,26 @@
 
 .matterStats {
     display: flex;
-    gap: 2rem;
+    gap: 3.5rem;
     align-items: center;
+    padding-right: 0.5rem;
 }
 
 .matterStats > span {
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-weight: 700;
-    min-width: 30px;
+    width: 60px;
     text-align: center;
 }
 
 .statNew {
-    color: #4CAF50;
+    color: #9c27b0; /* Roxo */
 }
 
 .statLearning {
-    color: #FFA726;
+    color: #f44336; /* Vermelho */
 }
 
 .statReview {
-    color: #42A5F5;
+    color: #4caf50; /* Verde */
 }
