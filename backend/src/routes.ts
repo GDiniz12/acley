@@ -22,8 +22,9 @@ router.get("/users", usersController.allUsers);
 router.get("/user", authMiddleware, usersController.userById);
 
 router.get("/notebook/user/", authMiddleware, notebookController.notebooksByUser);
+router.get("/notebook/:id", notebookController.notebookById);
 
-router.get("/matter/notebook", matterController.mattersByNotebook);
+router.get("/matter/notebook/:id", matterController.mattersByNotebook);
 
 router.get("/card/matter", cardsController.cardsByMatter);
 

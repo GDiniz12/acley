@@ -17,12 +17,12 @@ class Matter {
         }
     }
 
-    static async mattersByNotebook(idNotebook: string) {
+    static async mattersByNotebook(idNotebook: string | undefined) {
         try {
-            const [matters] = await pool.query("SELECT id, name FROM notebooks WHERE id_notebook = ?", [idNotebook]);
+            const [matters] = await pool.query("SELECT id, name FROM matters WHERE id_notebook = ?", [idNotebook]);
             return { matters };
         } catch(err) {
-            return { error: err };
+            return { err };
         }
     }
 

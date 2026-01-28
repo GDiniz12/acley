@@ -10,12 +10,16 @@ import styles from "./style.module.css";
 import { getToken } from "../../signin/auth";
 import "./style.module.css";
 
+interface TypeCurrentNotebook {
+    name: string;
+}
+
 function PageContent() {
-    const [currentNotebook, setCurrentNotebook] = useState(null);
+    const [currentNotebook, setCurrentNotebook] = useState<TypeCurrentNotebook[]>([]);
+    const [fetchLoaded, setFetchLoaded] = useState(false);
     const [showCreateMatterModal, setShowCreateMatterModal] = useState(false);
-    const [matters, setMatters] = useState([]);
+    const [refreshTrigger, setRefreshTrigger] = useState(0);
     const params = useParams();
-    const router = useRouter();
     
     // Pega o ID do notebook da URL
     const notebookId = params.id;
@@ -23,102 +27,34 @@ function PageContent() {
     // Busca o notebook específico quando o ID muda
     useEffect(() => {
         const fetchCurrentNotebook = async () => {
-
             try {
-                const token = getToken();
-                const res = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL}/notebook/${notebookId}`,
-                    {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    }
-                );
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notebook/${notebookId}`);
 
                 if (!res.ok) {
                     throw new Error('Erro ao carregar notebook');
                 }
 
-                const result = await res.json();
+                const result: TypeCurrentNotebook[] = await res.json();
                 setCurrentNotebook(result);
                 console.log("Notebook atual: ", result);
+                setFetchLoaded(true);
             } catch(err) {
                 console.error(err);
                 alert("Erro ao carregar o notebook!");
             }
         };
 
-        fetchCurrentNotebook();
-    }, [notebookId]);
-
-    // Buscar matérias do notebook
-    useEffect(() => {
-        const fetchMatters = async () => {
-            try {
-                const token = getToken();
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/matter/notebook`, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({
-                        idNotebook: notebookId
-                    })
-                });
-
-                if (!res.ok) {
-                    throw new Error('Erro ao carregar matérias');
-                }
-
-                const result = await res.json();
-                setMatters(result);
-            } catch(err) {
-                console.error(err);
-            }
-        };
-
         if (notebookId) {
-            fetchMatters();
+            fetchCurrentNotebook();
         }
     }, [notebookId]);
-
-    async function updateNameNotebook(newName: string) {
-
-        try {
-            const token = getToken();
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notebook`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    "idNotebook": 5,
-                    "newName": newName
-                })
-            });
-
-            if (!res.ok) {
-                throw new Error('Erro ao atualizar nome');
-            }
-
-            // Atualiza o estado loca
-            console.log("Nome atualizado!");
-        } catch(err) {
-            console.log("Error: " + err);
-            alert("Erro ao atualizar nome!");
-        }
-    }
 
     async function handleCreateMatter(matterName: string) {
         try {
-            const token = getToken();
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/matter`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
-                    'Authorization': `Bearer ${token}`
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
                     name: matterName,
@@ -130,10 +66,8 @@ function PageContent() {
                 throw new Error('Erro ao criar matéria');
             }
 
-            const newMatter = await res.json();
-            
-            // Atualizar a lista de matérias
-            setMatters(prev => [...prev, newMatter]);
+            // Força o MainDeck a atualizar a lista de matérias
+            setRefreshTrigger(prev => prev + 1);
             
             console.log("Matéria criada com sucesso!");
         } catch(err) {
@@ -150,9 +84,9 @@ function PageContent() {
                 </div>
                 <div className={styles.centerSide}>
                     <h2>
-                        
+                        {fetchLoaded ? currentNotebook[0].name : "undefined"}
                     </h2>
-                    <MainDeck notebookId={notebookId} />
+                    <MainDeck notebookId={notebookId} refreshTrigger={refreshTrigger} />
                     <button 
                         className={styles.btnCreate}
                         onClick={() => setShowCreateMatterModal(true)}

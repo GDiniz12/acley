@@ -29,6 +29,15 @@ class Notebook {
             return err;
         }
     }
+
+    static async notebooksById(idNote: string | undefined) {
+        try {
+            const [notebooks] = await pool.query("SELECT name FROM notebooks WHERE id = ?", [idNote]);
+            return { notebooks }
+        } catch(err) {
+            return { err }
+        }
+    }
     
     static async updateNameNotebook(idNotebook: string | undefined, newName: string) {
         try {
