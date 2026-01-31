@@ -1,23 +1,24 @@
 .matterCard {
     width: 100%;
     height: auto;
-    min-height: 45px;
-    padding: 0.75rem 2rem;
-    display: grid;
-    grid-template-columns: 1fr auto;
+    min-height: 55px; /* Um pouco mais alto para conforto visual */
+    /* Padding direito maior para acomodar o botão absoluto sem sobrepor texto */
+    padding: 0.75rem 4rem 0.75rem 2rem; 
+    display: flex;
+    justify-content: space-between;
     align-items: center;
     gap: 1rem;
     background-color: transparent;
-    border-bottom: solid #444;
+    border-bottom: solid #333; /* Cor da borda mais sutil */
     border-width: 1px;
     cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s;
+    transition: background-color 0.2s, transform 0.2s;
     box-sizing: border-box;
+    position: relative; /* Necessário para o posicionamento absoluto do menu */
 }
 
 .matterCard:hover {
-    background-color: #2a2a2a;
-    transform: translateX(5px);
+    background-color: #252525;
 }
 
 .matterName {
@@ -27,30 +28,120 @@
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+    flex: 1;
+    margin-right: 1rem;
+}
+
+/* RightSide agora só contém as estatísticas */
+.rightSide {
+    display: flex;
+    align-items: center;
 }
 
 .matterStats {
     display: flex;
-    gap: 3.5rem;
+    /* Gap idêntico ao do MainDeck */
+    gap: 1.5rem;
     align-items: center;
-    padding-right: 0.5rem;
 }
 
 .matterStats > span {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     font-weight: 700;
-    width: 60px;
+    /* Largura idêntica à do MainDeck h5 */
+    width: 70px; 
     text-align: center;
 }
 
-.statNew {
-    color: #9c27b0; /* Roxo */
+.statNew { color: #ad46c0; }
+.statLearning { color: #f65f54; }
+.statReview { color: #5cc260; }
+
+/* --- Estilos do Menu Flutuante --- */
+
+.menuWrapper {
+    position: absolute; /* Remove do fluxo normal */
+    right: 0.75rem; /* Posiciona na área de padding direita */
+    top: 50%;
+    transform: translateY(-50%); /* Centraliza verticalmente */
+    z-index: 10;
 }
 
-.statLearning {
-    color: #f44336; /* Vermelho */
+/* O botão quadrado dos 3 pontos */
+.dotsMenu {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 3px; /* Espaço entre os pontinhos */
+    cursor: pointer;
+    
+    /* Dimensões fixas para formar um quadrado perfeito */
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
 }
 
-.statReview {
-    color: #4caf50; /* Verde */
+/* Hover centralizado e suave */
+.dotsMenu:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Os pontinhos individuais */
+.dot {
+    width: 4px;
+    height: 4px;
+    background-color: #b0b0b0; /* Cor cinza claro para os pontos */
+    border-radius: 50%;
+}
+
+/* Hover no botão muda a cor dos pontos para branco */
+.dotsMenu:hover .dot {
+    background-color: #ffffff;
+}
+
+.optionsMenu {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    margin-top: 0.5rem;
+    background-color: #2d2d2d;
+    border: 1px solid #444;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    z-index: 100;
+    min-width: 140px;
+    overflow: hidden;
+    animation: fadeIn 0.15s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.optionButton {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    background: none;
+    border: none;
+    color: #e1e1e1;
+    text-align: left;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+}
+
+.optionButton:hover {
+    background-color: #3a3a3a;
+    color: #fff;
+}
+
+.optionButton.delete:hover {
+    background-color: #3f1a1a;
+    color: #ff6b6b;
 }

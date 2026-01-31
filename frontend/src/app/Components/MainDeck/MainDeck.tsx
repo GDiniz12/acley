@@ -11,12 +11,18 @@ interface Matter {
 
 interface MainDeckProps {
     notebookId: string;
-    refreshTrigger?: number; // Para forçar atualização quando criar nova matéria
+    refreshTrigger?: number;
 }
 
 export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) {
     const [matters, setMatters] = useState<Matter[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    
+    // Estados para o Modal
+    const [showModal, setShowModal] = useState(false);
+    const [modalType, setModalType] = useState<'rename' | 'delete'>('rename');
+    const [selectedMatter, setSelectedMatter] = useState<Matter | null>(null);
+    const [newName, setNewName] = useState('');
 
     useEffect(() => {
         async function fetchMatters() {
@@ -42,6 +48,90 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
 
         fetchMatters();
     }, [notebookId, refreshTrigger]);
+
+    // Funções de Abertura de Modal
+    function handleOpenRenameModal(matter: Matter) {
+        setSelectedMatter(matter);
+        setNewName(matter.name);
+        setModalType('rename');
+        setShowModal(true);
+    }
+
+    function handleOpenDeleteModal(matter: Matter) {
+        setSelectedMatter(matter);
+        setModalType('delete');
+        setShowModal(true);
+    }
+
+    function handleCloseModal() {
+        setShowModal(false);
+        setSelectedMatter(null);
+        setNewName('');
+    }
+
+    // Funções de API
+    async function handleRenameMatter() {
+        if (!selectedMatter || !newName.trim()) {
+            alert("Por favor, insira um nome válido!");
+            return;
+        }
+
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/matter`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    idMatter: selectedMatter.id,
+                    NewName: newName.trim() // Nota: O backend espera "NewName"
+                })
+            });
+
+            if (!res.ok) {
+                throw new Error('Erro ao renomear matéria');
+            }
+
+            setMatters(prev => 
+                prev.map(m => 
+                    m.id === selectedMatter.id 
+                        ? { ...m, name: newName.trim() }
+                        : m
+                )
+            );
+
+            handleCloseModal();
+        } catch(err) {
+            console.error(err);
+            alert("Erro ao renomear matéria!");
+        }
+    }
+
+    async function handleDeleteMatter() {
+        if (!selectedMatter) return;
+
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/matter`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    idMatter: selectedMatter.id
+                })
+            });
+
+            if (!res.ok) {
+                throw new Error('Erro ao excluir matéria');
+            }
+
+            setMatters(prev => prev.filter(m => m.id !== selectedMatter.id));
+            handleCloseModal();
+        } catch(err) {
+            console.error(err);
+            alert("Erro ao excluir matéria!");
+        }
+    }
 
     return (
         <>
@@ -70,11 +160,92 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
                                 newCards={0}
                                 learningCards={0}
                                 reviewCards={0}
+                                onRename={() => handleOpenRenameModal(matter)}
+                                onDelete={() => handleOpenDeleteModal(matter)}
                             />
                         ))
                     )}
                 </div>
             </div>
+
+            {/* Modal de Renomear/Excluir (Copiado o estilo do SideBar) */}
+            {showModal && (
+                <div style={{
+                    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                    backgroundColor: 'rgba(0,0,0,0.7)', zIndex: 1000,
+                    display: 'flex', justifyContent: 'center', alignItems: 'center'
+                }} onClick={handleCloseModal}>
+                    <div style={{
+                        backgroundColor: '#1e1e1e', padding: '2rem', borderRadius: '12px',
+                        width: '400px', maxWidth: '90%', border: '1px solid #333'
+                    }} onClick={(e) => e.stopPropagation()}>
+                        {modalType === 'rename' ? (
+                            <>
+                                <h2 style={{ marginBottom: '1rem', color: '#fff' }}>Renomear Matéria</h2>
+                                <p style={{ marginBottom: '1rem', color: '#aaa' }}>Digite o novo nome da matéria</p>
+                                <input 
+                                    type="text" 
+                                    value={newName}
+                                    onChange={(e) => setNewName(e.target.value)}
+                                    placeholder="Nome da matéria"
+                                    style={{
+                                        width: '100%', padding: '0.8rem', borderRadius: '6px',
+                                        border: '1px solid #444', backgroundColor: '#2d2d2d',
+                                        color: '#fff', marginBottom: '1.5rem'
+                                    }}
+                                    autoFocus
+                                />
+                                <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+                                    <button 
+                                        onClick={handleRenameMatter}
+                                        style={{
+                                            padding: '0.6rem 1.2rem', borderRadius: '6px', border: 'none',
+                                            backgroundColor: '#fff', color: '#000', fontWeight: 'bold', cursor: 'pointer'
+                                        }}
+                                    >
+                                        Confirmar
+                                    </button>
+                                    <button 
+                                        onClick={handleCloseModal}
+                                        style={{
+                                            padding: '0.6rem 1.2rem', borderRadius: '6px', border: '1px solid #555',
+                                            backgroundColor: 'transparent', color: '#fff', cursor: 'pointer'
+                                        }}
+                                    >
+                                        Cancelar
+                                    </button>
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <h2 style={{ marginBottom: '1rem', color: '#fff' }}>Excluir Matéria</h2>
+                                <p style={{ marginBottom: '1rem', color: '#aaa' }}>Tem certeza que deseja excluir a matéria "<strong>{selectedMatter?.name}</strong>"?</p>
+                                <p style={{ color: '#ff4444', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Esta ação não pode ser desfeita.</p>
+                                <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+                                    <button 
+                                        onClick={handleDeleteMatter}
+                                        style={{
+                                            padding: '0.6rem 1.2rem', borderRadius: '6px', border: 'none',
+                                            backgroundColor: '#ff4444', color: '#fff', fontWeight: 'bold', cursor: 'pointer'
+                                        }}
+                                    >
+                                        Excluir
+                                    </button>
+                                    <button 
+                                        onClick={handleCloseModal}
+                                        style={{
+                                            padding: '0.6rem 1.2rem', borderRadius: '6px', border: '1px solid #555',
+                                            backgroundColor: 'transparent', color: '#fff', cursor: 'pointer'
+                                        }}
+                                    >
+                                        Cancelar
+                                    </button>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                </div>
+            )}
         </>
     );
 }
