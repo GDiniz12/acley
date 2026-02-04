@@ -2,6 +2,7 @@ import express from "express";
 import usersController from "./controllers/userController.js";
 import notebookController from "./controllers/notebookController.js";
 import matterController from "./controllers/matterController.js";
+import subMatterController from "./controllers/subMatterController.js";
 import cardsController from "./controllers/cardController.js";
 import authMiddleware from "./middlewares/authMiddleware.js";
 
@@ -15,6 +16,8 @@ router.post("/notebook", notebookController.createNotebook);
 
 router.post("/matter", matterController.createMatter);
 
+router.post("/submatter", subMatterController.createSubMatter);
+
 router.post("/card", cardsController.createCard);
 
 // Get routes
@@ -26,6 +29,8 @@ router.get("/notebook/:id", notebookController.notebookById);
 
 router.get("/matter/notebook/:id", matterController.mattersByNotebook);
 
+router.get("/submatter/parent/:idParent", subMatterController.subMattersByParent);
+
 router.get("/card/matter", cardsController.cardsByMatter);
 
 // Put routes
@@ -35,6 +40,8 @@ router.put("/notebook/:id", notebookController.updateNotebook);
 
 router.put("/matter", matterController.updateMatter);
 
+router.put("/submatter", subMatterController.updateSubMatter);
+
 router.put("/card", cardsController.updateCard);
 
 // Delete routes
@@ -43,6 +50,8 @@ router.delete("/user", usersController.deleteUser);
 router.delete("/notebook/:idNotebook", notebookController.deleteNotebook);
 
 router.delete("/matter", matterController.deleteMatter);
+
+router.delete("/submatter", subMatterController.deleteSubMatter);
 
 router.delete("/card", cardsController.deleteCard);
 

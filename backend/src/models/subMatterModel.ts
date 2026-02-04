@@ -8,16 +8,16 @@ class SubMatter {
         this.matterParent = matterParent;
     }
 
-    static async createSubMatter(id: string, name: string, matterParent: string) {
+    static async createSubMatter(name: string, matterParent: string) {
         try {
-            await pool.query("INSERT INTO submatters(id, name, matter_parent) VALUES (?, ?, ?)", [id, name, matterParent]);
+            await pool.query("INSERT INTO submatters(name, matter_parent) VALUES (?, ?)", [name, matterParent]);
             return true;
         } catch(err) {
             return { error: err };
         }
     }
 
-    static async subMattersByParent(idParent: string) {
+    static async subMattersByParent(idParent: string | undefined) {
         try {
             const [subMatters] = await pool.query<SubMatter[]>("SELECT id, name FROM submatters WHERE matter_parent = ?", [idParent]);
 
@@ -31,7 +31,7 @@ class SubMatter {
 
     static async updateNameSubmatter(newName: string, idSubMatter: string)  {
         try {
-            await pool.query("UPDATE submatters SET name = ? WHERE id = ?", [idSubMatter]);
+            await pool.query("UPDATE submatters SET name = ? WHERE id = ?", [newName, idSubMatter]);
             return true;
         } catch(err) {
             return { error: err };
@@ -47,3 +47,5 @@ class SubMatter {
         }
     }
 }
+
+export default SubMatter;

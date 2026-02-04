@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import MainDeck from "../../Components/MainDeck/MainDeck";
 import ProtectedRoute from "../../Components/ProtectedRoute";
 import SideBar from "../../Components/SideBar/SideBar";
 import CreateMatterModal from "../../Components/CreateMatterModal/CreateMatter";
+import CreateSubMatterModal from "../../Components/CreateSubMatter/Createsubmatter";
 import styles from "./style.module.css";
-import { getToken } from "../../signin/auth";
 import "./style.module.css";
 
 interface TypeCurrentNotebook {
@@ -18,13 +18,12 @@ function PageContent() {
     const [currentNotebook, setCurrentNotebook] = useState<TypeCurrentNotebook[]>([]);
     const [fetchLoaded, setFetchLoaded] = useState(false);
     const [showCreateMatterModal, setShowCreateMatterModal] = useState(false);
+    const [showCreateSubMatterModal, setShowCreateSubMatterModal] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
     const params = useParams();
     
-    // Pega o ID do notebook da URL
-    const notebookId = params.id;
+    const notebookId = params.id as string;
 
-    // Busca o notebook específico quando o ID muda
     useEffect(() => {
         const fetchCurrentNotebook = async () => {
             try {
@@ -66,13 +65,38 @@ function PageContent() {
                 throw new Error('Erro ao criar matéria');
             }
 
-            // Força o MainDeck a atualizar a lista de matérias
             setRefreshTrigger(prev => prev + 1);
             
             console.log("Matéria criada com sucesso!");
         } catch(err) {
             console.error(err);
-            throw err; // Propaga o erro para o modal tratar
+            throw err;
+        }
+    }
+
+    async function handleCreateSubMatter(subMatterName: string, parentMatterId: number) {
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/submatter`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    name: subMatterName,
+                    matterParent: parentMatterId.toString()
+                })
+            });
+
+            if (!res.ok) {
+                throw new Error('Erro ao criar submatéria');
+            }
+
+            setRefreshTrigger(prev => prev + 1);
+            
+            console.log("Submatéria criada com sucesso!");
+        } catch(err) {
+            console.error(err);
+            throw err;
         }
     }
 
@@ -87,12 +111,20 @@ function PageContent() {
                         {fetchLoaded ? currentNotebook[0].name : "undefined"}
                     </h2>
                     <MainDeck notebookId={notebookId} refreshTrigger={refreshTrigger} />
-                    <button 
-                        className={styles.btnCreate}
-                        onClick={() => setShowCreateMatterModal(true)}
-                    >
-                        Criar matéria
-                    </button>
+                    <div className={styles.buttonContainer}>
+                        <button 
+                            className={styles.btnCreate}
+                            onClick={() => setShowCreateMatterModal(true)}
+                        >
+                            Criar matéria
+                        </button>
+                        <button 
+                            className={styles.btnCreateSub}
+                            onClick={() => setShowCreateSubMatterModal(true)}
+                        >
+                            Criar submatéria
+                        </button>
+                    </div>
                 </div>
                 <div className={styles.RigthSide}>
                     <button>Sinalizando</button>
@@ -104,6 +136,14 @@ function PageContent() {
                 showModal={showCreateMatterModal}
                 onClose={() => setShowCreateMatterModal(false)}
                 onConfirm={handleCreateMatter}
+            />
+
+            {/* Modal de Criar Submatéria */}
+            <CreateSubMatterModal 
+                showModal={showCreateSubMatterModal}
+                onClose={() => setShowCreateSubMatterModal(false)}
+                onConfirm={handleCreateSubMatter}
+                notebookId={notebookId}
             />
         </>
     );

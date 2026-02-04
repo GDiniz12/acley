@@ -1,24 +1,55 @@
 .matterCard {
     width: 100%;
     height: auto;
-    min-height: 55px; /* Um pouco mais alto para conforto visual */
-    /* Padding direito maior para acomodar o botão absoluto sem sobrepor texto */
-    padding: 0.75rem 4rem 0.75rem 2rem; 
+    min-height: 55px;
+    padding: 0.75rem 4rem 0.75rem 1rem; 
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 1rem;
     background-color: transparent;
-    border-bottom: solid #333; /* Cor da borda mais sutil */
+    border-bottom: solid #333;
     border-width: 1px;
     cursor: pointer;
     transition: background-color 0.2s, transform 0.2s;
     box-sizing: border-box;
-    position: relative; /* Necessário para o posicionamento absoluto do menu */
+    position: relative;
 }
 
 .matterCard:hover {
     background-color: #252525;
+}
+
+.leftSide {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    overflow: hidden;
+}
+
+.expandButton {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    background-color: #3a3a3a;
+    border: 1px solid #555;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 1.3rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    padding: 0;
+    line-height: 1;
+}
+
+.expandButton:hover {
+    background-color: #4a4a4a;
+    border-color: #666;
 }
 
 .matterName {
@@ -29,10 +60,8 @@
     overflow: hidden;
     white-space: nowrap;
     flex: 1;
-    margin-right: 1rem;
 }
 
-/* RightSide agora só contém as estatísticas */
 .rightSide {
     display: flex;
     align-items: center;
@@ -40,7 +69,6 @@
 
 .matterStats {
     display: flex;
-    /* Gap idêntico ao do MainDeck */
     gap: 1.5rem;
     align-items: center;
 }
@@ -48,7 +76,6 @@
 .matterStats > span {
     font-size: 0.95rem;
     font-weight: 700;
-    /* Largura idêntica à do MainDeck h5 */
     width: 70px; 
     text-align: center;
 }
@@ -60,43 +87,37 @@
 /* --- Estilos do Menu Flutuante --- */
 
 .menuWrapper {
-    position: absolute; /* Remove do fluxo normal */
-    right: 0.75rem; /* Posiciona na área de padding direita */
+    position: absolute;
+    right: 0.75rem;
     top: 50%;
-    transform: translateY(-50%); /* Centraliza verticalmente */
+    transform: translateY(-50%);
     z-index: 10;
 }
 
-/* O botão quadrado dos 3 pontos */
 .dotsMenu {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 3px; /* Espaço entre os pontinhos */
+    gap: 3px;
     cursor: pointer;
-    
-    /* Dimensões fixas para formar um quadrado perfeito */
     width: 32px;
     height: 32px;
     border-radius: 6px;
     transition: background-color 0.2s ease;
 }
 
-/* Hover centralizado e suave */
 .dotsMenu:hover {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
-/* Os pontinhos individuais */
 .dot {
     width: 4px;
     height: 4px;
-    background-color: #b0b0b0; /* Cor cinza claro para os pontos */
+    background-color: #b0b0b0;
     border-radius: 50%;
 }
 
-/* Hover no botão muda a cor dos pontos para branco */
 .dotsMenu:hover .dot {
     background-color: #ffffff;
 }
@@ -144,4 +165,77 @@
 .optionButton.delete:hover {
     background-color: #3f1a1a;
     color: #ff6b6b;
+}
+
+/* --- Estilos das Submatérias --- */
+
+.subMattersContainer {
+    width: 100%;
+    background-color: #1a1a1a;
+    border-bottom: 1px solid #333;
+    animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        max-height: 0;
+    }
+    to {
+        opacity: 1;
+        max-height: 500px;
+    }
+}
+
+.subMatterCard {
+    width: 100%;
+    min-height: 50px;
+    padding: 0.7rem 4rem 0.7rem 3.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    border-bottom: 1px solid #2a2a2a;
+    box-sizing: border-box;
+}
+
+.subMatterCard:last-child {
+    border-bottom: none;
+}
+
+.subMatterCard:hover {
+    background-color: #252525;
+}
+
+.subMatterName {
+    color: #ccc;
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    flex: 1;
+}
+
+.subMatterStats {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+.subMatterStats > span {
+    font-size: 0.9rem;
+    font-weight: 600;
+    width: 70px;
+    text-align: center;
+}
+
+.loadingSubMatters,
+.noSubMatters {
+    padding: 1.5rem 3.5rem;
+    color: #666;
+    font-size: 0.9rem;
+    text-align: center;
 }

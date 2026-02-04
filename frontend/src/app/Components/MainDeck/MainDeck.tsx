@@ -17,8 +17,9 @@ interface MainDeckProps {
 export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) {
     const [matters, setMatters] = useState<Matter[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [mattersWithSubMatters, setMattersWithSubMatters] = useState<Set<number>>(new Set());
     
-    // Estados para o Modal
+    // Estados para o Modal de Renomear/Excluir
     const [showModal, setShowModal] = useState(false);
     const [modalType, setModalType] = useState<'rename' | 'delete'>('rename');
     const [selectedMatter, setSelectedMatter] = useState<Matter | null>(null);
@@ -38,6 +39,9 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
 
                 const data = await res.json();
                 setMatters(data || []);
+                
+                // Verifica quais matérias têm submatérias
+                await checkMattersWithSubMatters(data || []);
             } catch(err) {
                 console.error("Erro ao buscar matérias:", err);
                 setMatters([]);
@@ -48,6 +52,31 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
 
         fetchMatters();
     }, [notebookId, refreshTrigger]);
+
+    async function checkMattersWithSubMatters(matters: Matter[]) {
+        const mattersWithSubs = new Set<number>();
+        
+        for (const matter of matters) {
+            try {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/submatter/parent/${matter.id}`);
+                if (res.ok) {
+                    const subMatters = await res.json();
+                    if (subMatters && subMatters.length > 0) {
+                        mattersWithSubs.add(matter.id);
+                    }
+                }
+            } catch(err) {
+                console.error(`Erro ao verificar submatérias da matéria ${matter.id}:`, err);
+            }
+        }
+        
+        setMattersWithSubMatters(mattersWithSubs);
+    }
+
+    // Função para atualizar quando uma nova submatéria é criada
+    function handleSubMatterCreated(parentMatterId: number) {
+        setMattersWithSubMatters(prev => new Set(prev).add(parentMatterId));
+    }
 
     // Funções de Abertura de Modal
     function handleOpenRenameModal(matter: Matter) {
@@ -84,7 +113,7 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
                 },
                 body: JSON.stringify({
                     idMatter: selectedMatter.id,
-                    NewName: newName.trim() // Nota: O backend espera "NewName"
+                    NewName: newName.trim()
                 })
             });
 
@@ -126,6 +155,11 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
             }
 
             setMatters(prev => prev.filter(m => m.id !== selectedMatter.id));
+            setMattersWithSubMatters(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(selectedMatter.id);
+                return newSet;
+            });
             handleCloseModal();
         } catch(err) {
             console.error(err);
@@ -162,13 +196,14 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
                                 reviewCards={0}
                                 onRename={() => handleOpenRenameModal(matter)}
                                 onDelete={() => handleOpenDeleteModal(matter)}
+                                hasSubMatters={mattersWithSubMatters.has(matter.id)}
                             />
                         ))
                     )}
                 </div>
             </div>
 
-            {/* Modal de Renomear/Excluir (Copiado o estilo do SideBar) */}
+            {/* Modal de Renomear/Excluir */}
             {showModal && (
                 <div style={{
                     position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
