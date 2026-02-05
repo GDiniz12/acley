@@ -9,6 +9,12 @@ interface Matter {
     name: string;
 }
 
+interface CardCounts {
+    new: number;
+    learn: number;
+    review: number;
+}
+
 interface MainDeckProps {
     notebookId: string;
     refreshTrigger?: number;
@@ -18,6 +24,7 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
     const [matters, setMatters] = useState<Matter[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [mattersWithSubMatters, setMattersWithSubMatters] = useState<Set<number>>(new Set());
+    const [cardCounts, setCardCounts] = useState<Map<number, CardCounts>>(new Map());
     
     // Estados para o Modal de Renomear/Excluir
     const [showModal, setShowModal] = useState(false);
@@ -42,6 +49,9 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
                 
                 // Verifica quais matérias têm submatérias
                 await checkMattersWithSubMatters(data || []);
+                
+                // Busca contagem de cards para cada matéria
+                await fetchCardCounts(data || []);
             } catch(err) {
                 console.error("Erro ao buscar matérias:", err);
                 setMatters([]);
@@ -52,6 +62,25 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
 
         fetchMatters();
     }, [notebookId, refreshTrigger]);
+
+    async function fetchCardCounts(matters: Matter[]) {
+        const countsMap = new Map<number, CardCounts>();
+        
+        for (const matter of matters) {
+            try {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/card/count/matter/${matter.id}`);
+                if (res.ok) {
+                    const counts = await res.json();
+                    countsMap.set(matter.id, counts);
+                }
+            } catch(err) {
+                console.error(`Erro ao buscar contagem de cards da matéria ${matter.id}:`, err);
+                countsMap.set(matter.id, { new: 0, learn: 0, review: 0 });
+            }
+        }
+        
+        setCardCounts(countsMap);
+    }
 
     async function checkMattersWithSubMatters(matters: Matter[]) {
         const mattersWithSubs = new Set<number>();
@@ -73,9 +102,13 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
         setMattersWithSubMatters(mattersWithSubs);
     }
 
-    // Função para atualizar quando uma nova submatéria é criada/modificada
+    // Função para atualizar quando uma nova submatéria é criada/modificada ou card é criado
     function handleSubMatterUpdate(parentMatterId: number) {
         checkMattersWithSubMatters(matters);
+    }
+
+    function handleCardUpdate() {
+        fetchCardCounts(matters);
     }
 
     // Funções de Abertura de Modal
@@ -160,6 +193,11 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
                 newSet.delete(selectedMatter.id);
                 return newSet;
             });
+            setCardCounts(prev => {
+                const newMap = new Map(prev);
+                newMap.delete(selectedMatter.id);
+                return newMap;
+            });
             handleCloseModal();
         } catch(err) {
             console.error(err);
@@ -186,20 +224,24 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
                             Nenhuma matéria criada ainda. Clique em "Criar matéria" para começar!
                         </div>
                     ) : (
-                        matters.map((matter) => (
-                            <MatterCard 
-                                key={matter.id}
-                                id={matter.id}
-                                name={matter.name}
-                                newCards={0}
-                                learningCards={0}
-                                reviewCards={0}
-                                onRename={() => handleOpenRenameModal(matter)}
-                                onDelete={() => handleOpenDeleteModal(matter)}
-                                hasSubMatters={mattersWithSubMatters.has(matter.id)}
-                                onSubMatterUpdate={() => handleSubMatterUpdate(matter.id)}
-                            />
-                        ))
+                        matters.map((matter) => {
+                            const counts = cardCounts.get(matter.id) || { new: 0, learn: 0, review: 0 };
+                            return (
+                                <MatterCard 
+                                    key={matter.id}
+                                    id={matter.id}
+                                    name={matter.name}
+                                    newCards={counts.new}
+                                    learningCards={counts.learn}
+                                    reviewCards={counts.review}
+                                    onRename={() => handleOpenRenameModal(matter)}
+                                    onDelete={() => handleOpenDeleteModal(matter)}
+                                    hasSubMatters={mattersWithSubMatters.has(matter.id)}
+                                    onSubMatterUpdate={() => handleSubMatterUpdate(matter.id)}
+                                    onCardUpdate={handleCardUpdate}
+                                />
+                            );
+                        })
                     )}
                 </div>
             </div>

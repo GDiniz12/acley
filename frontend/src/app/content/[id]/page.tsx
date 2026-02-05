@@ -7,6 +7,7 @@ import ProtectedRoute from "../../Components/ProtectedRoute";
 import SideBar from "../../Components/SideBar/SideBar";
 import CreateMatterModal from "../../Components/CreateMatterModal/CreateMatter";
 import CreateSubMatterModal from "../../Components/CreateSubMatter/Createsubmatter";
+import CreateCardModal from "../../Components/CreateCardModal/Createcardmodal";
 import styles from "./style.module.css";
 import "./style.module.css";
 
@@ -19,6 +20,7 @@ function PageContent() {
     const [fetchLoaded, setFetchLoaded] = useState(false);
     const [showCreateMatterModal, setShowCreateMatterModal] = useState(false);
     const [showCreateSubMatterModal, setShowCreateSubMatterModal] = useState(false);
+    const [showCreateCardModal, setShowCreateCardModal] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
     const params = useParams();
     
@@ -100,6 +102,34 @@ function PageContent() {
         }
     }
 
+    async function handleCreateCard(front: string, back: string, matterId: number, submatterId: number | null) {
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/card`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    front: front,
+                    back: back,
+                    parentId: matterId.toString(),
+                    subMatterId: submatterId ? submatterId.toString() : null
+                })
+            });
+
+            if (!res.ok) {
+                throw new Error('Erro ao criar flashcard');
+            }
+
+            setRefreshTrigger(prev => prev + 1);
+            
+            console.log("Flashcard criado com sucesso!");
+        } catch(err) {
+            console.error(err);
+            throw err;
+        }
+    }
+
     return (
         <>
             <div className={styles.content}>
@@ -124,6 +154,12 @@ function PageContent() {
                         >
                             Criar submatéria
                         </button>
+                        <button 
+                            className={styles.btnCreateCard}
+                            onClick={() => setShowCreateCardModal(true)}
+                        >
+                            Criar flashcard
+                        </button>
                     </div>
                 </div>
                 <div className={styles.RigthSide}>
@@ -143,6 +179,14 @@ function PageContent() {
                 showModal={showCreateSubMatterModal}
                 onClose={() => setShowCreateSubMatterModal(false)}
                 onConfirm={handleCreateSubMatter}
+                notebookId={notebookId}
+            />
+
+            {/* Modal de Criar Flashcard */}
+            <CreateCardModal 
+                showModal={showCreateCardModal}
+                onClose={() => setShowCreateCardModal(false)}
+                onConfirm={handleCreateCard}
                 notebookId={notebookId}
             />
         </>

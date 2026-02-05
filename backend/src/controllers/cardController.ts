@@ -1,27 +1,51 @@
 import type { Request, Response } from "express";
-import { v4 as uuidv4 } from "uuid";
 import { Card, type StatusCard } from "../models/cardModel.js";
-
 
 const cardsController = {
     createCard: async (req: Request, res: Response) => {
-        const { front, back, parentId, subMatterId} = req.body;
-        const id = uuidv4();
-        const statusDefault: StatusCard = "learn";
+        const { front, back, parentId, subMatterId } = req.body;
+        const statusDefault: StatusCard = "new";
 
-        const result = await Card.createCard(id, front, back, parentId, subMatterId, statusDefault);
+        const result = await Card.createCard(front, back, parentId, subMatterId, statusDefault);
         if (result !== true) return res.status(500).json({ message: result.error });
 
         return res.status(201).json({ message: "Created"});
     },
     cardsByMatter: async (req: Request, res: Response) => {
-        const { idMatter } = req.body;
+        const { idMatter } = req.params;
 
         const result = await Card.cardsByMatter(idMatter);
 
         if (result.error) return res.status(500).json({ message: result.error });
 
         return res.status(200).json(result.cards);
+    },
+    cardsBySubMatter: async (req: Request, res: Response) => {
+        const { idSubMatter } = req.params;
+
+        const result = await Card.cardsBySubMatter(idSubMatter);
+
+        if (result.error) return res.status(500).json({ message: result.error });
+
+        return res.status(200).json(result.cards);
+    },
+    countCardsByMatter: async (req: Request, res: Response) => {
+        const { idMatter } = req.params;
+
+        const result = await Card.countCardsByMatter(idMatter);
+
+        if (result.error) return res.status(500).json({ message: result.error });
+
+        return res.status(200).json(result);
+    },
+    countCardsBySubMatter: async (req: Request, res: Response) => {
+        const { idSubMatter } = req.params;
+
+        const result = await Card.countCardsBySubMatter(idSubMatter);
+
+        if (result.error) return res.status(500).json({ message: result.error });
+
+        return res.status(200).json(result);
     },
     updateCard: async (req: Request, res: Response) => {
         const { front, back, idCard } = req.body;

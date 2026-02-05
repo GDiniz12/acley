@@ -31,7 +31,10 @@ router.get("/matter/notebook/:id", matterController.mattersByNotebook);
 
 router.get("/submatter/parent/:idParent", subMatterController.subMattersByParent);
 
-router.get("/card/matter", cardsController.cardsByMatter);
+router.get("/card/matter/:idMatter", cardsController.cardsByMatter);
+router.get("/card/submatter/:idSubMatter", cardsController.cardsBySubMatter);
+router.get("/card/count/matter/:idMatter", cardsController.countCardsByMatter);
+router.get("/card/count/submatter/:idSubMatter", cardsController.countCardsBySubMatter);
 
 // Put routes
 router.put("/user", usersController.updateUser);

@@ -6,27 +6,99 @@ export class Card {
     front: string;
     back: string;
     parentId: string;
-    subMatterId: string;
-    constructor(front: string, back: string, parentId: string, subMatterId: string) {
+    subMatterId: string | null;
+    constructor(front: string, back: string, parentId: string, subMatterId: string | null) {
         this.front = front;
         this.back = back;
         this.parentId = parentId;
         this.subMatterId = subMatterId;
     }
 
-    static async createCard(id: string, front: string, back: string, parentId: string, subMatterId: string, status: StatusCard) {
+    static async createCard(front: string, back: string, parentId: string, subMatterId: string | null, status: StatusCard) {
         try {
-            await pool.query("INSERT INTO cards(id, front, back, matter_parent, subMatterId, status_card) VALUES(?, ?, ?, ?, ?, ?)", [id, front, back, parentId, subMatterId, status]);
+            await pool.query(
+                "INSERT INTO cards(front, back, matter_parent, submatter, status_card) VALUES(?, ?, ?, ?, ?)", 
+                [front, back, parentId, subMatterId, status]
+            );
             return true;
         } catch(err) {
             return { error: err };
         }
     }
 
-    static async cardsByMatter(idMatter: string) {
+    static async cardsByMatter(idMatter: string | undefined) {
         try {
             const [cards] = await pool.query("SELECT front, back FROM cards WHERE matter_parent = ?", [idMatter]);
             return { cards };
+        } catch(err) {
+            return { error: err };
+        }
+    }
+
+    static async cardsBySubMatter(idSubMatter: string | undefined) {
+        try {
+            const [cards] = await pool.query("SELECT front, back FROM cards WHERE submatter = ?", [idSubMatter]);
+            return { cards };
+        } catch(err) {
+            return { error: err };
+        }
+    }
+
+    static async countCardsByMatter(idMatter: string | undefined) {
+        try {
+            const [result] = await pool.query<any[]>(
+                `SELECT 
+                    status_card,
+                    COUNT(*) as count
+                FROM cards 
+                WHERE matter_parent = ?
+                GROUP BY status_card`,
+                [idMatter]
+            );
+            
+            const counts = {
+                new: 0,
+                learn: 0,
+                review: 0
+            };
+
+            result.forEach((row: any) => {
+                if (row.status_card === 'new') counts.new = row.count;
+                if (row.status_card === 'learn') counts.learn = row.count;
+                if (row.status_card === 'review') counts.review = row.count;
+            });
+
+            return counts;
+        } catch(err) {
+            return { error: err };
+        }
+    }
+
+    static async countCardsBySubMatter(idSubMatter: string | undefined) {
+        try {
+            const [result] = await pool.query<any[]>(
+                `SELECT 
+                    status_card,
+                    COUNT(*) as count
+                FROM cards 
+                WHERE submatter = ?
+                GROUP BY status_card`,
+                [idSubMatter]
+            );
+            
+            const counts = {
+                new: 0,
+                learn: 0,
+                review: 0
+            };
+
+            result.forEach((row: any) => {
+                if (row.status_card === 'new') counts.new = row.count;
+                if (row.status_card === 'learn') counts.learn = row.count;
+                if (row.status_card === 'review') counts.review = row.count;
+            });
+
+            return counts;
         } catch(err) {
             return { error: err };
         }
