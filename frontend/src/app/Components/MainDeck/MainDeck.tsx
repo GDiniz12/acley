@@ -73,9 +73,9 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
         setMattersWithSubMatters(mattersWithSubs);
     }
 
-    // Função para atualizar quando uma nova submatéria é criada
-    function handleSubMatterCreated(parentMatterId: number) {
-        setMattersWithSubMatters(prev => new Set(prev).add(parentMatterId));
+    // Função para atualizar quando uma nova submatéria é criada/modificada
+    function handleSubMatterUpdate(parentMatterId: number) {
+        checkMattersWithSubMatters(matters);
     }
 
     // Funções de Abertura de Modal
@@ -197,6 +197,7 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
                                 onRename={() => handleOpenRenameModal(matter)}
                                 onDelete={() => handleOpenDeleteModal(matter)}
                                 hasSubMatters={mattersWithSubMatters.has(matter.id)}
+                                onSubMatterUpdate={() => handleSubMatterUpdate(matter.id)}
                             />
                         ))
                     )}
@@ -255,7 +256,7 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
                             <>
                                 <h2 style={{ marginBottom: '1rem', color: '#fff' }}>Excluir Matéria</h2>
                                 <p style={{ marginBottom: '1rem', color: '#aaa' }}>Tem certeza que deseja excluir a matéria "<strong>{selectedMatter?.name}</strong>"?</p>
-                                <p style={{ color: '#ff4444', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Esta ação não pode ser desfeita.</p>
+                                <p style={{ color: '#ff4444', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Esta ação não pode ser desfeita e todas as submatérias serão excluídas também.</p>
                                 <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
                                     <button 
                                         onClick={handleDeleteMatter}

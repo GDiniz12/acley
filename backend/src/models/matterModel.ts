@@ -37,6 +37,10 @@ class Matter {
 
     static async deleteMatter(idMatter: number) {
         try {
+            // Primeiro deleta todas as submatérias relacionadas
+            await pool.query("DELETE FROM submatters WHERE matter_parent = ?", [idMatter]);
+            
+            // Depois deleta a matéria pai
             await pool.query("DELETE FROM matters WHERE id = ?", [idMatter]);
             return true;
         } catch(err) {
