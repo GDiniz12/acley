@@ -46,13 +46,26 @@ export class Card {
 
     static async countCardsByMatter(idMatter: string | undefined) {
         try {
-            const [result] = await pool.query<any[]>(
+            // Contar cards diretamente associados à matéria (sem submatéria)
+            const [directCards] = await pool.query<any[]>(
                 `SELECT 
                     status_card,
                     COUNT(*) as count
                 FROM cards 
-                WHERE matter_parent = ?
+                WHERE matter_parent = ? AND submatter IS NULL
                 GROUP BY status_card`,
+                [idMatter]
+            );
+            
+            // Contar cards de todas as submatérias desta matéria
+            const [subMatterCards] = await pool.query<any[]>(
+                `SELECT 
+                    c.status_card,
+                    COUNT(*) as count
+                FROM cards c
+                INNER JOIN submatters s ON c.submatter = s.id
+                WHERE s.matter_parent = ?
+                GROUP BY c.status_card`,
                 [idMatter]
             );
             
@@ -62,10 +75,18 @@ export class Card {
                 review: 0
             };
 
-            result.forEach((row: any) => {
-                if (row.status_card === 'new') counts.new = row.count;
-                if (row.status_card === 'learn') counts.learn = row.count;
-                if (row.status_card === 'review') counts.review = row.count;
+            // Somar cards diretos
+            directCards.forEach((row: any) => {
+                if (row.status_card === 'new') counts.new += row.count;
+                if (row.status_card === 'learn') counts.learn += row.count;
+                if (row.status_card === 'review') counts.review += row.count;
+            });
+
+            // Somar cards das submatérias
+            subMatterCards.forEach((row: any) => {
+                if (row.status_card === 'new') counts.new += row.count;
+                if (row.status_card === 'learn') counts.learn += row.count;
+                if (row.status_card === 'review') counts.review += row.count;
             });
 
             return counts;

@@ -6,6 +6,12 @@ interface SubMatter {
     name: string;
 }
 
+interface CardCounts {
+    new: number;
+    learn: number;
+    review: number;
+}
+
 interface MatterCardProps {
     id: number;
     name: string;
@@ -16,6 +22,7 @@ interface MatterCardProps {
     onDelete: () => void;
     hasSubMatters?: boolean;
     onSubMatterUpdate?: () => void;
+    onCardUpdate?: () => void;
 }
 
 export default function MatterCard({ 
@@ -27,12 +34,14 @@ export default function MatterCard({
     onRename,
     onDelete,
     hasSubMatters = false,
-    onSubMatterUpdate
+    onSubMatterUpdate,
+    onCardUpdate
 }: MatterCardProps) {
     const [showOptions, setShowOptions] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
     const [subMatters, setSubMatters] = useState<SubMatter[]>([]);
     const [loadingSubMatters, setLoadingSubMatters] = useState(false);
+    const [subMatterCounts, setSubMatterCounts] = useState<Map<string, CardCounts>>(new Map());
     
     // Estados para submatérias
     const [selectedSubMatter, setSelectedSubMatter] = useState<SubMatter | null>(null);
@@ -70,12 +79,34 @@ export default function MatterCard({
 
             const data = await res.json();
             setSubMatters(data || []);
+            
+            // Buscar contagens para cada submatéria
+            await fetchSubMatterCounts(data || []);
         } catch(err) {
             console.error("Erro ao buscar submatérias:", err);
             setSubMatters([]);
         } finally {
             setLoadingSubMatters(false);
         }
+    }
+
+    async function fetchSubMatterCounts(subMatters: SubMatter[]) {
+        const countsMap = new Map<string, CardCounts>();
+        
+        for (const subMatter of subMatters) {
+            try {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/card/count/submatter/${subMatter.id}`);
+                if (res.ok) {
+                    const counts = await res.json();
+                    countsMap.set(subMatter.id, counts);
+                }
+            } catch(err) {
+                console.error(`Erro ao buscar contagem de cards da submatéria ${subMatter.id}:`, err);
+                countsMap.set(subMatter.id, { new: 0, learn: 0, review: 0 });
+            }
+        }
+        
+        setSubMatterCounts(countsMap);
     }
 
     function handleToggleExpand(e: React.MouseEvent) {
@@ -213,6 +244,10 @@ export default function MatterCard({
             if (onSubMatterUpdate) {
                 onSubMatterUpdate();
             }
+            
+            if (onCardUpdate) {
+                onCardUpdate();
+            }
         } catch(err) {
             console.error(err);
             alert("Erro ao excluir submatéria!");
@@ -270,49 +305,52 @@ export default function MatterCard({
                     ) : subMatters.length === 0 ? (
                         <div className={styles.noSubMatters}>Nenhuma submatéria encontrada</div>
                     ) : (
-                        subMatters.map((subMatter) => (
-                            <div 
-                                key={subMatter.id}
-                                className={styles.subMatterCard}
-                                onClick={() => handleSubMatterClick(subMatter)}
-                            >
-                                <span className={styles.subMatterName}>{subMatter.name}</span>
-                                <div className={styles.subMatterStats}>
-                                    <span className={styles.statNew}>0</span>
-                                    <span className={styles.statLearning}>0</span>
-                                    <span className={styles.statReview}>0</span>
-                                </div>
-                                
-                                {/* Menu de opções da submatéria */}
-                                <div className={styles.subMenuWrapper}>
-                                    <div 
-                                        className={styles.dotsMenu} 
-                                        onClick={(e) => toggleSubMatterOptions(e, subMatter.id)}
-                                    >
-                                        <div className={styles.dot}></div>
-                                        <div className={styles.dot}></div>
-                                        <div className={styles.dot}></div>
+                        subMatters.map((subMatter) => {
+                            const counts = subMatterCounts.get(subMatter.id) || { new: 0, learn: 0, review: 0 };
+                            return (
+                                <div 
+                                    key={subMatter.id}
+                                    className={styles.subMatterCard}
+                                    onClick={() => handleSubMatterClick(subMatter)}
+                                >
+                                    <span className={styles.subMatterName}>{subMatter.name}</span>
+                                    <div className={styles.subMatterStats}>
+                                        <span className={styles.statNew}>{counts.new}</span>
+                                        <span className={styles.statLearning}>{counts.learn}</span>
+                                        <span className={styles.statReview}>{counts.review}</span>
                                     </div>
                                     
-                                    {activeSubMatterMenu === subMatter.id && (
-                                        <div className={styles.optionsMenu}>
-                                            <button 
-                                                onClick={(e) => handleOpenRenameSubMatter(e, subMatter)}
-                                                className={styles.optionButton}
-                                            >
-                                                Renomear
-                                            </button>
-                                            <button 
-                                                onClick={(e) => handleOpenDeleteSubMatter(e, subMatter)}
-                                                className={`${styles.optionButton} ${styles.delete}`}
-                                            >
-                                                Excluir
-                                            </button>
+                                    {/* Menu de opções da submatéria */}
+                                    <div className={styles.subMenuWrapper}>
+                                        <div 
+                                            className={styles.dotsMenu} 
+                                            onClick={(e) => toggleSubMatterOptions(e, subMatter.id)}
+                                        >
+                                            <div className={styles.dot}></div>
+                                            <div className={styles.dot}></div>
+                                            <div className={styles.dot}></div>
                                         </div>
-                                    )}
+                                        
+                                        {activeSubMatterMenu === subMatter.id && (
+                                            <div className={styles.optionsMenu}>
+                                                <button 
+                                                    onClick={(e) => handleOpenRenameSubMatter(e, subMatter)}
+                                                    className={styles.optionButton}
+                                                >
+                                                    Renomear
+                                                </button>
+                                                <button 
+                                                    onClick={(e) => handleOpenDeleteSubMatter(e, subMatter)}
+                                                    className={`${styles.optionButton} ${styles.delete}`}
+                                                >
+                                                    Excluir
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
-                        ))
+                            );
+                        })
                     )}
                 </div>
             )}
