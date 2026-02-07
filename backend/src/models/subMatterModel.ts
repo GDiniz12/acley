@@ -40,9 +40,15 @@ class SubMatter {
 
     static async deleteSubMatter(idSubMatter: string) {
         try {
+            // 1. Primeiro, deletar todos os cards associados a esta submatéria
+            await pool.query("DELETE FROM cards WHERE submatter = ?", [idSubMatter]);
+            
+            // 2. Depois, deletar a submatéria
             await pool.query("DELETE FROM submatters WHERE id = ?", [idSubMatter]);
+            
             return true;
         } catch(err) {
+            console.error("Erro ao deletar submatéria:", err);
             return { error: err };
         }
     }

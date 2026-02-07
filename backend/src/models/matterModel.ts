@@ -37,13 +37,29 @@ class Matter {
 
     static async deleteMatter(idMatter: number) {
         try {
-            // Primeiro deleta todas as submatérias relacionadas
+            // 1. Primeiro, buscar todas as submatérias desta matéria
+            const [submatters]: any = await pool.query(
+                "SELECT id FROM submatters WHERE matter_parent = ?", 
+                [idMatter]
+            );
+            
+            // 2. Deletar cards de cada submatéria
+            for (const submatter of submatters) {
+                await pool.query("DELETE FROM cards WHERE submatter = ?", [submatter.id]);
+            }
+            
+            // 3. Deletar todas as submatérias
             await pool.query("DELETE FROM submatters WHERE matter_parent = ?", [idMatter]);
             
-            // Depois deleta a matéria pai
+            // 4. Deletar cards diretos da matéria (sem submatéria)
+            await pool.query("DELETE FROM cards WHERE matter_parent = ? AND submatter IS NULL", [idMatter]);
+            
+            // 5. Finalmente, deletar a matéria
             await pool.query("DELETE FROM matters WHERE id = ?", [idMatter]);
+            
             return true;
         } catch(err) {
+            console.error("Erro ao deletar matéria:", err);
             return { error: err };
         }
     }

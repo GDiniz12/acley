@@ -59,9 +59,44 @@ class Notebook {
 
     static async deleteNotebook(idNotebook: string | undefined) {
         try {
+            // 1. Buscar todas as matérias deste notebook
+            const [matters]: any = await pool.query(
+                "SELECT id FROM matters WHERE id_notebook = ?", 
+                [idNotebook]
+            );
+            
+            // 2. Para cada matéria, deletar tudo em cascata
+            for (const matter of matters) {
+                // 2.1. Buscar todas as submatérias desta matéria
+                const [submatters]: any = await pool.query(
+                    "SELECT id FROM submatters WHERE matter_parent = ?", 
+                    [matter.id]
+                );
+                
+                // 2.2. Deletar cards de cada submatéria
+                for (const submatter of submatters) {
+                    await pool.query("DELETE FROM cards WHERE submatter = ?", [submatter.id]);
+                }
+                
+                // 2.3. Deletar todas as submatérias desta matéria
+                await pool.query("DELETE FROM submatters WHERE matter_parent = ?", [matter.id]);
+                
+                // 2.4. Deletar cards diretos da matéria (sem submatéria)
+                await pool.query(
+                    "DELETE FROM cards WHERE matter_parent = ? AND submatter IS NULL", 
+                    [matter.id]
+                );
+            }
+            
+            // 3. Deletar todas as matérias do notebook
+            await pool.query("DELETE FROM matters WHERE id_notebook = ?", [idNotebook]);
+            
+            // 4. Finalmente, deletar o notebook
             await pool.query("DELETE FROM notebooks WHERE id = ?", [idNotebook]);
+            
             return true;
         } catch(err) {
+            console.error("Erro ao deletar notebook:", err);
             return { error: err };
         }
     }
