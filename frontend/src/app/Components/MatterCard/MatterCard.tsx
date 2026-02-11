@@ -23,7 +23,7 @@ interface MatterCardProps {
     hasSubMatters?: boolean;
     onSubMatterUpdate?: () => void;
     onCardUpdate?: () => void;
-    onOpenReview?: (matterId: number, matterName: string) => void;
+    onOpenReview?: (matterId: number, matterName: string, isSubMatter?: boolean) => void;
 }
 
 export default function MatterCard({ 
@@ -130,8 +130,9 @@ export default function MatterCard({
             return;
         }
         
+        // Abrir revisão da matéria PAI (inclui todas as submatérias)
         if (onOpenReview) {
-            onOpenReview(id, name);
+            onOpenReview(id, name, false);
         }
     }
 
@@ -162,8 +163,10 @@ export default function MatterCard({
             return;
         }
         
-        // TODO: Implementar revisão de submatéria
-        console.log(`Clicked on submatter: ${subMatter.name} (ID: ${subMatter.id})`);
+        // Abrir revisão APENAS desta submatéria específica
+        if (onOpenReview) {
+            onOpenReview(parseInt(subMatter.id), subMatter.name, true);
+        }
     }
 
     // Funções para submatérias

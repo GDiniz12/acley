@@ -15,7 +15,7 @@ interface ReviewModalProps {
     onClose: () => void;
     matterId: number;
     matterName: string;
-    includeSubmatters?: boolean;
+    isSubMatter?: boolean; // Nova prop para diferenciar se é submatéria
     onReviewComplete: () => void;
 }
 
@@ -24,7 +24,7 @@ export default function ReviewModal({
     onClose, 
     matterId, 
     matterName,
-    includeSubmatters = true,
+    isSubMatter = false,
     onReviewComplete
 }: ReviewModalProps) {
     const [cards, setCards] = useState<Card[]>([]);
@@ -37,14 +37,20 @@ export default function ReviewModal({
         if (showModal) {
             fetchCards();
         }
-    }, [showModal, matterId]);
+    }, [showModal, matterId, isSubMatter]);
 
     async function fetchCards() {
         setIsLoading(true);
         try {
-            const res = await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL}/card/review/${matterId}?includeSubmatters=${includeSubmatters}`
-            );
+            let res;
+            
+            if (isSubMatter) {
+                // Se é submatéria, buscar apenas os cards desta submatéria
+                res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/card/submatter/${matterId}`);
+            } else {
+                // Se é matéria pai, buscar todos os cards (incluindo de submatérias)
+                res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/card/review/${matterId}?includeSubmatters=true`);
+            }
 
             if (!res.ok) {
                 throw new Error('Erro ao carregar cards');
@@ -57,6 +63,7 @@ export default function ReviewModal({
         } catch(err) {
             console.error("Erro ao buscar cards:", err);
             alert("Erro ao carregar flashcards!");
+            setCards([]);
         } finally {
             setIsLoading(false);
         }
@@ -91,6 +98,8 @@ export default function ReviewModal({
             });
 
             if (!res.ok) {
+                const errorData = await res.json();
+                console.error("Erro do servidor:", errorData);
                 throw new Error('Erro ao atualizar status do card');
             }
 
@@ -106,7 +115,7 @@ export default function ReviewModal({
             }
         } catch(err) {
             console.error("Erro ao atualizar card:", err);
-            alert("Erro ao processar resposta!");
+            alert("Erro ao processar resposta! Verifique o console para mais detalhes.");
         } finally {
             setIsSubmitting(false);
         }
@@ -137,7 +146,7 @@ export default function ReviewModal({
                 </button>
 
                 <div className={styles.header}>
-                    <h2>{matterName}</h2>
+                    <h2>{matterName} {isSubMatter && <span style={{fontSize: '0.8em', color: '#888'}}>(Submatéria)</span>}</h2>
                     <div className={styles.progressBar}>
                         <div 
                             className={styles.progressFill} 

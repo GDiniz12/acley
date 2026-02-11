@@ -89,24 +89,17 @@ export class Card {
         }
     }
 
-    static async updateCardStatus(idCard: string, newStatus: StatusCard, nextReviewDate?: Date) {
+    static async updateCardStatus(idCard: string, newStatus: StatusCard) {
         try {
-            const now = new Date();
-            
-            // Calcular próxima data de revisão baseado na dificuldade
-            let reviewDate = nextReviewDate;
-            if (!reviewDate) {
-                reviewDate = new Date(now);
-                // Se não especificado, usa data atual
-            }
-            
+            // Atualizar apenas o status_card (sem last_reviewed e next_review)
             await pool.query(
-                "UPDATE cards SET status_card = ?, last_reviewed = ?, next_review = ? WHERE id = ?",
-                [newStatus, now, reviewDate, idCard]
+                "UPDATE cards SET status_card = ? WHERE id = ?",
+                [newStatus, idCard]
             );
             
             return true;
         } catch(err) {
+            console.error("Erro em updateCardStatus:", err);
             return { error: err };
         }
     }

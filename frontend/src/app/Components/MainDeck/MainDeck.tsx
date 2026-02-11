@@ -29,7 +29,11 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
     
     // Estados para o Modal de Revisão
     const [showReviewModal, setShowReviewModal] = useState(false);
-    const [selectedMatterForReview, setSelectedMatterForReview] = useState<{ id: number, name: string } | null>(null);
+    const [selectedMatterForReview, setSelectedMatterForReview] = useState<{ 
+        id: number, 
+        name: string,
+        isSubMatter: boolean 
+    } | null>(null);
     
     // Estados para o Modal de Renomear/Excluir
     const [showModal, setShowModal] = useState(false);
@@ -117,8 +121,8 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
     }
 
     // Funções de Abertura de Modal de Revisão
-    function handleOpenReview(matterId: number, matterName: string) {
-        setSelectedMatterForReview({ id: matterId, name: matterName });
+    function handleOpenReview(matterId: number, matterName: string, isSubMatter: boolean = false) {
+        setSelectedMatterForReview({ id: matterId, name: matterName, isSubMatter });
         setShowReviewModal(true);
     }
 
@@ -275,7 +279,7 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
                     onClose={handleCloseReview}
                     matterId={selectedMatterForReview.id}
                     matterName={selectedMatterForReview.name}
-                    includeSubmatters={true}
+                    isSubMatter={selectedMatterForReview.isSubMatter}
                     onReviewComplete={handleReviewComplete}
                 />
             )}

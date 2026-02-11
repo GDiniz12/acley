@@ -42,27 +42,35 @@ const cardsController = {
         return res.status(200).json(result.cards);
     },
     updateCardStatus: async (req: Request, res: Response) => {
-        const { idCard, status, difficulty } = req.body;
+        try {
+            const { idCard, status, difficulty } = req.body;
 
-        // Calcular próxima data de revisão baseado na dificuldade
-        let nextReviewDate = new Date();
-        
-        if (difficulty === 'easy') {
-            // Fácil: 1 semana
-            nextReviewDate.setDate(nextReviewDate.getDate() + 7);
-        } else if (difficulty === 'medium') {
-            // Médio: 3 dias
-            nextReviewDate.setDate(nextReviewDate.getDate() + 3);
-        } else if (difficulty === 'hard') {
-            // Difícil: 5 minutos
-            nextReviewDate.setMinutes(nextReviewDate.getMinutes() + 5);
+            // Validação dos parâmetros
+            if (!idCard) {
+                return res.status(400).json({ message: "idCard é obrigatório" });
+            }
+
+            if (!status || !['new', 'learn', 'review'].includes(status)) {
+                return res.status(400).json({ message: "status inválido (deve ser: new, learn ou review)" });
+            }
+
+            if (!difficulty || !['easy', 'medium', 'hard'].includes(difficulty)) {
+                return res.status(400).json({ message: "difficulty inválida (deve ser: easy, medium ou hard)" });
+            }
+
+            // Atualizar apenas o status (sem next_review e last_reviewed que não existem)
+            const result = await Card.updateCardStatus(idCard, status);
+
+            if (result !== true) {
+                console.error("Erro ao atualizar status do card:", result.error);
+                return res.status(500).json({ message: result.error });
+            }
+
+            return res.status(200).json({ message: "Status updated" });
+        } catch (error) {
+            console.error("Erro não tratado em updateCardStatus:", error);
+            return res.status(500).json({ message: "Erro interno do servidor", error: String(error) });
         }
-
-        const result = await Card.updateCardStatus(idCard, status, nextReviewDate);
-
-        if (result !== true) return res.status(500).json({ message: result.error });
-
-        return res.status(200).json({ message: "Status updated" });
     },
     countCardsByMatter: async (req: Request, res: Response) => {
         const { idMatter } = req.params;
