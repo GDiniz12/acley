@@ -29,6 +29,41 @@ const cardsController = {
 
         return res.status(200).json(result.cards);
     },
+    getAllCardsForReview: async (req: Request, res: Response) => {
+        const { idMatter } = req.params;
+        const { includeSubmatters } = req.query;
+        
+        const includeSubmattersFlag = includeSubmatters === 'true';
+
+        const result = await Card.getAllCardsForReview(idMatter, includeSubmattersFlag);
+
+        if (result.error) return res.status(500).json({ message: result.error });
+
+        return res.status(200).json(result.cards);
+    },
+    updateCardStatus: async (req: Request, res: Response) => {
+        const { idCard, status, difficulty } = req.body;
+
+        // Calcular próxima data de revisão baseado na dificuldade
+        let nextReviewDate = new Date();
+        
+        if (difficulty === 'easy') {
+            // Fácil: 1 semana
+            nextReviewDate.setDate(nextReviewDate.getDate() + 7);
+        } else if (difficulty === 'medium') {
+            // Médio: 3 dias
+            nextReviewDate.setDate(nextReviewDate.getDate() + 3);
+        } else if (difficulty === 'hard') {
+            // Difícil: 5 minutos
+            nextReviewDate.setMinutes(nextReviewDate.getMinutes() + 5);
+        }
+
+        const result = await Card.updateCardStatus(idCard, status, nextReviewDate);
+
+        if (result !== true) return res.status(500).json({ message: result.error });
+
+        return res.status(200).json({ message: "Status updated" });
+    },
     countCardsByMatter: async (req: Request, res: Response) => {
         const { idMatter } = req.params;
 

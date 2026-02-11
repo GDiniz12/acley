@@ -28,7 +28,7 @@ export class Card {
 
     static async cardsByMatter(idMatter: string | undefined) {
         try {
-            const [cards] = await pool.query("SELECT front, back FROM cards WHERE matter_parent = ?", [idMatter]);
+            const [cards] = await pool.query("SELECT id, front, back, status_card FROM cards WHERE matter_parent = ? AND submatter IS NULL", [idMatter]);
             return { cards };
         } catch(err) {
             return { error: err };
@@ -37,8 +37,75 @@ export class Card {
 
     static async cardsBySubMatter(idSubMatter: string | undefined) {
         try {
-            const [cards] = await pool.query("SELECT front, back FROM cards WHERE submatter = ?", [idSubMatter]);
+            const [cards] = await pool.query("SELECT id, front, back, status_card FROM cards WHERE submatter = ?", [idSubMatter]);
             return { cards };
+        } catch(err) {
+            return { error: err };
+        }
+    }
+
+    static async getAllCardsForReview(idMatter: string | undefined, includeSubmatters: boolean = true) {
+        try {
+            let cards: any[] = [];
+            
+            if (includeSubmatters) {
+                // Buscar cards da matéria E de todas as suas submatérias
+                const [allCards] = await pool.query<any[]>(
+                    `SELECT c.id, c.front, c.back, c.status_card, c.submatter
+                     FROM cards c
+                     LEFT JOIN submatters s ON c.submatter = s.id
+                     WHERE c.matter_parent = ?
+                     ORDER BY 
+                        CASE c.status_card 
+                            WHEN 'new' THEN 1 
+                            WHEN 'learn' THEN 2 
+                            WHEN 'review' THEN 3 
+                        END,
+                        c.id`,
+                    [idMatter]
+                );
+                cards = allCards;
+            } else {
+                // Buscar apenas cards diretos da matéria (sem submatéria)
+                const [directCards] = await pool.query<any[]>(
+                    `SELECT id, front, back, status_card, submatter
+                     FROM cards 
+                     WHERE matter_parent = ? AND submatter IS NULL
+                     ORDER BY 
+                        CASE status_card 
+                            WHEN 'new' THEN 1 
+                            WHEN 'learn' THEN 2 
+                            WHEN 'review' THEN 3 
+                        END,
+                        id`,
+                    [idMatter]
+                );
+                cards = directCards;
+            }
+            
+            return { cards };
+        } catch(err) {
+            return { error: err };
+        }
+    }
+
+    static async updateCardStatus(idCard: string, newStatus: StatusCard, nextReviewDate?: Date) {
+        try {
+            const now = new Date();
+            
+            // Calcular próxima data de revisão baseado na dificuldade
+            let reviewDate = nextReviewDate;
+            if (!reviewDate) {
+                reviewDate = new Date(now);
+                // Se não especificado, usa data atual
+            }
+            
+            await pool.query(
+                "UPDATE cards SET status_card = ?, last_reviewed = ?, next_review = ? WHERE id = ?",
+                [newStatus, now, reviewDate, idCard]
+            );
+            
+            return true;
         } catch(err) {
             return { error: err };
         }

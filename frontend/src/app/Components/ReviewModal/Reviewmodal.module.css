@@ -1,0 +1,333 @@
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    backdrop-filter: blur(8px);
+    animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modalContent {
+    background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+    padding: 2.5rem;
+    border-radius: 20px;
+    border: 2px solid #444;
+    width: 90%;
+    max-width: 700px;
+    max-height: 85vh;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.closeButton {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: transparent;
+    border: none;
+    color: #999;
+    font-size: 2rem;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s;
+    line-height: 1;
+}
+
+.closeButton:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    transform: rotate(90deg);
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.header h2 {
+    color: #fff;
+    margin: 0;
+    font-size: 1.8rem;
+    text-align: center;
+}
+
+.progressBar {
+    width: 100%;
+    height: 8px;
+    background-color: #333;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progressFill {
+    height: 100%;
+    background: linear-gradient(90deg, #4CAF50 0%, #8BC34A 100%);
+    transition: width 0.3s ease;
+    border-radius: 10px;
+}
+
+.progressText {
+    color: #aaa;
+    text-align: center;
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.loading,
+.noCards {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    color: #aaa;
+    gap: 1.5rem;
+}
+
+.noCards p {
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+.backButton {
+    padding: 0.75rem 2rem;
+    background-color: #444;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.backButton:hover {
+    background-color: #555;
+    transform: translateY(-2px);
+}
+
+.cardContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    flex: 1;
+}
+
+.card {
+    background-color: #2d2d2d;
+    border: 2px solid #444;
+    border-radius: 15px;
+    padding: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    min-height: 300px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.cardSide {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    flex: 1;
+}
+
+.sideLabel {
+    color: #888;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0;
+    font-weight: 600;
+}
+
+.cardContent {
+    color: #fff;
+    font-size: 1.3rem;
+    line-height: 1.6;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 1rem;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    min-height: 150px;
+}
+
+.showAnswerButton {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+}
+
+.showAnswerButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+}
+
+.difficultyButtons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.difficultyButton {
+    padding: 1rem 0.5rem;
+    border: 2px solid;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+    background-color: transparent;
+}
+
+.difficultyButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.buttonLabel {
+    font-size: 1rem;
+}
+
+.buttonTime {
+    font-size: 0.75rem;
+    opacity: 0.8;
+    font-weight: 500;
+}
+
+.difficultyButton.easy {
+    border-color: #4CAF50;
+    color: #4CAF50;
+}
+
+.difficultyButton.easy:hover:not(:disabled) {
+    background-color: #4CAF50;
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+}
+
+.difficultyButton.medium {
+    border-color: #FF9800;
+    color: #FF9800;
+}
+
+.difficultyButton.medium:hover:not(:disabled) {
+    background-color: #FF9800;
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(255, 152, 0, 0.4);
+}
+
+.difficultyButton.hard {
+    border-color: #f44336;
+    color: #f44336;
+}
+
+.difficultyButton.hard:hover:not(:disabled) {
+    background-color: #f44336;
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(244, 67, 54, 0.4);
+}
+
+.statusBadge {
+    display: flex;
+    justify-content: center;
+}
+
+.statusBadge span {
+    padding: 0.5rem 1.5rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.status-new {
+    background-color: rgba(173, 70, 192, 0.2);
+    color: #ad46c0;
+    border: 1px solid #ad46c0;
+}
+
+.status-learn {
+    background-color: rgba(246, 95, 84, 0.2);
+    color: #f65f54;
+    border: 1px solid #f65f54;
+}
+
+.status-review {
+    background-color: rgba(92, 194, 96, 0.2);
+    color: #5cc260;
+    border: 1px solid #5cc260;
+}
+
+@media (max-width: 768px) {
+    .modalContent {
+        padding: 1.5rem;
+        width: 95%;
+    }
+
+    .cardContent {
+        font-size: 1.1rem;
+        min-height: 120px;
+    }
+
+    .difficultyButtons {
+        grid-template-columns: 1fr;
+    }
+}

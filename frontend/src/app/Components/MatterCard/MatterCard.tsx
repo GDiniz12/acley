@@ -23,6 +23,7 @@ interface MatterCardProps {
     hasSubMatters?: boolean;
     onSubMatterUpdate?: () => void;
     onCardUpdate?: () => void;
+    onOpenReview?: (matterId: number, matterName: string) => void;
 }
 
 export default function MatterCard({ 
@@ -35,7 +36,8 @@ export default function MatterCard({
     onDelete,
     hasSubMatters = false,
     onSubMatterUpdate,
-    onCardUpdate
+    onCardUpdate,
+    onOpenReview
 }: MatterCardProps) {
     const [showOptions, setShowOptions] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
@@ -56,17 +58,18 @@ export default function MatterCard({
         function handleClickOutside(event: MouseEvent) {
             if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
                 setShowOptions(false);
+                setActiveSubMatterMenu(null);
             }
         }
 
-        if (showOptions) {
+        if (showOptions || activeSubMatterMenu) {
             document.addEventListener('mousedown', handleClickOutside);
         }
 
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [showOptions]);
+    }, [showOptions, activeSubMatterMenu]);
 
     async function fetchSubMatters() {
         setLoadingSubMatters(true);
@@ -119,8 +122,17 @@ export default function MatterCard({
         setIsExpanded(!isExpanded);
     }
     
-    function handleMatterClick() {
-        console.log(`Clicked on matter: ${name} (ID: ${id})`);
+    function handleMatterClick(e: React.MouseEvent) {
+        // Não abrir revisão se clicar no botão de expandir ou no menu
+        const target = e.target as HTMLElement;
+        if (target.closest(`.${styles.expandButton}`) || 
+            target.closest(`.${styles.menuWrapper}`)) {
+            return;
+        }
+        
+        if (onOpenReview) {
+            onOpenReview(id, name);
+        }
     }
 
     function toggleOptions(e: React.MouseEvent) {
@@ -143,7 +155,14 @@ export default function MatterCard({
         onDelete();
     }
 
-    function handleSubMatterClick(subMatter: SubMatter) {
+    function handleSubMatterClick(e: React.MouseEvent, subMatter: SubMatter) {
+        // Não abrir revisão se clicar no menu
+        const target = e.target as HTMLElement;
+        if (target.closest(`.${styles.subMenuWrapper}`)) {
+            return;
+        }
+        
+        // TODO: Implementar revisão de submatéria
         console.log(`Clicked on submatter: ${subMatter.name} (ID: ${subMatter.id})`);
     }
 
@@ -311,7 +330,7 @@ export default function MatterCard({
                                 <div 
                                     key={subMatter.id}
                                     className={styles.subMatterCard}
-                                    onClick={() => handleSubMatterClick(subMatter)}
+                                    onClick={(e) => handleSubMatterClick(e, subMatter)}
                                 >
                                     <span className={styles.subMatterName}>{subMatter.name}</span>
                                     <div className={styles.subMatterStats}>

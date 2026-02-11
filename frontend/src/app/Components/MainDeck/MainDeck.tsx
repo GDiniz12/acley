@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import styles from "./style.module.css";
 import MatterCard from "../MatterCard/MatterCard";
+import ReviewModal from "../ReviewModal/ReviewModal";
 
 interface Matter {
     id: number;
@@ -25,6 +26,10 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
     const [isLoading, setIsLoading] = useState(true);
     const [mattersWithSubMatters, setMattersWithSubMatters] = useState<Set<number>>(new Set());
     const [cardCounts, setCardCounts] = useState<Map<number, CardCounts>>(new Map());
+    
+    // Estados para o Modal de Revisão
+    const [showReviewModal, setShowReviewModal] = useState(false);
+    const [selectedMatterForReview, setSelectedMatterForReview] = useState<{ id: number, name: string } | null>(null);
     
     // Estados para o Modal de Renomear/Excluir
     const [showModal, setShowModal] = useState(false);
@@ -108,6 +113,22 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
     }
 
     function handleCardUpdate() {
+        fetchCardCounts(matters);
+    }
+
+    // Funções de Abertura de Modal de Revisão
+    function handleOpenReview(matterId: number, matterName: string) {
+        setSelectedMatterForReview({ id: matterId, name: matterName });
+        setShowReviewModal(true);
+    }
+
+    function handleCloseReview() {
+        setShowReviewModal(false);
+        setSelectedMatterForReview(null);
+    }
+
+    function handleReviewComplete() {
+        // Atualizar contagens após completar a revisão
         fetchCardCounts(matters);
     }
 
@@ -239,12 +260,25 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
                                     hasSubMatters={mattersWithSubMatters.has(matter.id)}
                                     onSubMatterUpdate={() => handleSubMatterUpdate(matter.id)}
                                     onCardUpdate={handleCardUpdate}
+                                    onOpenReview={handleOpenReview}
                                 />
                             );
                         })
                     )}
                 </div>
             </div>
+
+            {/* Modal de Revisão */}
+            {showReviewModal && selectedMatterForReview && (
+                <ReviewModal 
+                    showModal={showReviewModal}
+                    onClose={handleCloseReview}
+                    matterId={selectedMatterForReview.id}
+                    matterName={selectedMatterForReview.name}
+                    includeSubmatters={true}
+                    onReviewComplete={handleReviewComplete}
+                />
+            )}
 
             {/* Modal de Renomear/Excluir */}
             {showModal && (

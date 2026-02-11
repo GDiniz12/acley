@@ -33,6 +33,7 @@ router.get("/submatter/parent/:idParent", subMatterController.subMattersByParent
 
 router.get("/card/matter/:idMatter", cardsController.cardsByMatter);
 router.get("/card/submatter/:idSubMatter", cardsController.cardsBySubMatter);
+router.get("/card/review/:idMatter", cardsController.getAllCardsForReview);
 router.get("/card/count/matter/:idMatter", cardsController.countCardsByMatter);
 router.get("/card/count/submatter/:idSubMatter", cardsController.countCardsBySubMatter);
 
@@ -46,6 +47,7 @@ router.put("/matter", matterController.updateMatter);
 router.put("/submatter", subMatterController.updateSubMatter);
 
 router.put("/card", cardsController.updateCard);
+router.put("/card/status", cardsController.updateCardStatus);
 
 // Delete routes
 router.delete("/user", usersController.deleteUser);
