@@ -15,7 +15,7 @@ interface ReviewModalProps {
     onClose: () => void;
     matterId: number;
     matterName: string;
-    isSubMatter?: boolean; // Nova prop para diferenciar se é submatéria
+    isSubMatter?: boolean;
     onReviewComplete: () => void;
 }
 
@@ -57,7 +57,15 @@ export default function ReviewModal({
             }
 
             const data = await res.json();
-            setCards(data || []);
+            
+            // Filtrar apenas cards que estão disponíveis para revisão
+            // (cards com next_review NULL ou next_review <= agora)
+            const availableCards = (data || []).filter((card: Card) => {
+                // Como o backend já filtra por next_review, mantemos todos os cards retornados
+                return true;
+            });
+            
+            setCards(availableCards);
             setCurrentCardIndex(0);
             setShowAnswer(false);
         } catch(err) {
@@ -103,15 +111,22 @@ export default function ReviewModal({
                 throw new Error('Erro ao atualizar status do card');
             }
 
-            // Avançar para o próximo card
-            if (currentCardIndex < cards.length - 1) {
-                setCurrentCardIndex(prev => prev + 1);
-                setShowAnswer(false);
-            } else {
-                // Terminou a revisão
-                alert("Parabéns! Você revisou todos os flashcards!");
+            // Remover o card atual da lista (já foi revisado e agendado)
+            const updatedCards = cards.filter((_, index) => index !== currentCardIndex);
+            setCards(updatedCards);
+
+            // Se ainda há cards, continuar na mesma posição (que agora tem o próximo card)
+            // Se não há mais cards, finalizar
+            if (updatedCards.length === 0) {
+                // Não mostrar alert, apenas fechar e atualizar
                 onReviewComplete();
                 handleClose();
+            } else {
+                // Se o índice atual está fora dos limites, voltar para o último
+                if (currentCardIndex >= updatedCards.length) {
+                    setCurrentCardIndex(updatedCards.length - 1);
+                }
+                setShowAnswer(false);
             }
         } catch(err) {
             console.error("Erro ao atualizar card:", err);
@@ -126,6 +141,9 @@ export default function ReviewModal({
     }
 
     function handleClose() {
+        // Atualizar contagens antes de fechar
+        onReviewComplete();
+        
         setCards([]);
         setCurrentCardIndex(0);
         setShowAnswer(false);
@@ -154,7 +172,7 @@ export default function ReviewModal({
                         />
                     </div>
                     <p className={styles.progressText}>
-                        {currentCardIndex + 1} de {cards.length}
+                        {cards.length > 0 ? `${currentCardIndex + 1} de ${cards.length}` : '0 de 0'}
                     </p>
                 </div>
 
@@ -194,7 +212,7 @@ export default function ReviewModal({
                                         disabled={isSubmitting}
                                     >
                                         <span className={styles.buttonLabel}>Fácil</span>
-                                        <span className={styles.buttonTime}>1 semana</span>
+                                        <span className={styles.buttonTime}>7 dias</span>
                                     </button>
                                     <button 
                                         className={`${styles.difficultyButton} ${styles.medium}`}

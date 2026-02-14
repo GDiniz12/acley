@@ -130,6 +130,13 @@ export default function MatterCard({
             return;
         }
         
+        // Verificar se há cards disponíveis para revisão
+        const totalCards = newCards + learningCards + reviewCards;
+        if (totalCards === 0) {
+            alert("Nenhum flashcard disponível para revisão!");
+            return;
+        }
+        
         // Abrir revisão da matéria PAI (inclui todas as submatérias)
         if (onOpenReview) {
             onOpenReview(id, name, false);
@@ -160,6 +167,15 @@ export default function MatterCard({
         // Não abrir revisão se clicar no menu
         const target = e.target as HTMLElement;
         if (target.closest(`.${styles.subMenuWrapper}`)) {
+            return;
+        }
+        
+        // Verificar se há cards disponíveis nesta submatéria
+        const counts = subMatterCounts.get(subMatter.id) || { new: 0, learn: 0, review: 0 };
+        const totalCards = counts.new + counts.learn + counts.review;
+        
+        if (totalCards === 0) {
+            alert("Nenhum flashcard disponível para revisão nesta submatéria!");
             return;
         }
         

@@ -58,8 +58,8 @@ const cardsController = {
                 return res.status(400).json({ message: "difficulty inválida (deve ser: easy, medium ou hard)" });
             }
 
-            // Atualizar apenas o status (sem next_review e last_reviewed que não existem)
-            const result = await Card.updateCardStatus(idCard, status);
+            // Atualizar status com difficulty
+            const result = await Card.updateCardStatus(idCard, status, difficulty);
 
             if (result !== true) {
                 console.error("Erro ao atualizar status do card:", result.error);
