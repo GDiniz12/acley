@@ -60,7 +60,7 @@ class User {
 
     static async userByID(id: number | undefined) {
         try {
-            const [user] = await pool.query<User[]>("SELECT id, username, created_at FROM users WHERE id = ?", [id]);
+            const [user] = await pool.query<User[]>("SELECT id, username, email, created_at FROM users WHERE id = ?", [id]);
 
             if (user.length === 0) return false;
             return user;

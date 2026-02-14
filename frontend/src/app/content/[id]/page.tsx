@@ -8,6 +8,7 @@ import SideBar from "../../Components/SideBar/SideBar";
 import CreateMatterModal from "../../Components/CreateMatterModal/CreateMatter";
 import CreateSubMatterModal from "../../Components/CreateSubMatter/Createsubmatter";
 import CreateCardModal from "../../Components/CreateCardModal/Createcardmodal";
+import Settings from "../../Components/Settings/Settings";
 import styles from "./style.module.css";
 import "./style.module.css";
 
@@ -162,8 +163,8 @@ function PageContent() {
                         </button>
                     </div>
                 </div>
-                <div className={styles.RigthSide}>
-                    <button>Sinalizando</button>
+                <div className={styles.rightSide}>
+                    <Settings />
                 </div>
             </div>
 

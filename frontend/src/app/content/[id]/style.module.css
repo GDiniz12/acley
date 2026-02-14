@@ -88,8 +88,38 @@ body {
     transform: translateY(-2px);
 }
 
+.rightSide {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    padding: 2rem;
+}
+
 .acleyLogo {
     width: 3.5rem;
     height: 3.5rem;
     margin-top: -7rem;
+}
+
+@media (max-width: 1200px) {
+    .content {
+        grid-template-columns: 25% 50% 25%;
+    }
+}
+
+@media (max-width: 768px) {
+    .content {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr auto;
+    }
+    
+    .leftSide {
+        margin-left: 0;
+        margin-top: 2rem;
+    }
+    
+    .rightSide {
+        padding: 1rem;
+        justify-content: center;
+    }
 }
