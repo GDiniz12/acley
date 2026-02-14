@@ -80,3 +80,159 @@
 .loadingMessage {
     color: #fff;
 }
+
+/* ===== RESPONSIVIDADE ===== */
+
+/* Tablets em paisagem e desktops pequenos */
+@media (max-width: 1024px) {
+    .container {
+        width: 95%;
+        height: 60%;
+        margin-top: 4rem;
+    }
+    
+    .top {
+        padding: 0 1.5rem;
+        height: 2.8rem;
+    }
+    
+    .status {
+        gap: 2.5rem;
+    }
+    
+    .status > h5 {
+        font-size: 0.8rem;
+        width: 55px;
+    }
+}
+
+/* Tablets em retrato */
+@media (max-width: 768px) {
+    .container {
+        width: 95%;
+        height: 55%;
+        margin-top: 3rem;
+        border-radius: 12px;
+    }
+    
+    .top {
+        padding: 0 1.2rem;
+        height: 2.6rem;
+    }
+    
+    .top > span > h4 {
+        font-size: 1rem;
+    }
+    
+    .status {
+        gap: 2rem;
+    }
+    
+    .status > h5 {
+        font-size: 0.75rem;
+        width: 50px;
+    }
+    
+    .emptyMessage,
+    .loadingMessage {
+        padding: 2.5rem 1.5rem;
+        font-size: 1rem;
+    }
+}
+
+/* Smartphones grandes */
+@media (max-width: 480px) {
+    .container {
+        width: 100%;
+        height: auto;
+        min-height: 400px;
+        max-height: 60vh;
+        margin-top: 2rem;
+        border-radius: 10px;
+        border-width: 1.5px;
+    }
+    
+    .top {
+        padding: 0 1rem;
+        height: 2.5rem;
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto;
+        gap: 0.5rem;
+        height: auto;
+        padding: 0.8rem 1rem;
+    }
+    
+    .top > span > h4 {
+        font-size: 0.95rem;
+    }
+    
+    .status {
+        gap: 1.5rem;
+        justify-content: center;
+        padding-right: 0;
+    }
+    
+    .status > h5 {
+        font-size: 0.7rem;
+        width: 45px;
+    }
+    
+    .mattersContent::-webkit-scrollbar {
+        width: 4px;
+    }
+    
+    .emptyMessage,
+    .loadingMessage {
+        padding: 2rem 1rem;
+        font-size: 0.95rem;
+    }
+}
+
+/* Smartphones pequenos */
+@media (max-width: 360px) {
+    .container {
+        width: 100%;
+        min-height: 350px;
+        max-height: 55vh;
+        margin-top: 1.5rem;
+        border-radius: 8px;
+    }
+    
+    .top {
+        padding: 0.7rem 0.8rem;
+    }
+    
+    .top > span > h4 {
+        font-size: 0.9rem;
+    }
+    
+    .status {
+        gap: 1.2rem;
+    }
+    
+    .status > h5 {
+        font-size: 0.65rem;
+        width: 40px;
+    }
+    
+    .emptyMessage,
+    .loadingMessage {
+        padding: 1.5rem 0.8rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Ajuste para telas muito pequenas em altura */
+@media (max-height: 600px) {
+    .container {
+        height: auto;
+        min-height: 300px;
+        max-height: 50vh;
+        margin-top: 1rem;
+    }
+    
+    .emptyMessage,
+    .loadingMessage {
+        padding: 1.5rem 1rem;
+    }
+}

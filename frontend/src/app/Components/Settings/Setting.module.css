@@ -200,9 +200,299 @@
     transform: translateX(3px);
 }
 
+/* ===== RESPONSIVIDADE ===== */
+
+/* Tablets em paisagem e desktops pequenos */
+@media (max-width: 1024px) {
+    .settingsButton {
+        width: 42px;
+        height: 42px;
+    }
+    
+    .settingsPanel {
+        width: 300px;
+    }
+    
+    .panelHeader {
+        padding: 1.15rem 1.3rem;
+    }
+    
+    .panelHeader h3 {
+        font-size: 1.2rem;
+    }
+    
+    .panelContent {
+        padding: 1.3rem;
+        max-height: 450px;
+    }
+}
+
+/* Tablets em retrato */
 @media (max-width: 768px) {
+    .settingsButton {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .settingsButton svg {
+        width: 22px;
+        height: 22px;
+    }
+    
     .settingsPanel {
         width: 280px;
         right: -10px;
+        top: 55px;
+    }
+    
+    .panelHeader {
+        padding: 1rem 1.2rem;
+    }
+    
+    .panelHeader h3 {
+        font-size: 1.15rem;
+    }
+    
+    .closeButton {
+        width: 30px;
+        height: 30px;
+        font-size: 1.4rem;
+    }
+    
+    .panelContent {
+        padding: 1.2rem;
+        max-height: 400px;
+    }
+    
+    .sectionTitle {
+        font-size: 0.8rem;
+        margin-bottom: 0.9rem;
+    }
+    
+    .infoGroup {
+        margin-bottom: 1.1rem;
+    }
+    
+    .infoLabel {
+        font-size: 0.8rem;
+    }
+    
+    .infoValue {
+        font-size: 0.95rem;
+    }
+    
+    .divider {
+        margin: 1.3rem 0;
+    }
+    
+    .logoutButton {
+        padding: 0.8rem 0.9rem;
+        font-size: 0.95rem;
+    }
+}
+
+/* Smartphones grandes */
+@media (max-width: 480px) {
+    .settingsContainer {
+        position: static;
+    }
+    
+    .settingsButton {
+        width: 38px;
+        height: 38px;
+        border-width: 1.5px;
+    }
+    
+    .settingsButton svg {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .settingsPanel {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        right: auto;
+        transform: translate(-50%, -50%);
+        width: calc(100vw - 2rem);
+        max-width: 350px;
+        max-height: 80vh;
+        border-radius: 10px;
+        animation: slideUp 0.3s ease-out;
+    }
+    
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translate(-50%, -40%);
+        }
+        to {
+            opacity: 1;
+            transform: translate(-50%, -50%);
+        }
+    }
+    
+    .panelHeader {
+        padding: 0.9rem 1rem;
+    }
+    
+    .panelHeader h3 {
+        font-size: 1.1rem;
+    }
+    
+    .closeButton {
+        width: 28px;
+        height: 28px;
+        font-size: 1.3rem;
+    }
+    
+    .panelContent {
+        padding: 1rem;
+        max-height: calc(80vh - 80px);
+    }
+    
+    .loading,
+    .error {
+        padding: 1.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .sectionTitle {
+        font-size: 0.75rem;
+        margin-bottom: 0.8rem;
+    }
+    
+    .infoGroup {
+        margin-bottom: 1rem;
+    }
+    
+    .infoLabel {
+        font-size: 0.75rem;
+        margin-bottom: 0.35rem;
+    }
+    
+    .infoValue {
+        font-size: 0.9rem;
+    }
+    
+    .divider {
+        margin: 1.2rem 0;
+    }
+    
+    .logoutButton {
+        padding: 0.75rem 0.85rem;
+        font-size: 0.9rem;
+        gap: 0.4rem;
+        border-radius: 7px;
+    }
+    
+    .logoutButton svg {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+/* Smartphones pequenos */
+@media (max-width: 360px) {
+    .settingsButton {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .settingsButton svg {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .settingsPanel {
+        width: calc(100vw - 1.5rem);
+        max-width: 320px;
+        border-radius: 8px;
+    }
+    
+    .panelHeader {
+        padding: 0.8rem 0.9rem;
+    }
+    
+    .panelHeader h3 {
+        font-size: 1.05rem;
+    }
+    
+    .closeButton {
+        width: 26px;
+        height: 26px;
+        font-size: 1.2rem;
+    }
+    
+    .panelContent {
+        padding: 0.9rem;
+    }
+    
+    .sectionTitle {
+        font-size: 0.7rem;
+        margin-bottom: 0.7rem;
+    }
+    
+    .infoGroup {
+        margin-bottom: 0.9rem;
+    }
+    
+    .infoLabel {
+        font-size: 0.7rem;
+    }
+    
+    .infoValue {
+        font-size: 0.85rem;
+    }
+    
+    .divider {
+        margin: 1rem 0;
+    }
+    
+    .logoutButton {
+        padding: 0.7rem 0.8rem;
+        font-size: 0.85rem;
+        border-radius: 6px;
+    }
+    
+    .logoutButton svg {
+        width: 16px;
+        height: 16px;
+    }
+}
+
+/* Modo paisagem em smartphones */
+@media (max-width: 768px) and (orientation: landscape) and (max-height: 500px) {
+    .settingsPanel {
+        max-height: 90vh;
+        width: 280px;
+    }
+    
+    .panelContent {
+        max-height: calc(90vh - 80px);
+        padding: 0.8rem;
+    }
+    
+    .infoGroup {
+        margin-bottom: 0.8rem;
+    }
+    
+    .divider {
+        margin: 1rem 0;
+    }
+}
+
+/* Overlay para mobile quando o painel está aberto */
+@media (max-width: 480px) {
+    .settingsPanel::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.7);
+        z-index: -1;
+        backdrop-filter: blur(4px);
     }
 }

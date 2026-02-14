@@ -11,6 +11,7 @@
     align-items: center;
     z-index: 1000;
     backdrop-filter: blur(4px);
+    padding: 1rem;
 }
 
 .modalContent {
@@ -20,6 +21,7 @@
     border: 2px solid #fff;
     min-width: 500px;
     max-width: 600px;
+    width: 100%;
     max-height: 85vh;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
     display: flex;
@@ -112,6 +114,7 @@
     color: #fff;
     font-size: 0.95rem;
     flex: 1;
+    word-break: break-word;
 }
 
 .submatterItem span {
@@ -217,4 +220,320 @@
 
 .cancelButton:hover:not(:disabled) {
     background-color: #555;
+}
+
+/* ===== RESPONSIVIDADE ===== */
+
+/* Tablets em paisagem e desktops pequenos */
+@media (max-width: 1024px) {
+    .modalContent {
+        min-width: 470px;
+        max-width: 570px;
+        padding: 1.8rem;
+        gap: 1.3rem;
+    }
+    
+    .modalContent h2 {
+        font-size: 1.4rem;
+    }
+    
+    .mattersList {
+        max-height: 180px;
+    }
+}
+
+/* Tablets em retrato */
+@media (max-width: 768px) {
+    .modalOverlay {
+        padding: 0.8rem;
+    }
+    
+    .modalContent {
+        min-width: 420px;
+        max-width: 520px;
+        padding: 1.6rem;
+        gap: 1.2rem;
+        max-height: 80vh;
+        border-radius: 10px;
+    }
+    
+    .modalContent h2 {
+        font-size: 1.35rem;
+    }
+    
+    .formSection {
+        gap: 0.7rem;
+    }
+    
+    .label {
+        font-size: 0.9rem;
+    }
+    
+    .mattersList {
+        max-height: 170px;
+    }
+    
+    .mattersList::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .matterItem {
+        gap: 0.9rem;
+        padding: 0.7rem 0.9rem;
+    }
+    
+    .submatterItem {
+        padding-left: 1.8rem;
+    }
+    
+    .matterItem span {
+        font-size: 0.9rem;
+    }
+    
+    .submatterItem span {
+        font-size: 0.85rem;
+    }
+    
+    .radio {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .radioInner {
+        width: 9px;
+        height: 9px;
+    }
+    
+    .loading,
+    .emptyMessage {
+        padding: 1.8rem;
+        font-size: 0.9rem;
+    }
+    
+    .textarea {
+        padding: 0.7rem;
+        font-size: 0.95rem;
+    }
+    
+    .modalButtons {
+        gap: 0.9rem;
+    }
+    
+    .modalButtons button {
+        padding: 0.7rem 1.3rem;
+        font-size: 0.95rem;
+    }
+}
+
+/* Smartphones grandes */
+@media (max-width: 480px) {
+    .modalOverlay {
+        padding: 0.5rem;
+        align-items: flex-start;
+        padding-top: 3vh;
+    }
+    
+    .modalContent {
+        min-width: unset;
+        max-width: unset;
+        width: 100%;
+        padding: 1.4rem;
+        gap: 1rem;
+        max-height: 90vh;
+        border-radius: 10px;
+        border-width: 1.5px;
+    }
+    
+    .modalContent h2 {
+        font-size: 1.25rem;
+    }
+    
+    .formSection {
+        gap: 0.6rem;
+    }
+    
+    .label {
+        font-size: 0.85rem;
+    }
+    
+    .mattersList {
+        max-height: 160px;
+        border-radius: 7px;
+    }
+    
+    .mattersList::-webkit-scrollbar {
+        width: 4px;
+    }
+    
+    .matterItem {
+        gap: 0.8rem;
+        padding: 0.65rem 0.8rem;
+    }
+    
+    .submatterItem {
+        padding-left: 1.6rem;
+    }
+    
+    .matterItem span {
+        font-size: 0.85rem;
+    }
+    
+    .submatterItem span {
+        font-size: 0.8rem;
+    }
+    
+    .radio {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .radioInner {
+        width: 9px;
+        height: 9px;
+    }
+    
+    .loading,
+    .emptyMessage {
+        padding: 1.5rem;
+        font-size: 0.85rem;
+    }
+    
+    .textarea {
+        padding: 0.65rem;
+        font-size: 0.9rem;
+        border-radius: 7px;
+        min-height: 80px;
+    }
+    
+    .modalButtons {
+        flex-direction: column;
+        gap: 0.7rem;
+    }
+    
+    .modalButtons button {
+        width: 100%;
+        padding: 0.75rem;
+        font-size: 0.95rem;
+        border-radius: 7px;
+    }
+}
+
+/* Smartphones pequenos */
+@media (max-width: 360px) {
+    .modalOverlay {
+        padding: 0.4rem;
+        padding-top: 2vh;
+    }
+    
+    .modalContent {
+        padding: 1.2rem;
+        gap: 0.9rem;
+        max-height: 92vh;
+        border-radius: 8px;
+    }
+    
+    .modalContent h2 {
+        font-size: 1.15rem;
+    }
+    
+    .label {
+        font-size: 0.8rem;
+    }
+    
+    .mattersList {
+        max-height: 140px;
+        border-radius: 6px;
+    }
+    
+    .matterItem {
+        gap: 0.7rem;
+        padding: 0.6rem 0.7rem;
+    }
+    
+    .submatterItem {
+        padding-left: 1.4rem;
+    }
+    
+    .matterItem span {
+        font-size: 0.8rem;
+    }
+    
+    .submatterItem span {
+        font-size: 0.75rem;
+    }
+    
+    .radio {
+        width: 16px;
+        height: 16px;
+    }
+    
+    .radioInner {
+        width: 8px;
+        height: 8px;
+    }
+    
+    .loading,
+    .emptyMessage {
+        padding: 1.3rem;
+        font-size: 0.8rem;
+    }
+    
+    .textarea {
+        padding: 0.6rem;
+        font-size: 0.85rem;
+        border-radius: 6px;
+        min-height: 75px;
+    }
+    
+    .modalButtons {
+        gap: 0.6rem;
+    }
+    
+    .modalButtons button {
+        padding: 0.7rem;
+        font-size: 0.9rem;
+        border-radius: 6px;
+    }
+}
+
+/* Modo paisagem em smartphones */
+@media (max-width: 768px) and (orientation: landscape) and (max-height: 500px) {
+    .modalOverlay {
+        padding-top: 2vh;
+        overflow-y: auto;
+    }
+    
+    .modalContent {
+        padding: 1rem;
+        gap: 0.8rem;
+        max-height: 92vh;
+        margin: 1rem auto;
+    }
+    
+    .modalContent h2 {
+        font-size: 1.1rem;
+    }
+    
+    .mattersList {
+        max-height: 120px;
+    }
+    
+    .matterItem {
+        padding: 0.55rem 0.7rem;
+    }
+    
+    .textarea {
+        padding: 0.55rem;
+        min-height: 60px;
+    }
+    
+    .modalButtons {
+        margin-top: 0.5rem;
+        flex-direction: row;
+    }
+    
+    .modalButtons button {
+        padding: 0.6rem 1rem;
+        font-size: 0.85rem;
+    }
 }

@@ -11,6 +11,7 @@
     align-items: center;
     z-index: 1000;
     backdrop-filter: blur(4px);
+    padding: 1rem;
 }
 
 .modalContent {
@@ -20,6 +21,7 @@
     border: 2px solid #fff;
     min-width: 400px;
     max-width: 500px;
+    width: 100%;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
 }
 
@@ -96,4 +98,180 @@
 
 .cancelButton:hover:not(:disabled) {
     background-color: #555;
+}
+
+/* ===== RESPONSIVIDADE ===== */
+
+/* Tablets em paisagem e desktops pequenos */
+@media (max-width: 1024px) {
+    .modalContent {
+        min-width: 380px;
+        max-width: 480px;
+        padding: 1.8rem;
+    }
+    
+    .modalContent h2 {
+        font-size: 1.4rem;
+    }
+}
+
+/* Tablets em retrato */
+@media (max-width: 768px) {
+    .modalOverlay {
+        padding: 0.8rem;
+    }
+    
+    .modalContent {
+        min-width: 350px;
+        max-width: 450px;
+        padding: 1.6rem;
+        border-radius: 10px;
+    }
+    
+    .modalContent h2 {
+        font-size: 1.35rem;
+        margin-bottom: 0.9rem;
+    }
+    
+    .modalContent p {
+        font-size: 0.95rem;
+        margin: 0.45rem 0;
+    }
+    
+    .modalInput {
+        padding: 0.7rem;
+        font-size: 0.95rem;
+        margin: 0.9rem 0;
+    }
+    
+    .modalButtons {
+        gap: 0.9rem;
+        margin-top: 1.3rem;
+    }
+    
+    .modalButtons button {
+        padding: 0.7rem 1.3rem;
+        font-size: 0.95rem;
+    }
+}
+
+/* Smartphones grandes */
+@media (max-width: 480px) {
+    .modalOverlay {
+        padding: 0.5rem;
+        align-items: flex-start;
+        padding-top: 10vh;
+    }
+    
+    .modalContent {
+        min-width: unset;
+        max-width: unset;
+        width: 100%;
+        padding: 1.4rem;
+        border-radius: 10px;
+        border-width: 1.5px;
+    }
+    
+    .modalContent h2 {
+        font-size: 1.25rem;
+        margin-bottom: 0.8rem;
+    }
+    
+    .modalContent p {
+        font-size: 0.9rem;
+        margin: 0.4rem 0;
+    }
+    
+    .modalInput {
+        padding: 0.65rem;
+        font-size: 0.9rem;
+        margin: 0.8rem 0;
+        border-radius: 7px;
+    }
+    
+    .modalButtons {
+        flex-direction: column;
+        gap: 0.7rem;
+        margin-top: 1.2rem;
+    }
+    
+    .modalButtons button {
+        width: 100%;
+        padding: 0.75rem;
+        font-size: 0.95rem;
+        border-radius: 7px;
+    }
+}
+
+/* Smartphones pequenos */
+@media (max-width: 360px) {
+    .modalOverlay {
+        padding: 0.4rem;
+        padding-top: 8vh;
+    }
+    
+    .modalContent {
+        padding: 1.2rem;
+        border-radius: 8px;
+    }
+    
+    .modalContent h2 {
+        font-size: 1.15rem;
+        margin-bottom: 0.7rem;
+    }
+    
+    .modalContent p {
+        font-size: 0.85rem;
+    }
+    
+    .modalInput {
+        padding: 0.6rem;
+        font-size: 0.85rem;
+        margin: 0.7rem 0;
+        border-radius: 6px;
+    }
+    
+    .modalButtons {
+        gap: 0.6rem;
+        margin-top: 1rem;
+    }
+    
+    .modalButtons button {
+        padding: 0.7rem;
+        font-size: 0.9rem;
+        border-radius: 6px;
+    }
+}
+
+/* Modo paisagem em smartphones */
+@media (max-width: 768px) and (orientation: landscape) and (max-height: 500px) {
+    .modalOverlay {
+        padding-top: 5vh;
+        overflow-y: auto;
+    }
+    
+    .modalContent {
+        padding: 1rem;
+        margin: 1rem auto;
+    }
+    
+    .modalContent h2 {
+        font-size: 1.1rem;
+        margin-bottom: 0.6rem;
+    }
+    
+    .modalInput {
+        margin: 0.6rem 0;
+        padding: 0.55rem;
+    }
+    
+    .modalButtons {
+        margin-top: 0.8rem;
+        flex-direction: row;
+    }
+    
+    .modalButtons button {
+        padding: 0.6rem 1rem;
+        font-size: 0.85rem;
+    }
 }
