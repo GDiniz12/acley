@@ -1,7 +1,16 @@
 import { pool } from "../db.js";
+import { type RowDataPacket } from "mysql2/promise";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
+
+interface UserRow extends RowDataPacket {
+    id: number;
+    username: string;
+    password: string;
+    email: string;
+    created_at: Date;
+}
 
 class User {
     id: number;
@@ -42,7 +51,7 @@ class User {
 
     static async login(email: string, password: string) {
         try {
-            const [user] = await pool.query<User[]>("SELECT id, username, password FROM users WHERE email = ?", [email]);
+            const [user] = await pool.query<UserRow[]>("SELECT id, username, password FROM users WHERE email = ?", [email]);
 
             const isValidPassword = bcrypt.compareSync(password, user[0]?.password!);
 
@@ -60,7 +69,7 @@ class User {
 
     static async userByID(id: number | undefined) {
         try {
-            const [user] = await pool.query<User[]>("SELECT id, username, email, created_at FROM users WHERE id = ?", [id]);
+            const [user] = await pool.query<UserRow[]>("SELECT id, username, email, created_at FROM users WHERE id = ?", [id]);
 
             if (user.length === 0) return false;
             return user;
@@ -71,7 +80,7 @@ class User {
 
     static async updateUser(username: string, email: string, password: string, idUser: number) {
         try {
-            const [user] = await pool.query<User[]>("SELECT username FROM users WHERE id = ?", [idUser]);
+            const [user] = await pool.query<UserRow[]>("SELECT username FROM users WHERE id = ?", [idUser]);
             if (user.length === 0) return { message: "User not found"};
 
             const fields = [];

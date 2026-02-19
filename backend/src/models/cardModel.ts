@@ -1,6 +1,18 @@
 import { pool } from "../db.js";
+import { type RowDataPacket } from "mysql2/promise";
 
 export type StatusCard = "new" | "review" | "learn";
+
+interface CardRow extends RowDataPacket {
+    id: number;
+    front: string;
+    back: string;
+    status_card: StatusCard;
+    matter_parent: string;
+    submatter: string | null;
+    next_review: Date | null;
+    last_reviewed: Date | null;
+}
 
 export class Card {
     front: string;
@@ -30,7 +42,6 @@ export class Card {
         try {
             const now = new Date();
             
-            // Filtrar apenas cards disponíveis (next_review IS NULL ou next_review <= NOW)
             const [cards] = await pool.query(
                 `SELECT id, front, back, status_card 
                  FROM cards 
@@ -57,7 +68,6 @@ export class Card {
         try {
             const now = new Date();
             
-            // Filtrar apenas cards disponíveis (next_review IS NULL ou next_review <= NOW)
             const [cards] = await pool.query(
                 `SELECT id, front, back, status_card 
                  FROM cards 
@@ -85,8 +95,6 @@ export class Card {
             let cards: any[] = [];
             
             if (includeSubmatters) {
-                // Buscar cards da matéria E de todas as suas submatérias
-                // APENAS cards disponíveis (next_review IS NULL ou next_review <= NOW)
                 const [allCards] = await pool.query<any[]>(
                     `SELECT c.id, c.front, c.back, c.status_card, c.submatter
                      FROM cards c
@@ -104,8 +112,6 @@ export class Card {
                 );
                 cards = allCards;
             } else {
-                // Buscar apenas cards diretos da matéria (sem submatéria)
-                // APENAS cards disponíveis (next_review IS NULL ou next_review <= NOW)
                 const [directCards] = await pool.query<any[]>(
                     `SELECT id, front, back, status_card, submatter
                      FROM cards 
@@ -135,19 +141,14 @@ export class Card {
             const now = new Date();
             let nextReviewDate: Date | null = null;
             
-            // Calcular próxima revisão baseado na dificuldade
             if (difficulty === 'easy') {
-                // 7 dias
                 nextReviewDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
             } else if (difficulty === 'medium') {
-                // 3 dias
                 nextReviewDate = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
             } else if (difficulty === 'hard') {
-                // 5 minutos
                 nextReviewDate = new Date(now.getTime() + 5 * 60 * 1000);
             }
             
-            // Atualizar status, last_reviewed e next_review
             await pool.query(
                 "UPDATE cards SET status_card = ?, last_reviewed = ?, next_review = ? WHERE id = ?",
                 [newStatus, now, nextReviewDate, idCard]
@@ -164,7 +165,6 @@ export class Card {
         try {
             const now = new Date();
             
-            // Contar cards diretamente associados à matéria (sem submatéria)
             const [directCards] = await pool.query<any[]>(
                 `SELECT 
                     status_card,
@@ -177,7 +177,6 @@ export class Card {
                 [idMatter, now]
             );
             
-            // Contar cards de todas as submatérias desta matéria
             const [subMatterCards] = await pool.query<any[]>(
                 `SELECT 
                     c.status_card,
@@ -196,14 +195,12 @@ export class Card {
                 review: 0
             };
 
-            // Somar cards diretos
             directCards.forEach((row: any) => {
                 if (row.status_card === 'new') counts.new += row.count;
                 if (row.status_card === 'learn') counts.learn += row.count;
                 if (row.status_card === 'review') counts.review += row.count;
             });
 
-            // Somar cards das submatérias
             subMatterCards.forEach((row: any) => {
                 if (row.status_card === 'new') counts.new += row.count;
                 if (row.status_card === 'learn') counts.learn += row.count;
@@ -275,7 +272,7 @@ export class Card {
 
     static async deleteCard(idCard: string) {
         try {
-            const [card] = await pool.query<Card[]>("SELECT id FROM cards WHERE id = ?", [idCard]);
+            const [card] = await pool.query<CardRow[]>("SELECT id FROM cards WHERE id = ?", [idCard]);
             if (card.length === 0) return { message: "Card not found"};
 
             await pool.query("DELETE FROM cards WHERE id = ?", [idCard]);

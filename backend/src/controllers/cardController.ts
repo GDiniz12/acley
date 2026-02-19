@@ -16,7 +16,7 @@ const cardsController = {
 
         const result = await Card.cardsByMatter(idMatter);
 
-        if (result.error) return res.status(500).json({ message: result.error });
+        if ('error' in result) return res.status(500).json({ message: result.error });
 
         return res.status(200).json(result.cards);
     },
@@ -25,7 +25,7 @@ const cardsController = {
 
         const result = await Card.cardsBySubMatter(idSubMatter);
 
-        if (result.error) return res.status(500).json({ message: result.error });
+        if ('error' in result) return res.status(500).json({ message: result.error });
 
         return res.status(200).json(result.cards);
     },
@@ -37,7 +37,7 @@ const cardsController = {
 
         const result = await Card.getAllCardsForReview(idMatter, includeSubmattersFlag);
 
-        if (result.error) return res.status(500).json({ message: result.error });
+        if ('error' in result) return res.status(500).json({ message: result.error });
 
         return res.status(200).json(result.cards);
     },
@@ -45,7 +45,6 @@ const cardsController = {
         try {
             const { idCard, status, difficulty } = req.body;
 
-            // Validação dos parâmetros
             if (!idCard) {
                 return res.status(400).json({ message: "idCard é obrigatório" });
             }
@@ -58,7 +57,6 @@ const cardsController = {
                 return res.status(400).json({ message: "difficulty inválida (deve ser: easy, medium ou hard)" });
             }
 
-            // Atualizar status com difficulty
             const result = await Card.updateCardStatus(idCard, status, difficulty);
 
             if (result !== true) {
@@ -77,7 +75,7 @@ const cardsController = {
 
         const result = await Card.countCardsByMatter(idMatter);
 
-        if (result.error) return res.status(500).json({ message: result.error });
+        if ('error' in result) return res.status(500).json({ message: result.error });
 
         return res.status(200).json(result);
     },
@@ -86,7 +84,7 @@ const cardsController = {
 
         const result = await Card.countCardsBySubMatter(idSubMatter);
 
-        if (result.error) return res.status(500).json({ message: result.error });
+        if ('error' in result) return res.status(500).json({ message: result.error });
 
         return res.status(200).json(result);
     },
@@ -102,9 +100,9 @@ const cardsController = {
         const { idCard } = req.body;
 
         const result = await Card.deleteCard(idCard);
-        if (result.error) return res.status(500).json({ message: result.error });
 
-        if (result.message)  return res.status(404).json({ message: result.message });
+        if ('error' in result) return res.status(500).json({ message: result.error });
+        if ('message' in result) return res.status(404).json({ message: result.message });
 
         return res.status(200).json({ message: result.success });
     }

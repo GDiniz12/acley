@@ -1,4 +1,11 @@
 import { pool } from "../db.js";
+import { type RowDataPacket } from "mysql2/promise";
+
+interface SubMatterRow extends RowDataPacket {
+    id: number;
+    name: string;
+    matter_parent: string;
+}
 
 class SubMatter {
     name: string;
@@ -19,7 +26,7 @@ class SubMatter {
 
     static async subMattersByParent(idParent: string | undefined) {
         try {
-            const [subMatters] = await pool.query<SubMatter[]>("SELECT id, name FROM submatters WHERE matter_parent = ?", [idParent]);
+            const [subMatters] = await pool.query<SubMatterRow[]>("SELECT id, name FROM submatters WHERE matter_parent = ?", [idParent]);
 
             if (subMatters.length === 0) return { message: "Submatters not found"};
 

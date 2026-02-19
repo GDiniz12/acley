@@ -7,8 +7,8 @@ const notebookController = {
 
         const result = await Notebook.createNotebook(nameNotebook, idUser);
 
-        if (result.error) {
-            return res.status(500).json({ error: result});
+        if ('error' in result) {
+            return res.status(500).json({ error: result });
         }
         return res.status(201).json(result.notebook);
     },
@@ -17,8 +17,8 @@ const notebookController = {
 
         const result = await Notebook.notebooksById(id);
 
-        if (result.err) {
-            return res.status(500).json({ message: result.err});
+        if ('err' in result) {
+            return res.status(500).json({ message: result.err });
         }
 
         return res.status(200).json(result.notebooks);
@@ -28,8 +28,8 @@ const notebookController = {
 
         const notebooks = await Notebook.notebooksByUser(idUser);
 
-        if (notebooks.error) {
-            return res.status(500).json({ error: notebooks.error });
+        if (!Array.isArray(notebooks)) {
+            return res.status(500).json({ error: notebooks });
         }
         return res.status(200).json(notebooks);
     },
