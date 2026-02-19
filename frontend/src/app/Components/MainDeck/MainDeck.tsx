@@ -27,7 +27,6 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
     const [mattersWithSubMatters, setMattersWithSubMatters] = useState<Set<number>>(new Set());
     const [cardCounts, setCardCounts] = useState<Map<number, CardCounts>>(new Map());
     
-    // Estados para o Modal de Revisão
     const [showReviewModal, setShowReviewModal] = useState(false);
     const [selectedMatterForReview, setSelectedMatterForReview] = useState<{ 
         id: number, 
@@ -35,7 +34,6 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
         isSubMatter: boolean 
     } | null>(null);
     
-    // Estados para o Modal de Renomear/Excluir
     const [showModal, setShowModal] = useState(false);
     const [modalType, setModalType] = useState<'rename' | 'delete'>('rename');
     const [selectedMatter, setSelectedMatter] = useState<Matter | null>(null);
@@ -56,10 +54,7 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
                 const data = await res.json();
                 setMatters(data || []);
                 
-                // Verifica quais matérias têm submatérias
                 await checkMattersWithSubMatters(data || []);
-                
-                // Busca contagem de cards para cada matéria
                 await fetchCardCounts(data || []);
             } catch(err) {
                 console.error("Erro ao buscar matérias:", err);
@@ -111,7 +106,6 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
         setMattersWithSubMatters(mattersWithSubs);
     }
 
-    // Função para atualizar quando uma nova submatéria é criada/modificada ou card é criado
     function handleSubMatterUpdate(parentMatterId: number) {
         checkMattersWithSubMatters(matters);
     }
@@ -120,7 +114,6 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
         fetchCardCounts(matters);
     }
 
-    // Funções de Abertura de Modal de Revisão
     function handleOpenReview(matterId: number, matterName: string, isSubMatter: boolean = false) {
         setSelectedMatterForReview({ id: matterId, name: matterName, isSubMatter });
         setShowReviewModal(true);
@@ -132,11 +125,9 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
     }
 
     function handleReviewComplete() {
-        // Atualizar contagens após completar a revisão
         fetchCardCounts(matters);
     }
 
-    // Funções de Abertura de Modal
     function handleOpenRenameModal(matter: Matter) {
         setSelectedMatter(matter);
         setNewName(matter.name);
@@ -156,7 +147,6 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
         setNewName('');
     }
 
-    // Funções de API
     async function handleRenameMatter() {
         if (!selectedMatter || !newName.trim()) {
             alert("Por favor, insira um nome válido!");
@@ -246,7 +236,7 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
                         <div className={styles.loadingMessage}>Carregando matérias...</div>
                     ) : matters.length === 0 ? (
                         <div className={styles.emptyMessage}>
-                            Nenhuma matéria criada ainda. Clique em "Criar matéria" para começar!
+                            Nenhuma matéria criada ainda. Clique em &quot;Criar matéria&quot; para começar!
                         </div>
                     ) : (
                         matters.map((matter) => {
@@ -272,7 +262,6 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
                 </div>
             </div>
 
-            {/* Modal de Revisão */}
             {showReviewModal && selectedMatterForReview && (
                 <ReviewModal 
                     showModal={showReviewModal}
@@ -284,7 +273,6 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
                 />
             )}
 
-            {/* Modal de Renomear/Excluir */}
             {showModal && (
                 <div style={{
                     position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
@@ -335,7 +323,10 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
                         ) : (
                             <>
                                 <h2 style={{ marginBottom: '1rem', color: '#fff' }}>Excluir Matéria</h2>
-                                <p style={{ marginBottom: '1rem', color: '#aaa' }}>Tem certeza que deseja excluir a matéria "<strong>{selectedMatter?.name}</strong>"?</p>
+                                <p style={{ marginBottom: '1rem', color: '#aaa' }}>
+                                    Tem certeza que deseja excluir a matéria{' '}
+                                    <strong>&quot;{selectedMatter?.name}&quot;</strong>?
+                                </p>
                                 <p style={{ color: '#ff4444', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Esta ação não pode ser desfeita e todas as submatérias serão excluídas também.</p>
                                 <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
                                     <button 
