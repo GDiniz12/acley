@@ -1,0 +1,7 @@
+.effectLight {
+    width: 20rem;
+    height: 20rem;
+    border-radius: 100%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.3) -200%, rgba(255, 255, 255, 0) 70%);
+    pointer-events: none;
+}

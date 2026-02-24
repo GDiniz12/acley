@@ -1,0 +1,9 @@
+body {
+    background-color: #000;
+}
+
+.effects {
+    display: flex;
+    align-items: start;
+    justify-content: start;
+}
