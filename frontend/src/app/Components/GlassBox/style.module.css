@@ -1,0 +1,61 @@
+.container {
+  position: relative;
+  border-radius: 20px;
+  cursor: pointer;
+
+  background:
+    radial-gradient(
+      ellipse at 30% 20%,
+      rgba(255, 255, 255, 0.04) 0%,
+      transparent 60%
+    ),
+    linear-gradient(
+      160deg,
+      rgba(60, 60, 60, 0.6) 0%,
+      rgba(30, 30, 30, 0.85) 100%
+    );
+
+  border: 1px solid transparent;
+
+  box-shadow:
+    0 -1px 0 0 rgba(255, 255, 255, 0.55) inset,
+    -1px 0 0 0 rgba(255, 255, 255, 0.15) inset,
+    1px 0 0 0 rgba(255, 255, 255, 0.08) inset,
+    0 1px 0 0 rgba(255, 255, 255, 0.04) inset,
+    0 20px 60px rgba(0, 0, 0, 0.9),
+    0 4px 20px rgba(0, 0, 0, 0.7),
+    0 1px 3px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.06);
+
+  backdrop-filter: blur(24px) saturate(1.2);
+  -webkit-backdrop-filter: blur(24px) saturate(1.2);
+
+  transition:
+    box-shadow 0.4s ease,
+    transform 0.4s ease;
+}
+
+.container::before {
+  content: '';
+  position: absolute;
+  inset: -1px; 
+  border-radius: 21px;
+  padding: 1px;
+
+  background: linear-gradient(
+    160deg,
+    rgba(255, 255, 255, 0.45) 0%,  
+    rgba(255, 255, 255, 0.18) 25%,
+    rgba(255, 255, 255, 0.06) 50%,  
+    rgba(255, 255, 255, 0.03) 75%,
+    rgba(255, 255, 255, 0.10) 100%  
+  );
+
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: destination-out;
+  mask-composite: exclude;
+
+  pointer-events: none;
+}
