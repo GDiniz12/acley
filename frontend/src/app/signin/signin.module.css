@@ -63,9 +63,19 @@
     color: #fff;
 }
 
+.containerSignIn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 2rem 0;
+}
+
 .containerSignIn > form{
     display: flex;
     flex-direction: column;
+    align-items: center;
     margin-bottom: 2rem;
 }
 
@@ -91,6 +101,18 @@
     font-size: 15px;
     padding: 17px;
     cursor: pointer;
+    width: 25rem;
+}
+
+@media (max-width: 480px) {
+    .containerSignIn > form > button {
+        width: 85%;
+    }
+}
+
+.error {
+    color: red;
+    margin-bottom: 1rem;
 }
 
 @media (max-width: 480px) {

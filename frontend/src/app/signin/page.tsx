@@ -7,10 +7,12 @@ import { useState } from "react";
 import Link from "next/link";
 import { setToken } from "./auth";
 import { useRouter } from "next/navigation";
+import GlassBox from "../Components/GlassBox/GlassBox";
 
 export default function SignIn() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [isPasswordFalse, setIsPasswordFalse] = useState(false);
     const router = useRouter();
 
     async function allNotebooks(theToken: string) {
@@ -48,8 +50,9 @@ export default function SignIn() {
 
             if (!res.ok) {
                 const err = await res.json().catch(() => ({ error: "Unknown error"}));
-                console.log("Error: ", err);
-                alert("Error!");
+                if (err.message) {
+                    setIsPasswordFalse(true);
+                }
                 return;
             }
 
@@ -75,14 +78,15 @@ export default function SignIn() {
                     <span><button><Link href={"/signup"}>Registrar</Link></button></span>
                 </div>
                 <div className={styles.content}>
-                    <div className={styles.containerSignIn}>
+                    <GlassBox width="100%"  height="100%" className={styles.containerSignIn}>
                         <form onSubmit={handleSubmit}>
                             <h3>Entre no Acley</h3>
                             <input type="email" name="emailInp" placeholder="Seu email" onChange={(e) => setEmail(e.target.value)}/>
                             <input type="password" name="passwordInp" placeholder="Sua senha" onChange={(e) => setPassword(e.target.value)}/>
+                            {isPasswordFalse && <span className={styles.error}>Email ou senha incorretos</span>}
                             <button type="submit">Entrar</button>
                         </form>
-                    </div>
+                    </GlassBox>
                 </div>
             </div>
         </>
