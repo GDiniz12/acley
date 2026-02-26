@@ -3,9 +3,10 @@
 import styles from "./style.module.css";
 import SidebarTop from "../Components/SidebarTop/SidebarTop";
 import Image from "next/image";
-import acleyLogo from "../assets/acleylogo-remove-background.png"
+import acleyLogo from "../assets/acleylogo-remove-background.png";
 import { useEffect, useState } from "react";
 import { getToken } from "../signin/auth";
+import GlassBox from "../Components/GlassBox/GlassBox";
 
 function whatTimeIs() {
     const hour = Date().split(" ")[4];
@@ -71,6 +72,21 @@ export default function HomePage() {
                     <SidebarTop />
 
                     <h1>{whatTimeIs()}, {finish ? dataUser[0].username : "No found"}</h1>
+
+                    <div className={styles.boxes}>
+                        <GlassBox width={"100%"} height={"10rem"}>
+                            <h2>Minhas Anotações</h2>
+                        </GlassBox>
+                        <GlassBox width={"100%"} height={"10rem"}>
+                            <h2>Meus Flashcards</h2>
+                        </GlassBox>
+                        <GlassBox width={"100%"} height={"10rem"}>
+                            <h2>Meu Progresso</h2>
+                        </GlassBox>
+                        <GlassBox width={"100%"} height={"10rem"}>
+                            <h2>Recomendações de Estudo</h2>
+                        </GlassBox>
+                    </div>
                 </div>
                 <div></div>
             </div>
