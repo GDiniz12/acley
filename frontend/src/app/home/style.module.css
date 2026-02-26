@@ -42,3 +42,7 @@ body {
     top: -5.5px;
     font-weight: 300;
 }
+
+.glassBox > div{
+    transition: 0.4s;
+}

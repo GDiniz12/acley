@@ -28,6 +28,8 @@ interface TypeUser {
 export default function HomePage() {
     const [dataUser, setDataUser] = useState<TypeUser[]>([]);
     const [finish, setFinish] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
+
 
     useEffect(() => {
         async function userDetails() {
@@ -66,7 +68,14 @@ export default function HomePage() {
                     </span>
                 </div>
                 <div className={styles.main}>
-                    <GlassBox width={"25rem"} height={"0.5rem"}/>
+                    <div onMouseEnter={() => setIsOpen(true)} onMouseLeave={() => setIsOpen(false)} className={styles.glassBox}>
+                        <GlassBox
+                            width={"25rem"}
+                            height={isOpen ? "3rem" : "0.5rem"}
+                            onMouseEnter={() => setIsOpen(true)}
+                            onMouseLeave={() => setIsOpen(false)}
+                        />
+                    </div>
 
                     <h1>{whatTimeIs()}, {finish ? dataUser[0].username : "No found"}</h1>
                 </div>
