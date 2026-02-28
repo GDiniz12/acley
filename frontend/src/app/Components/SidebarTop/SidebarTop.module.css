@@ -47,3 +47,8 @@
   visibility: visible;
   opacity: 1;
 }
+
+.link {
+    text-decoration: none;
+    color: inherit;
+}
