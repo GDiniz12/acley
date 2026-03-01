@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import styles from "./style.module.css";
+import GlassBox from "../GlassBox/GlassBox";
 import MatterCard from "../MatterCard/MatterCard";
 import ReviewModal from "../ReviewModal/ReviewModal";
 
@@ -222,7 +223,7 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
 
     return (
         <>
-            <div className={styles.container}>
+            <GlassBox className={styles.container}>
                 <div className={styles.top}>
                     <span><h4>Matérias</h4></span>
                     <span className={styles.status}>
@@ -260,7 +261,7 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
                         })
                     )}
                 </div>
-            </div>
+            </GlassBox>
 
             {showReviewModal && selectedMatterForReview && (
                 <ReviewModal 

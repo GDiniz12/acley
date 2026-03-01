@@ -8,7 +8,7 @@ type ComponentsType = React.PropsWithChildren<{
     style?: React.CSSProperties;
 }>;
 
-export default function glassBox({
+export default function GlassBox({
     width,
     height,
     children,

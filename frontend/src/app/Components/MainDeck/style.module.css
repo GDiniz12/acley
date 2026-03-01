@@ -1,7 +1,10 @@
 .container {
+    /* fixed dimensions regardless of number of matters, scroll handled by inner container */
     width: 90%;
     height: 65%;
-    border: solid #fff;
+
+    /* border removed since GlassBox provides the frosted-glass visual */
+
     border-radius: 15px;
     margin-top: 5rem;
     display: flex;
