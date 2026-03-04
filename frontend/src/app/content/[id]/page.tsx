@@ -11,6 +11,7 @@ import CreateCardModal from "../../Components/CreateCardModal/Createcardmodal";
 import Settings from "../../Components/Settings/Settings";
 import styles from "./style.module.css";
 import "./style.module.css";
+import SideBarGlass from "@/app/Components/SideBarGlass/sideBarGlass";
 
 interface TypeCurrentNotebook {
     name: string;
@@ -135,7 +136,7 @@ function PageContent() {
         <>
             <div className={styles.content}>
                 <div className={styles.leftSide}>
-                    <SideBar />
+                    <SideBarGlass />
                 </div>
                 <div className={styles.centerSide}>
                     <h2>

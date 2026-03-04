@@ -1,7 +1,3 @@
-.glassBox {
-    /* container can be styled if needed */
-}
-
 .glassBox > div{
     transition: 0.4s;
     display: flex;

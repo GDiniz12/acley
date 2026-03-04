@@ -1,0 +1,29 @@
+.glassBox {
+    display: grid;
+    grid-template-rows: 20% 80%;
+    transition: 0.4s;
+}
+
+.glassBox > * {
+    visibility: hidden;
+}
+
+.glassBox:hover > * {
+    visibility: visible;
+}
+
+.titleBar {
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40%;
+}
+
+.titleBar > span {
+    font-size: 1.5rem;
+}
+
+.allNotebooks {
+    border-top: rgba(255, 255, 255, 0.153) solid 1px;
+}
