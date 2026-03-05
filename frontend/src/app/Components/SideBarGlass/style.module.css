@@ -26,4 +26,27 @@
 
 .allNotebooks {
     border-top: rgba(255, 255, 255, 0.153) solid 1px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    overflow-y: auto;
+}
+
+.notebookItem {
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+}
+
+.notebookItem:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.notebookName {
+    color: #fff;
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 500;
 }
