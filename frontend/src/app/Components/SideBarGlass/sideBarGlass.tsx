@@ -1,99 +1,34 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import GlassBox from "../GlassBox/GlassBox";
+import { useState } from "react";
+import ButtonSideBar from "../ButtonSideBar/buttonSideBar";
 import styles from "./style.module.css";
-import { getToken } from "@/app/signin/auth";
+import Link from "next/link";
 
-interface TypeNotebooks{
-    id: string;
-    name: string;
-}
-
-interface TypeUser {
-    id: number;
-    username: string;
-    created_at: string;
-}
-
-export default function SideBarGlass() {
+export default function SideBar() {
     const [isOpen, setIsOpen] = useState(false);
-    const [notebooks, setNotebooks] = useState<TypeNotebooks[]>([]);
-    const [dataUser, setDataUser] = useState<TypeUser[]>([]);
 
-    useEffect(() => {
-        async function userData() {
-            try {
-                const token = getToken();
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
+    const IconNotes = () => (
+        <Link href={"/notes"}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="50%" height="50%" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
+        </Link>
+    )
 
-                if (!res.ok) {
-                    throw new Error('Erro ao carregar dados de usuário');
-                }
+    const IconFlashCards = () => (
+        <Link href={"/cards"}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="50%" height="50%" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+        </Link>
+    )
 
-                const result: TypeUser[] = await res.json();
-                setDataUser(result);
-            } catch(err) {
-                console.error(err);
-                alert("Erro ao carregar dados do usuário!");
-            }
-        }
-
-        userData();
-    }, []);
-
-    useEffect(() => {
-        const fetchNotebook = async () => {
-            try {
-                const token = getToken();
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notebook/user/`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });        
-                if (!res.ok) {
-                    throw new Error('Erro ao carregar notebooks');
-                }
-        
-                const result: TypeNotebooks[] = await res.json();
-                setNotebooks(result);
-            } catch(err) {
-                console.error(err);
-                alert("Erro ao carregar notebooks!");
-            }
-        }
-
-        fetchNotebook();
-    }, []);
-
-    function showNotebooks() {
-        return (
-            <>
-                {notebooks.map((notebook) => (
-                    <div key={notebook.id} className={styles.notebookItem}>
-                        <p className={styles.notebookName}>{notebook.name}</p>
-                    </div>
-                ))}
-            </>
-        )
-    }
+    const IconTutor = () => (
+        <Link href={"/tutor"}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="50%" height="50%" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/><path d="M20 2v4"/><path d="M22 4h-4"/><circle cx="4" cy="20" r="2"/></svg>
+        </Link>
+    )
     return (
         <>
-            <div className={styles.SideBarGlass} onMouseEnter={() => setIsOpen(true)}
-            onMouseLeave={() => setIsOpen(false)}>
-                <GlassBox width={isOpen ? "15rem" : "0.5rem"} height="20rem" className={styles.glassBox}>
-                    <div className={styles.titleBar}>
-                        <h3>Notebooks</h3>
-                        <span>+</span>
-                    </div>
-                    <div className={styles.allNotebooks}>
-                        {showNotebooks()}
-                    </div>
-                </GlassBox>
+            <div className={styles.containerSideBar}>
+                    <ButtonSideBar onClick={() => setIsOpen(isOpen ? false : true)} width={isOpen ? "40%" : "15%"} />
             </div>
         </>
     );

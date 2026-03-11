@@ -1,52 +1,5 @@
-.glassBox {
-    display: grid;
-    grid-template-rows: 20% 80%;
-    transition: 0.4s;
-}
-
-.glassBox > * {
-    visibility: hidden;
-}
-
-.glassBox:hover > * {
-    visibility: visible;
-}
-
-.titleBar {
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 40%;
-}
-
-.titleBar > span {
-    font-size: 1.5rem;
-}
-
-.allNotebooks {
-    border-top: rgba(255, 255, 255, 0.153) solid 1px;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    padding: 0.75rem;
-    overflow-y: auto;
-}
-
-.notebookItem {
-    padding: 0.75rem;
-    border-radius: 0.5rem;
-    transition: background-color 0.3s ease;
-    cursor: pointer;
-}
-
-.notebookItem:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
-.notebookName {
-    color: #fff;
-    margin: 0;
-    font-size: 0.9rem;
-    font-weight: 500;
+.containerSideBar {
+    height: 100vh;
+    width: 100%;
+    background-color: #1D1C1B;
 }

@@ -1,12 +1,12 @@
 "use client";
 
 import styles from "./style.module.css";
-import SidebarTop from "../Components/SidebarTop/SidebarTop";
+import SidebarTop from "../../Components/SidebarTop/SidebarTop";
 import Image from "next/image";
-import acleyLogo from "../assets/acleylogo-remove-background.png";
+import acleyLogo from "../../assets/newAcleyLogo-removebg-preview.png";
 import { useEffect, useState } from "react";
-import { getToken } from "../signin/auth";
-import GlassBox from "../Components/GlassBox/GlassBox";
+import { getToken } from "../../signin/auth";
+import GlassBox from "../../Components/GlassBox/GlassBox";
 
 function whatTimeIs() {
     const hour = Date().split(" ")[4];

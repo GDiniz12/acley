@@ -8,7 +8,6 @@ import SideBar from "../../Components/SideBar/SideBar";
 import CreateMatterModal from "../../Components/CreateMatterModal/CreateMatter";
 import CreateSubMatterModal from "../../Components/CreateSubMatter/Createsubmatter";
 import CreateCardModal from "../../Components/CreateCardModal/Createcardmodal";
-import Settings from "../../Components/Settings/Settings";
 import styles from "./style.module.css";
 import "./style.module.css";
 import SideBarGlass from "@/app/Components/SideBarGlass/sideBarGlass";
@@ -134,11 +133,7 @@ function PageContent() {
 
     return (
         <>
-            <div className={styles.content}>
-                <div className={styles.leftSide}>
-                    <SideBarGlass />
-                </div>
-                <div className={styles.centerSide}>
+            
                     <h2>
                         {fetchLoaded ? currentNotebook[0].name : "undefined"}
                     </h2>
@@ -163,11 +158,6 @@ function PageContent() {
                             Criar flashcard
                         </button>
                     </div>
-                </div>
-                <div className={styles.rightSide}>
-                    <Settings />
-                </div>
-            </div>
 
             {/* Modal de Criar Matéria */}
             <CreateMatterModal 
