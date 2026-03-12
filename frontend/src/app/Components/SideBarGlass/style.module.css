@@ -1,5 +1,242 @@
+/* ── WRAPPER ─────────────────────────────────────────────────────────────── */
+.wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 999;
+    display: flex;
+    align-items: stretch;
+    transition: width 320ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.wrapperOpen  { width: 260px; }
+.wrapperClosed { width: 0px; }
+
+/* ── SIDEBAR ─────────────────────────────────────────────────────────────── */
 .containerSideBar {
     height: 100vh;
-    width: 100%;
     background-color: #1D1C1B;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition:
+        width 320ms cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 220ms ease;
+}
+
+.sidebarOpen {
+    width: 260px;
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.sidebarClosed {
+    width: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* ── TOP BAR — menu icon + search, side by side ──────────────────────────── */
+.topBar {
+    width: 260px;          /* fixed so it never shrinks during transition */
+    height: 10%;
+    min-height: 52px;
+    padding: 5px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 3%;
+    box-sizing: border-box;
+}
+
+/* ── MENU ICON (matches original ButtonSideBar .menuIcon) ────────────────── */
+.menuWrapper {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.menuIcon {
+    cursor: pointer;
+    border-radius: 30%;
+    padding: 3px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 34px;
+    height: 34px;
+    transition: background-color 0.2s;
+}
+
+.menuIcon:hover {
+    background-color: #4141418c;
+}
+
+.menuIconActive {
+    background-color: #4141418c;
+}
+
+/* ── SEARCH BAR (matches original ButtonSideBar .search) ─────────────────── */
+.search {
+    flex: 1;
+    height: 50%;
+    min-height: 28px;
+    border-radius: 50px;
+    background-color: #4141418c;
+    margin-right: 5%;
+}
+
+.search > input {
+    width: 100%;
+    height: 100%;
+    border-radius: 30px;
+    background-color: transparent;
+    color: #dedbdbcd;
+    border: solid 3px transparent;
+    outline: none;
+    box-sizing: border-box;
+    padding: 5%;
+    font-size: 0.85rem;
+}
+
+.search > input:focus {
+    border: solid 3px #8774E1;
+}
+
+/* ── TOOLTIP DROPDOWN ────────────────────────────────────────────────────── */
+.tooltip {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    width: 200px;
+    background: #111110;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 6px;
+    z-index: 1000;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+    transition:
+        opacity 200ms ease,
+        transform 200ms ease,
+        visibility 200ms;
+    transform-origin: top left;
+}
+
+.tooltipShow {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+    visibility: visible;
+}
+
+.tooltipHide {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.97);
+    pointer-events: none;
+    visibility: hidden;
+}
+
+/* ── TOOLTIP ITEMS ───────────────────────────────────────────────────────── */
+.tooltipItem {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 9px 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 13.5px;
+    font-weight: 400;
+    transition: background-color 150ms, color 150ms;
+    cursor: pointer;
+    white-space: nowrap;
+    box-sizing: border-box;
+}
+
+.tooltipItem:hover {
+    background-color: #8774E1;
+    color: #fff;
+}
+
+.tooltipItemActive {
+    background-color: #8774E1;
+    color: #fff;
+    font-weight: 600;
+}
+
+.tooltipItemActive:hover {
+    background-color: #9d8ce8;
+}
+
+.tooltipIcon {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.tooltipLabel {
+    flex: 1;
+}
+
+.activeDot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.85);
+    flex-shrink: 0;
+}
+
+/* ── SIDEBAR BODY ────────────────────────────────────────────────────────── */
+.sidebarContent {
+    flex: 1;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.sidebarContent::-webkit-scrollbar {
+    display: none;
+}
+
+/* ── OPEN/CLOSE TOGGLE BUTTON ────────────────────────────────────────────── */
+.toggleBtn {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 48px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-left: none;
+    border-radius: 0 8px 8px 0;
+    background: #1D1C1B;
+    color: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 0;
+    transition:
+        left 320ms cubic-bezier(0.4, 0, 0.2, 1),
+        color 200ms,
+        background-color 200ms;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.3);
+}
+
+.toggleBtnOpen   { left: 260px; }
+.toggleBtnClosed { left: 0; border-left: 1px solid rgba(255, 255, 255, 0.08); border-radius: 0 8px 8px 0; }
+
+.toggleBtn:hover {
+    background-color: #2a2927;
+    color: #8774E1;
+}
+
+/* ── RESPONSIVE ──────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .wrapperOpen       { width: 220px; }
+    .sidebarOpen       { width: 220px; }
+    .topBar            { width: 220px; }
+    .toggleBtnOpen     { left: 220px; }
 }
