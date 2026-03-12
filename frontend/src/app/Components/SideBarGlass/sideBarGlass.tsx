@@ -5,6 +5,7 @@ import styles from "./style.module.css";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { getToken } from "../../signin/auth";
+import NotesSidebarSection from "./NotesSideBarSection";
 
 // ── Icons ──────────────────────────────────────────────────────────────────
 
@@ -108,9 +109,12 @@ interface SideBarGlassProps {
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
-/** Returns true if the pathname is a notebook content page (not /notes). */
 function isNotebookRoute(pathname: string) {
     return pathname.startsWith("/content/") && !pathname.startsWith("/content/notes");
+}
+
+function isNotesRoute(pathname: string) {
+    return pathname.startsWith("/content/notes");
 }
 
 // ── Component ──────────────────────────────────────────────────────────────
@@ -124,13 +128,11 @@ export default function SideBarGlass({ isOpen: isOpenProp, onToggle }: SideBarGl
         else setInternalOpen((prev) => !prev);
     }
 
-    // ── Nav tooltip ──
     const [tooltipOpen, setTooltipOpen]   = useState(false);
     const [activeId, setActiveId]         = useState<string>("notes");
     const tooltipRef     = useRef<HTMLDivElement>(null);
     const menuWrapperRef = useRef<HTMLDivElement>(null);
 
-    // ── Notebooks state ──
     const [notebooks, setNotebooks]               = useState<Notebook[]>([]);
     const [notebooksLoading, setNotebooksLoading] = useState(false);
     const [creatingNotebook, setCreatingNotebook] = useState(false);
@@ -138,15 +140,14 @@ export default function SideBarGlass({ isOpen: isOpenProp, onToggle }: SideBarGl
     const pathname = usePathname();
     const router   = useRouter();
     const showNotebooks = isNotebookRoute(pathname);
+    const showNotes     = isNotesRoute(pathname);
 
-    // ── Active nav item ──
     useEffect(() => {
         const match = NAV_ITEMS.find((item) => pathname.startsWith(item.href));
         if (match) setActiveId(match.id);
         else if (isNotebookRoute(pathname)) setActiveId("flashcards");
     }, [pathname]);
 
-    // ── Close tooltip on outside click ──
     useEffect(() => {
         function handleClickOutside(e: MouseEvent) {
             if (
@@ -158,7 +159,6 @@ export default function SideBarGlass({ isOpen: isOpenProp, onToggle }: SideBarGl
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    // ── Fetch notebooks when on notebook route ──
     const fetchNotebooks = useCallback(async () => {
         setNotebooksLoading(true);
         try {
@@ -180,14 +180,11 @@ export default function SideBarGlass({ isOpen: isOpenProp, onToggle }: SideBarGl
         if (showNotebooks) fetchNotebooks();
     }, [showNotebooks, fetchNotebooks]);
 
-    // ── Create notebook ──
     async function handleCreateNotebook() {
         if (creatingNotebook) return;
         setCreatingNotebook(true);
         try {
             const token = getToken();
-
-            // Need idUser — decode from token or fetch user
             const userRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -197,10 +194,7 @@ export default function SideBarGlass({ isOpen: isOpenProp, onToggle }: SideBarGl
 
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notebook`, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
+                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
                 body: JSON.stringify({ nameNotebook: "Sem título", idUser }),
             });
             if (!res.ok) throw new Error("Erro ao criar notebook");
@@ -216,18 +210,15 @@ export default function SideBarGlass({ isOpen: isOpenProp, onToggle }: SideBarGl
         }
     }
 
-    // ── Current notebook id (to highlight active) ──
     const currentNotebookId = pathname.split("/content/")[1];
 
     return (
         <div className={`${styles.wrapper} ${sidebarOpen ? styles.wrapperOpen : styles.wrapperClosed}`}>
 
-            {/* ── SIDEBAR ── */}
             <aside className={`${styles.containerSideBar} ${sidebarOpen ? styles.sidebarOpen : styles.sidebarClosed}`}>
 
                 {/* Top bar */}
                 <div className={styles.topBar}>
-                    {/* Menu icon with tooltip */}
                     <div className={styles.menuWrapper} ref={menuWrapperRef}>
                         <div
                             className={`${styles.menuIcon} ${tooltipOpen ? styles.menuIconActive : ""}`}
@@ -260,7 +251,6 @@ export default function SideBarGlass({ isOpen: isOpenProp, onToggle }: SideBarGl
                         </div>
                     </div>
 
-                    {/* Search bar */}
                     <div className={styles.search}>
                         <input type="text" placeholder="Pesquisar" />
                     </div>
@@ -269,10 +259,9 @@ export default function SideBarGlass({ isOpen: isOpenProp, onToggle }: SideBarGl
                 {/* ── Sidebar body ── */}
                 <div className={styles.sidebarContent}>
 
-                    {/* NOTEBOOKS SECTION — only on /content/[id] routes */}
+                    {/* NOTEBOOKS — only on /content/[id] routes */}
                     {showNotebooks && (
                         <div className={styles.section}>
-                            {/* Section header */}
                             <div className={styles.sectionHeader}>
                                 <span className={styles.sectionTitle}>NOTEBOOKS</span>
                                 <button
@@ -284,8 +273,6 @@ export default function SideBarGlass({ isOpen: isOpenProp, onToggle }: SideBarGl
                                     <PlusIcon />
                                 </button>
                             </div>
-
-                            {/* Notebook list */}
                             <div className={styles.notebookList}>
                                 {notebooksLoading ? (
                                     <div className={styles.sectionLoading}>Carregando…</div>
@@ -312,10 +299,13 @@ export default function SideBarGlass({ isOpen: isOpenProp, onToggle }: SideBarGl
                         </div>
                     )}
 
+                    {/* NOTES — only on /content/notes */}
+                    {showNotes && <NotesSidebarSection />}
+
                 </div>
             </aside>
 
-            {/* ── Toggle button ── */}
+            {/* Toggle button */}
             <button
                 className={`${styles.toggleBtn} ${sidebarOpen ? styles.toggleBtnOpen : styles.toggleBtnClosed}`}
                 onClick={() => { handleToggle(); setTooltipOpen(false); }}
