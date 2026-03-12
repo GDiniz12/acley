@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import styles from "./style.module.css";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { getToken } from "../../signin/auth";
 
 // ── Icons ──────────────────────────────────────────────────────────────────
 
@@ -68,90 +69,179 @@ const SettingsIcon = () => (
     </svg>
 );
 
+const PlusIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+        fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M5 12h14"/><path d="M12 5v14"/>
+    </svg>
+);
+
+const NotebookIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+        fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M2 6h4"/><path d="M2 10h4"/><path d="M2 14h4"/><path d="M2 18h4"/>
+        <rect width="16" height="20" x="4" y="2" rx="2"/>
+    </svg>
+);
+
 // ── Nav items ──────────────────────────────────────────────────────────────
 
 const NAV_ITEMS = [
-    { id: "profile",    label: "Perfil",        icon: <ProfileIcon />,    href: "/profile" },
-    { id: "notes",      label: "Notas",          icon: <NotesIcon />,      href: "/content/notes" },
-    { id: "flashcards", label: "Flashcards",     icon: <FlashcardsIcon />, href: "/cards" },
-    { id: "ai-tutor",   label: "AI Tutor",       icon: <AITutorIcon />,    href: "/tutor" },
-    { id: "settings",   label: "Configurações",  icon: <SettingsIcon />,   href: "/settings" },
+    { id: "profile",    label: "Perfil",       icon: <ProfileIcon />,    href: "/profile" },
+    { id: "notes",      label: "Notas",         icon: <NotesIcon />,      href: "/content/notes" },
+    { id: "flashcards", label: "Flashcards",    icon: <FlashcardsIcon />, href: "/cards" },
+    { id: "ai-tutor",   label: "AI Tutor",      icon: <AITutorIcon />,    href: "/tutor" },
+    { id: "settings",   label: "Configurações", icon: <SettingsIcon />,   href: "/settings" },
 ] as const;
 
-// ── Props ──────────────────────────────────────────────────────────────────
+// ── Types ──────────────────────────────────────────────────────────────────
+
+interface Notebook {
+    id: string;
+    name: string;
+}
 
 interface SideBarGlassProps {
-    /** Controlled open state (optional). If omitted, component manages its own state. */
     isOpen?: boolean;
-    /** Called when the toggle button is clicked (required when isOpen is provided). */
     onToggle?: () => void;
+}
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+
+/** Returns true if the pathname is a notebook content page (not /notes). */
+function isNotebookRoute(pathname: string) {
+    return pathname.startsWith("/content/") && !pathname.startsWith("/content/notes");
 }
 
 // ── Component ──────────────────────────────────────────────────────────────
 
 export default function SideBarGlass({ isOpen: isOpenProp, onToggle }: SideBarGlassProps) {
-    // If isOpen is passed as a prop, use controlled mode; otherwise manage internally
     const [internalOpen, setInternalOpen] = useState(true);
     const sidebarOpen = isOpenProp !== undefined ? isOpenProp : internalOpen;
 
     function handleToggle() {
-        if (onToggle) {
-            onToggle();
-        } else {
-            setInternalOpen((prev) => !prev);
-        }
+        if (onToggle) onToggle();
+        else setInternalOpen((prev) => !prev);
     }
 
-    const [tooltipOpen, setTooltipOpen] = useState(false);
-    const [activeId, setActiveId] = useState<string>("notes");
-
-    const tooltipRef = useRef<HTMLDivElement>(null);
+    // ── Nav tooltip ──
+    const [tooltipOpen, setTooltipOpen]   = useState(false);
+    const [activeId, setActiveId]         = useState<string>("notes");
+    const tooltipRef     = useRef<HTMLDivElement>(null);
     const menuWrapperRef = useRef<HTMLDivElement>(null);
-    const pathname = usePathname();
 
+    // ── Notebooks state ──
+    const [notebooks, setNotebooks]               = useState<Notebook[]>([]);
+    const [notebooksLoading, setNotebooksLoading] = useState(false);
+    const [creatingNotebook, setCreatingNotebook] = useState(false);
+
+    const pathname = usePathname();
+    const router   = useRouter();
+    const showNotebooks = isNotebookRoute(pathname);
+
+    // ── Active nav item ──
+    useEffect(() => {
+        const match = NAV_ITEMS.find((item) => pathname.startsWith(item.href));
+        if (match) setActiveId(match.id);
+        else if (isNotebookRoute(pathname)) setActiveId("flashcards");
+    }, [pathname]);
+
+    // ── Close tooltip on outside click ──
     useEffect(() => {
         function handleClickOutside(e: MouseEvent) {
             if (
-                tooltipRef.current && !tooltipRef.current.contains(e.target as Node) &&
+                tooltipRef.current     && !tooltipRef.current.contains(e.target as Node) &&
                 menuWrapperRef.current && !menuWrapperRef.current.contains(e.target as Node)
-            ) {
-                setTooltipOpen(false);
-            }
+            ) setTooltipOpen(false);
         }
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
+    // ── Fetch notebooks when on notebook route ──
+    const fetchNotebooks = useCallback(async () => {
+        setNotebooksLoading(true);
+        try {
+            const token = getToken();
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notebook/user/`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (!res.ok) throw new Error("Erro ao carregar notebooks");
+            const data: Notebook[] = await res.json();
+            setNotebooks(data);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setNotebooksLoading(false);
+        }
+    }, []);
+
     useEffect(() => {
-        const match = NAV_ITEMS.find(item => pathname.startsWith(item.href));
-        if (match) setActiveId(match.id);
-    }, [pathname]);
+        if (showNotebooks) fetchNotebooks();
+    }, [showNotebooks, fetchNotebooks]);
+
+    // ── Create notebook ──
+    async function handleCreateNotebook() {
+        if (creatingNotebook) return;
+        setCreatingNotebook(true);
+        try {
+            const token = getToken();
+
+            // Need idUser — decode from token or fetch user
+            const userRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (!userRes.ok) throw new Error("Erro ao obter usuário");
+            const userData = await userRes.json();
+            const idUser = userData[0]?.id;
+
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notebook`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ nameNotebook: "Sem título", idUser }),
+            });
+            if (!res.ok) throw new Error("Erro ao criar notebook");
+            const data = await res.json();
+            const newNotebook = Array.isArray(data) ? data[0] : data[0];
+            setNotebooks((prev) => [...prev, newNotebook]);
+            router.push(`/content/${newNotebook.id}`);
+        } catch (err) {
+            console.error(err);
+            alert("Erro ao criar notebook!");
+        } finally {
+            setCreatingNotebook(false);
+        }
+    }
+
+    // ── Current notebook id (to highlight active) ──
+    const currentNotebookId = pathname.split("/content/")[1];
 
     return (
         <div className={`${styles.wrapper} ${sidebarOpen ? styles.wrapperOpen : styles.wrapperClosed}`}>
 
-            {/* ── SIDEBAR ────────────────────────────────────────────────── */}
+            {/* ── SIDEBAR ── */}
             <aside className={`${styles.containerSideBar} ${sidebarOpen ? styles.sidebarOpen : styles.sidebarClosed}`}>
 
-                {/* Top bar: menu icon on left + search bar */}
+                {/* Top bar */}
                 <div className={styles.topBar}>
-
-                    {/* Menu icon with tooltip dropdown */}
+                    {/* Menu icon with tooltip */}
                     <div className={styles.menuWrapper} ref={menuWrapperRef}>
                         <div
                             className={`${styles.menuIcon} ${tooltipOpen ? styles.menuIconActive : ""}`}
-                            onClick={() => setTooltipOpen(prev => !prev)}
+                            onClick={() => setTooltipOpen((prev) => !prev)}
                         >
                             <MenuIcon />
                         </div>
 
-                        {/* Tooltip dropdown */}
                         <div
                             ref={tooltipRef}
                             className={`${styles.tooltip} ${tooltipOpen ? styles.tooltipShow : styles.tooltipHide}`}
                             role="menu"
                         >
-                            {NAV_ITEMS.map(item => {
+                            {NAV_ITEMS.map((item) => {
                                 const isActive = activeId === item.id;
                                 return (
                                     <Link
@@ -159,10 +249,7 @@ export default function SideBarGlass({ isOpen: isOpenProp, onToggle }: SideBarGl
                                         href={item.href}
                                         role="menuitem"
                                         className={`${styles.tooltipItem} ${isActive ? styles.tooltipItemActive : ""}`}
-                                        onClick={() => {
-                                            setActiveId(item.id);
-                                            setTooltipOpen(false);
-                                        }}
+                                        onClick={() => { setActiveId(item.id); setTooltipOpen(false); }}
                                     >
                                         <span className={styles.tooltipIcon}>{item.icon}</span>
                                         <span className={styles.tooltipLabel}>{item.label}</span>
@@ -179,11 +266,56 @@ export default function SideBarGlass({ isOpen: isOpenProp, onToggle }: SideBarGl
                     </div>
                 </div>
 
-                {/* Sidebar body */}
-                <div className={styles.sidebarContent} />
+                {/* ── Sidebar body ── */}
+                <div className={styles.sidebarContent}>
+
+                    {/* NOTEBOOKS SECTION — only on /content/[id] routes */}
+                    {showNotebooks && (
+                        <div className={styles.section}>
+                            {/* Section header */}
+                            <div className={styles.sectionHeader}>
+                                <span className={styles.sectionTitle}>NOTEBOOKS</span>
+                                <button
+                                    className={styles.sectionAction}
+                                    onClick={handleCreateNotebook}
+                                    disabled={creatingNotebook}
+                                    title="Novo notebook"
+                                >
+                                    <PlusIcon />
+                                </button>
+                            </div>
+
+                            {/* Notebook list */}
+                            <div className={styles.notebookList}>
+                                {notebooksLoading ? (
+                                    <div className={styles.sectionLoading}>Carregando…</div>
+                                ) : notebooks.length === 0 ? (
+                                    <div className={styles.sectionEmpty}>Nenhum notebook ainda.</div>
+                                ) : (
+                                    notebooks.map((nb) => {
+                                        const isActive = nb.id === currentNotebookId;
+                                        return (
+                                            <Link
+                                                key={nb.id}
+                                                href={`/content/${nb.id}`}
+                                                className={`${styles.notebookItem} ${isActive ? styles.notebookItemActive : ""}`}
+                                            >
+                                                <span className={styles.notebookItemIcon}>
+                                                    <NotebookIcon />
+                                                </span>
+                                                <span className={styles.notebookItemName}>{nb.name}</span>
+                                            </Link>
+                                        );
+                                    })
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                </div>
             </aside>
 
-            {/* ── OPEN/CLOSE TOGGLE ──────────────────────────────────────── */}
+            {/* ── Toggle button ── */}
             <button
                 className={`${styles.toggleBtn} ${sidebarOpen ? styles.toggleBtnOpen : styles.toggleBtnClosed}`}
                 onClick={() => { handleToggle(); setTooltipOpen(false); }}

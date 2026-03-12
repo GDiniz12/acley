@@ -10,7 +10,7 @@
     transition: width 320ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.wrapperOpen  { width: 260px; }
+.wrapperOpen  { width: 240px; }
 .wrapperClosed { width: 0px; }
 
 /* ── SIDEBAR ─────────────────────────────────────────────────────────────── */
@@ -23,10 +23,11 @@
     transition:
         width 320ms cubic-bezier(0.4, 0, 0.2, 1),
         opacity 220ms ease;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .sidebarOpen {
-    width: 260px;
+    width: 240px;
     opacity: 1;
     pointer-events: auto;
 }
@@ -37,20 +38,21 @@
     pointer-events: none;
 }
 
-/* ── TOP BAR — menu icon + search, side by side ──────────────────────────── */
+/* ── TOP BAR ─────────────────────────────────────────────────────────────── */
 .topBar {
-    width: 260px;          /* fixed so it never shrinks during transition */
-    height: 10%;
-    min-height: 52px;
-    padding: 5px;
+    width: 240px;
+    height: 52px;
+    padding: 5px 8px;
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    gap: 3%;
+    gap: 6px;
     box-sizing: border-box;
+    flex-shrink: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
 
-/* ── MENU ICON (matches original ButtonSideBar .menuIcon) ────────────────── */
+/* ── MENU ICON ───────────────────────────────────────────────────────────── */
 .menuWrapper {
     position: relative;
     flex-shrink: 0;
@@ -58,50 +60,52 @@
 
 .menuIcon {
     cursor: pointer;
-    border-radius: 30%;
-    padding: 3px;
+    border-radius: 7px;
+    padding: 5px;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
     width: 34px;
     height: 34px;
-    transition: background-color 0.2s;
+    transition: background-color 0.15s;
 }
 
-.menuIcon:hover {
-    background-color: #4141418c;
-}
-
+.menuIcon:hover,
 .menuIconActive {
-    background-color: #4141418c;
+    background-color: rgba(255, 255, 255, 0.07);
 }
 
-/* ── SEARCH BAR (matches original ButtonSideBar .search) ─────────────────── */
+/* ── SEARCH BAR ──────────────────────────────────────────────────────────── */
 .search {
     flex: 1;
-    height: 50%;
-    min-height: 28px;
-    border-radius: 50px;
-    background-color: #4141418c;
-    margin-right: 5%;
+    height: 30px;
+    border-radius: 6px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    margin-right: 4px;
 }
 
 .search > input {
     width: 100%;
     height: 100%;
-    border-radius: 30px;
+    border-radius: 6px;
     background-color: transparent;
-    color: #dedbdbcd;
-    border: solid 3px transparent;
+    color: rgba(232, 230, 227, 0.6);
+    border: none;
     outline: none;
     box-sizing: border-box;
-    padding: 5%;
-    font-size: 0.85rem;
+    padding: 0 10px;
+    font-size: 0.78rem;
+    font-family: inherit;
 }
 
 .search > input:focus {
-    border: solid 3px #8774E1;
+    outline: 1.5px solid rgba(135, 116, 225, 0.5);
+    outline-offset: -1px;
+}
+
+.search > input::placeholder {
+    color: rgba(255, 255, 255, 0.2);
 }
 
 /* ── TOOLTIP DROPDOWN ────────────────────────────────────────────────────── */
@@ -146,7 +150,7 @@
     padding: 9px 12px;
     border-radius: 8px;
     text-decoration: none;
-    color: rgba(255, 255, 255, 0.55);
+    color: rgba(255, 255, 255, 0.5);
     font-size: 13.5px;
     font-weight: 400;
     transition: background-color 150ms, color 150ms;
@@ -156,35 +160,39 @@
 }
 
 .tooltipItem:hover {
-    background-color: #8774E1;
+    background-color: rgba(135, 116, 225, 0.15);
     color: #fff;
 }
 
 .tooltipItemActive {
-    background-color: #8774E1;
-    color: #fff;
+    background-color: rgba(135, 116, 225, 0.18);
+    color: #8774E1;
     font-weight: 600;
 }
 
 .tooltipItemActive:hover {
-    background-color: #9d8ce8;
+    background-color: rgba(135, 116, 225, 0.25);
+    color: #a896ef;
 }
 
 .tooltipIcon {
     display: flex;
     align-items: center;
     flex-shrink: 0;
+    opacity: 0.7;
 }
 
-.tooltipLabel {
-    flex: 1;
+.tooltipItemActive .tooltipIcon {
+    opacity: 1;
 }
+
+.tooltipLabel { flex: 1; }
 
 .activeDot {
     width: 5px;
     height: 5px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.85);
+    background: #8774E1;
     flex-shrink: 0;
 }
 
@@ -192,26 +200,147 @@
 .sidebarContent {
     flex: 1;
     overflow-y: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    overflow-x: hidden;
+    padding: 8px 0;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(135, 116, 225, 0.2) transparent;
 }
 
-.sidebarContent::-webkit-scrollbar {
-    display: none;
+.sidebarContent::-webkit-scrollbar { width: 3px; }
+.sidebarContent::-webkit-scrollbar-thumb {
+    background: rgba(135, 116, 225, 0.25);
+    border-radius: 3px;
 }
 
-/* ── OPEN/CLOSE TOGGLE BUTTON ────────────────────────────────────────────── */
+/* ── SECTION ─────────────────────────────────────────────────────────────── */
+.section {
+    padding: 0 8px;
+    margin-bottom: 4px;
+}
+
+.sectionHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 8px 4px 8px;
+    margin-bottom: 2px;
+}
+
+.sectionTitle {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.25);
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    user-select: none;
+}
+
+.sectionAction {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    border: none;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transition: background-color 0.15s, color 0.15s;
+    padding: 0;
+}
+
+.sectionAction:hover:not(:disabled) {
+    background-color: rgba(135, 116, 225, 0.15);
+    color: #8774E1;
+}
+
+.sectionAction:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* ── NOTEBOOK LIST ───────────────────────────────────────────────────────── */
+.notebookList {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.notebookItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 6px 8px;
+    border-radius: 7px;
+    text-decoration: none;
+    color: rgba(232, 230, 227, 0.55);
+    font-size: 0.83rem;
+    font-weight: 400;
+    transition: background-color 0.15s, color 0.15s;
+    box-sizing: border-box;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.notebookItem:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: rgba(232, 230, 227, 0.85);
+}
+
+.notebookItemActive {
+    background-color: rgba(135, 116, 225, 0.12);
+    color: #c4b8f5;
+    font-weight: 500;
+}
+
+.notebookItemActive:hover {
+    background-color: rgba(135, 116, 225, 0.18);
+}
+
+.notebookItemIcon {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    opacity: 0.45;
+}
+
+.notebookItemActive .notebookItemIcon {
+    opacity: 0.85;
+    color: #8774E1;
+}
+
+.notebookItemName {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    min-width: 0;
+}
+
+/* ── EMPTY / LOADING ─────────────────────────────────────────────────────── */
+.sectionLoading,
+.sectionEmpty {
+    padding: 8px 8px;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.18);
+    text-align: left;
+    user-select: none;
+}
+
+/* ── TOGGLE BUTTON ───────────────────────────────────────────────────────── */
 .toggleBtn {
     position: fixed;
     top: 50%;
     transform: translateY(-50%);
-    width: 20px;
-    height: 48px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    width: 18px;
+    height: 44px;
+    border: 1px solid rgba(255, 255, 255, 0.07);
     border-left: none;
-    border-radius: 0 8px 8px 0;
+    border-radius: 0 7px 7px 0;
     background: #1D1C1B;
-    color: rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.25);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -222,21 +351,21 @@
         left 320ms cubic-bezier(0.4, 0, 0.2, 1),
         color 200ms,
         background-color 200ms;
-    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.3);
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.25);
 }
 
-.toggleBtnOpen   { left: 260px; }
-.toggleBtnClosed { left: 0; border-left: 1px solid rgba(255, 255, 255, 0.08); border-radius: 0 8px 8px 0; }
+.toggleBtnOpen   { left: 240px; }
+.toggleBtnClosed { left: 0; border-left: 1px solid rgba(255, 255, 255, 0.07); border-radius: 0 7px 7px 0; }
 
 .toggleBtn:hover {
-    background-color: #2a2927;
+    background-color: #252422;
     color: #8774E1;
 }
 
 /* ── RESPONSIVE ──────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
-    .wrapperOpen       { width: 220px; }
-    .sidebarOpen       { width: 220px; }
-    .topBar            { width: 220px; }
-    .toggleBtnOpen     { left: 220px; }
+    .wrapperOpen  { width: 200px; }
+    .sidebarOpen  { width: 200px; }
+    .topBar       { width: 200px; }
+    .toggleBtnOpen { left: 200px; }
 }
