@@ -1,0 +1,343 @@
+/* ── Page ─────────────────────────────────────────────────────────────── */
+.page {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #171615;
+  padding-bottom: 6rem;
+}
+
+/* ── Toolbar ─────────────────────────────────────────────────────────────── */
+.toolbar {
+  width: 100%;
+  max-width: 780px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 0 0.5rem 0;
+  gap: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 0.5rem;
+}
+
+.toolbarLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.toolbarRight {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.toolbarDate {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.3);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: capitalize;
+}
+
+.wordCount {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.25);
+  font-weight: 400;
+}
+
+.saveBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: transparent;
+  border: 1px solid rgba(135, 116, 225, 0.35);
+  border-radius: 8px;
+  color: #8774E1;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.saveBtn:hover {
+  background: rgba(135, 116, 225, 0.1);
+  border-color: #8774E1;
+}
+
+/* ── Editor ─────────────────────────────────────────────────────────────── */
+.editor {
+  width: 100%;
+  max-width: 780px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Title ─────────────────────────────────────────────────────────────── */
+.titleWrapper {
+  margin-bottom: 0.25rem;
+}
+
+.titleInput {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-size: 2.6rem;
+  font-weight: 700;
+  line-height: 1.2;
+  resize: none;
+  overflow: hidden;
+  padding: 2rem 0 0.75rem 0;
+  caret-color: #8774E1;
+  font-family: inherit;
+  letter-spacing: -0.02em;
+}
+
+.titleInput::placeholder {
+  color: rgba(255, 255, 255, 0.12);
+}
+
+.titleDivider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.07);
+  margin-bottom: 0.5rem;
+}
+
+/* ── Blocks container ──────────────────────────────────────────────────── */
+.blocksContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding-top: 0.25rem;
+}
+
+/* ── Block row ─────────────────────────────────────────────────────────── */
+.blockRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.15rem 0;
+  border-radius: 6px;
+  transition: background-color 0.15s;
+  position: relative;
+}
+
+.blockRow:hover .typeBadge {
+  opacity: 1;
+}
+
+.blockRowFocused .typeBadge {
+  opacity: 1;
+}
+
+/* ── Left side ─────────────────────────────────────────────────────────── */
+.blockLeft {
+  position: relative;
+  flex-shrink: 0;
+  width: 32px;
+  display: flex;
+  justify-content: center;
+  padding-top: 0.35rem;
+}
+
+/* ── Type badge button ────────────────────────────────────────────────── */
+.typeBadge {
+  opacity: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: 1px solid rgba(135, 116, 225, 0.25);
+  background: rgba(135, 116, 225, 0.08);
+  color: rgba(135, 116, 225, 0.7);
+  font-size: 0.65rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  padding: 0;
+  line-height: 1;
+  font-family: inherit;
+}
+
+.typeBadge:hover,
+.typeBadgeActive {
+  opacity: 1 !important;
+  background: rgba(135, 116, 225, 0.2);
+  border-color: #8774E1;
+  color: #8774E1;
+}
+
+/* ── Type menu dropdown ───────────────────────────────────────────────── */
+.typeMenu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 175px;
+  background: #1e1d1c;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 5px;
+  z-index: 100;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+  animation: menuFadeIn 0.15s ease-out;
+}
+
+@keyframes menuFadeIn {
+  from { opacity: 0; transform: translateY(-4px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)    scale(1); }
+}
+
+.typeMenuItem {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 0.75rem;
+  border: none;
+  background: transparent;
+  border-radius: 7px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.15s, color 0.15s;
+  font-family: inherit;
+}
+
+.typeMenuItem:hover {
+  background: rgba(135, 116, 225, 0.15);
+  color: #fff;
+}
+
+.typeMenuItemActive {
+  background: rgba(135, 116, 225, 0.2);
+  color: #8774E1;
+  font-weight: 600;
+}
+
+.typeMenuItemActive:hover {
+  background: rgba(135, 116, 225, 0.3);
+}
+
+.typeMenuIcon {
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  background: rgba(135, 116, 225, 0.15);
+  color: #8774E1;
+  font-size: 0.6rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ── Block textarea ──────────────────────────────────────────────────── */
+.blockTextarea {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #e8e6e3;
+  resize: none;
+  overflow: hidden;
+  line-height: 1.65;
+  font-family: inherit;
+  caret-color: #8774E1;
+  padding: 0.25rem 0;
+}
+
+.blockTextarea::placeholder {
+  color: rgba(255, 255, 255, 0.18);
+}
+
+/* Block type styles */
+.blockH1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+
+.blockH2 {
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #f0ede8;
+  letter-spacing: -0.01em;
+  line-height: 1.4;
+}
+
+.blockH3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #e8e5e0;
+  line-height: 1.5;
+}
+
+.blockParagraph {
+  font-size: 1rem;
+  font-weight: 400;
+  color: rgba(232, 230, 227, 0.88);
+  line-height: 1.75;
+}
+
+/* ── Add block button ────────────────────────────────────────────────── */
+.addBlockBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: transparent;
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.25);
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.55rem 0.85rem;
+  cursor: pointer;
+  margin-top: 0.75rem;
+  margin-left: 40px;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.addBlockBtn:hover {
+  border-color: rgba(135, 116, 225, 0.4);
+  color: #8774E1;
+  background: rgba(135, 116, 225, 0.06);
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .toolbar,
+  .editor {
+    max-width: 680px;
+    padding: 0 1.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .toolbar,
+  .editor {
+    padding: 0 1rem;
+  }
+
+  .titleInput {
+    font-size: 2rem;
+    padding-top: 1.5rem;
+  }
+
+  .blockH1 { font-size: 1.6rem; }
+  .blockH2 { font-size: 1.25rem; }
+  .blockH3 { font-size: 1.05rem; }
+}

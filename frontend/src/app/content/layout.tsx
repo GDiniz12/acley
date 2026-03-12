@@ -1,11 +1,11 @@
 import { Plus_Jakarta_Sans } from "next/font/google";
-import SideBar from "../Components/SideBarGlass/sideBarGlass";
+import ContentLayoutClient from "./ContentLayoutClient";
 import "./globalStyle.css";
 
 const jakarta = Plus_Jakarta_Sans({
   variable: "--font-jakarta",
-  subsets: ["latin"]
-})
+  subsets: ["latin"],
+});
 
 export default function RootLayout({
   children,
@@ -15,14 +15,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body className={jakarta.className}>
-        <div className="theBody">
-          <div>
-            <SideBar />
-          </div>
-          <div className="mainContent">
-              {children}
-          </div>
-        </div>
+        <ContentLayoutClient>{children}</ContentLayoutClient>
       </body>
     </html>
   );

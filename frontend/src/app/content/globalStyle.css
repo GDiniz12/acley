@@ -1,20 +1,9 @@
 * {
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-    background-color: #171615;
-}
-
-.theBody {
-    display: grid;
-    grid-template-columns: 20% 80%;
-}
-
-.mainContent {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  background-color: #171615;
 }

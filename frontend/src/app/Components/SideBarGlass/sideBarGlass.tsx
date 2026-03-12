@@ -60,7 +60,6 @@ const AITutorIcon = () => (
     </svg>
 );
 
-/* Replace the inner <path> SVG with your own icon when ready */
 const SettingsIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
         fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -73,16 +72,36 @@ const SettingsIcon = () => (
 
 const NAV_ITEMS = [
     { id: "profile",    label: "Perfil",        icon: <ProfileIcon />,    href: "/profile" },
-    { id: "notes",      label: "Notas",          icon: <NotesIcon />,      href: "/notes" },
+    { id: "notes",      label: "Notas",          icon: <NotesIcon />,      href: "/content/notes" },
     { id: "flashcards", label: "Flashcards",     icon: <FlashcardsIcon />, href: "/cards" },
     { id: "ai-tutor",   label: "AI Tutor",       icon: <AITutorIcon />,    href: "/tutor" },
     { id: "settings",   label: "Configurações",  icon: <SettingsIcon />,   href: "/settings" },
 ] as const;
 
+// ── Props ──────────────────────────────────────────────────────────────────
+
+interface SideBarGlassProps {
+    /** Controlled open state (optional). If omitted, component manages its own state. */
+    isOpen?: boolean;
+    /** Called when the toggle button is clicked (required when isOpen is provided). */
+    onToggle?: () => void;
+}
+
 // ── Component ──────────────────────────────────────────────────────────────
 
-export default function SideBarGlass() {
-    const [sidebarOpen, setSidebarOpen] = useState(true);
+export default function SideBarGlass({ isOpen: isOpenProp, onToggle }: SideBarGlassProps) {
+    // If isOpen is passed as a prop, use controlled mode; otherwise manage internally
+    const [internalOpen, setInternalOpen] = useState(true);
+    const sidebarOpen = isOpenProp !== undefined ? isOpenProp : internalOpen;
+
+    function handleToggle() {
+        if (onToggle) {
+            onToggle();
+        } else {
+            setInternalOpen((prev) => !prev);
+        }
+    }
+
     const [tooltipOpen, setTooltipOpen] = useState(false);
     const [activeId, setActiveId] = useState<string>("notes");
 
@@ -90,7 +109,6 @@ export default function SideBarGlass() {
     const menuWrapperRef = useRef<HTMLDivElement>(null);
     const pathname = usePathname();
 
-    // Close tooltip when clicking outside
     useEffect(() => {
         function handleClickOutside(e: MouseEvent) {
             if (
@@ -104,7 +122,6 @@ export default function SideBarGlass() {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    // Sync active item with current route
     useEffect(() => {
         const match = NAV_ITEMS.find(item => pathname.startsWith(item.href));
         if (match) setActiveId(match.id);
@@ -156,20 +173,20 @@ export default function SideBarGlass() {
                         </div>
                     </div>
 
-                    {/* Search bar — same style as original ButtonSideBar */}
+                    {/* Search bar */}
                     <div className={styles.search}>
                         <input type="text" placeholder="Pesquisar" />
                     </div>
                 </div>
 
-                {/* Sidebar body — your existing notebook list goes here */}
+                {/* Sidebar body */}
                 <div className={styles.sidebarContent} />
             </aside>
 
             {/* ── OPEN/CLOSE TOGGLE ──────────────────────────────────────── */}
             <button
                 className={`${styles.toggleBtn} ${sidebarOpen ? styles.toggleBtnOpen : styles.toggleBtnClosed}`}
-                onClick={() => { setSidebarOpen(prev => !prev); setTooltipOpen(false); }}
+                onClick={() => { handleToggle(); setTooltipOpen(false); }}
                 aria-label={sidebarOpen ? "Fechar sidebar" : "Abrir sidebar"}
             >
                 {sidebarOpen ? <ChevronLeftIcon /> : <ChevronRightIcon />}
