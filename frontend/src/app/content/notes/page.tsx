@@ -13,7 +13,7 @@ type SaveStatus = "idle" | "unsaved" | "saving" | "saved" | "error";
 interface NoteBlock {
   id: string;
   type: BlockType;
-  content: string;
+  html: string;
 }
 
 interface NoteDetail {
@@ -25,6 +25,11 @@ interface NoteDetail {
   updated_at: string;
 }
 
+interface SelBar {
+  top: number;
+  left: number;
+}
+
 // ── Helpers ────────────────────────────────────────────────────────────────
 
 function generateId() {
@@ -32,27 +37,44 @@ function generateId() {
 }
 
 function parseBlocks(content: string | null | undefined): NoteBlock[] {
-  if (!content) return [{ id: generateId(), type: "paragraph", content: "" }];
+  if (!content) return [{ id: generateId(), type: "paragraph", html: "" }];
   try {
     const parsed = JSON.parse(content);
-    if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      return parsed.map((b: any) => ({
+        id: b.id ?? generateId(),
+        type: (b.type as BlockType) ?? "paragraph",
+        // support old format (content) and new format (html)
+        html: b.html ?? b.content ?? "",
+      }));
+    }
   } catch {}
-  return [{ id: generateId(), type: "paragraph", content: String(content) }];
+  return [{ id: generateId(), type: "paragraph", html: String(content) }];
 }
 
-const BLOCK_PLACEHOLDERS: Record<BlockType, string> = {
+const PLACEHOLDERS: Record<BlockType, string> = {
   h1: "Título principal",
   h2: "Subtítulo",
   h3: "Título menor",
-  paragraph: "Escreva algo ou pressione Enter para novo bloco…",
+  paragraph: "Escreva algo…",
 };
 
-const BLOCK_LABELS: Record<BlockType, string> = {
+const TYPE_LABELS: Record<BlockType, string> = {
   h1: "Título 1",
   h2: "Título 2",
   h3: "Título 3",
   paragraph: "Parágrafo",
 };
+
+// Move cursor to end of a contenteditable element
+function moveCursorToEnd(el: HTMLElement) {
+  const range = document.createRange();
+  const sel = window.getSelection();
+  range.selectNodeContents(el);
+  range.collapse(false);
+  sel?.removeAllRanges();
+  sel?.addRange(range);
+}
 
 // ── BlockEditor ────────────────────────────────────────────────────────────
 
@@ -61,80 +83,179 @@ interface BlockEditorProps {
   isFocused: boolean;
   showTypeMenu: boolean;
   onFocus: () => void;
-  onBlur: () => void;
+  onBlur: (html: string) => void;
+  onInput: (html: string) => void;
   onTypeMenuToggle: () => void;
   onTypeMenuClose: () => void;
   onChangeType: (type: BlockType) => void;
-  onContentChange: (content: string) => void;
   onEnter: () => void;
   onBackspaceEmpty: () => void;
-  textareaRef: (el: HTMLTextAreaElement | null) => void;
+  onSelectionChange: () => void;
+  divRef: (el: HTMLDivElement | null) => void;
 }
 
 function BlockEditor({
-  block, isFocused, showTypeMenu,
-  onFocus, onBlur, onTypeMenuToggle, onTypeMenuClose,
-  onChangeType, onContentChange, onEnter, onBackspaceEmpty,
-  textareaRef,
+  block,
+  isFocused,
+  showTypeMenu,
+  onFocus,
+  onBlur,
+  onInput,
+  onTypeMenuToggle,
+  onTypeMenuClose,
+  onChangeType,
+  onEnter,
+  onBackspaceEmpty,
+  onSelectionChange,
+  divRef,
 }: BlockEditorProps) {
-  const localRef = useRef<HTMLTextAreaElement>(null);
+  const localRef = useRef<HTMLDivElement>(null);
 
+  // Only sync innerHTML from state when the block is NOT focused.
+  // This prevents React from resetting the cursor while the user is typing.
   useEffect(() => {
     const el = localRef.current;
-    if (!el) return;
-    el.style.height = "auto";
-    el.style.height = el.scrollHeight + "px";
-  }, [block.content]);
+    if (!el || isFocused) return;
+    if (el.innerHTML !== block.html) {
+      el.innerHTML = block.html;
+    }
+  }, [block.html, isFocused]);
 
-  const blockTypeClass =
+  const blockClass =
     block.type === "h1" ? styles.blockH1
     : block.type === "h2" ? styles.blockH2
     : block.type === "h3" ? styles.blockH3
     : styles.blockParagraph;
 
+  function handleKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
+    // Ctrl/Cmd + B → bold
+    if ((e.ctrlKey || e.metaKey) && e.key === "b") {
+      e.preventDefault();
+      document.execCommand("bold", false);
+      onInput(localRef.current?.innerHTML ?? "");
+      return;
+    }
+    // Ctrl/Cmd + I → italic
+    if ((e.ctrlKey || e.metaKey) && e.key === "i") {
+      e.preventDefault();
+      document.execCommand("italic", false);
+      onInput(localRef.current?.innerHTML ?? "");
+      return;
+    }
+    // Enter → new block (no shift)
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      onEnter();
+      return;
+    }
+    // Backspace on empty block → remove block
+    if (e.key === "Backspace") {
+      const el = localRef.current;
+      if (!el) return;
+      const isEmpty = el.innerHTML === "" || el.innerHTML === "<br>";
+      if (isEmpty) {
+        e.preventDefault();
+        onBackspaceEmpty();
+      }
+    }
+  }
+
   return (
-    <div className={`${styles.blockRow} ${isFocused ? styles.blockRowFocused : ""}`}>
+    <div
+      className={`${styles.blockRow} ${isFocused ? styles.blockRowFocused : ""}`}
+    >
+      {/* ── Type badge + menu ── */}
       <div className={styles.blockLeft}>
         <button
           className={`${styles.typeBadge} ${showTypeMenu ? styles.typeBadgeActive : ""}`}
+          // preventDefault keeps focus in the contenteditable
+          onMouseDown={(e) => { e.stopPropagation(); e.preventDefault(); }}
           onClick={(e) => { e.stopPropagation(); onTypeMenuToggle(); }}
           tabIndex={-1}
         >
           {block.type === "paragraph" ? "¶" : block.type.toUpperCase()}
         </button>
+
         {showTypeMenu && (
-          <div className={styles.typeMenu}>
+          <div
+            className={styles.typeMenu}
+            onMouseDown={(e) => e.stopPropagation()}
+          >
             {(["h1", "h2", "h3", "paragraph"] as BlockType[]).map((t) => (
               <button
                 key={t}
                 className={`${styles.typeMenuItem} ${block.type === t ? styles.typeMenuItemActive : ""}`}
+                onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
                 onClick={() => { onChangeType(t); onTypeMenuClose(); }}
               >
-                <span className={styles.typeMenuIcon}>{t === "paragraph" ? "¶" : t.toUpperCase()}</span>
-                <span>{BLOCK_LABELS[t]}</span>
+                <span className={styles.typeMenuIcon}>
+                  {t === "paragraph" ? "¶" : t.toUpperCase()}
+                </span>
+                <span>{TYPE_LABELS[t]}</span>
               </button>
             ))}
           </div>
         )}
       </div>
-      <textarea
+
+      {/* ── Contenteditable block ── */}
+      <div
         ref={(el) => {
-          (localRef as React.MutableRefObject<HTMLTextAreaElement | null>).current = el;
-          textareaRef(el);
+          (localRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
+          divRef(el);
         }}
-        className={`${styles.blockTextarea} ${blockTypeClass}`}
-        value={block.content}
-        placeholder={isFocused ? BLOCK_PLACEHOLDERS[block.type] : ""}
-        rows={1}
+        className={`${styles.blockContent} ${blockClass}`}
+        contentEditable
+        suppressContentEditableWarning
+        data-placeholder={PLACEHOLDERS[block.type]}
         onFocus={onFocus}
-        onBlur={onBlur}
-        onChange={(e) => onContentChange(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); onEnter(); }
-          if (e.key === "Backspace" && block.content === "") { e.preventDefault(); onBackspaceEmpty(); }
-        }}
-        spellCheck={false}
+        onBlur={() => onBlur(localRef.current?.innerHTML ?? "")}
+        onInput={() => onInput(localRef.current?.innerHTML ?? "")}
+        onKeyDown={handleKeyDown}
+        onKeyUp={onSelectionChange}
+        onMouseUp={onSelectionChange}
+        onSelect={onSelectionChange}
       />
+    </div>
+  );
+}
+
+// ── Floating formatting bar ────────────────────────────────────────────────
+
+function FormattingBar({
+  top,
+  left,
+  onBold,
+  onItalic,
+}: {
+  top: number;
+  left: number;
+  onBold: () => void;
+  onItalic: () => void;
+}) {
+  return (
+    <div
+      className={styles.formattingBar}
+      style={{ top, left }}
+      // Prevent mousedown from clearing the selection
+      onMouseDown={(e) => e.preventDefault()}
+    >
+      <button
+        className={styles.formattingBtn}
+        title="Negrito (Ctrl+B)"
+        onClick={onBold}
+      >
+        <strong>B</strong>
+      </button>
+      <button
+        className={styles.formattingBtn}
+        title="Itálico (Ctrl+I)"
+        onClick={onItalic}
+      >
+        <em>I</em>
+      </button>
+      <div className={styles.formattingDivider} />
+      <span className={styles.formattingHint}>Ctrl+B · Ctrl+I</span>
     </div>
   );
 }
@@ -145,9 +266,12 @@ export default function NotesPage() {
   const { selectedNoteId, refresh } = useNotesContext();
 
   const [title, setTitle] = useState("");
-  const [blocks, setBlocks] = useState<NoteBlock[]>([{ id: generateId(), type: "paragraph", content: "" }]);
+  const [blocks, setBlocks] = useState<NoteBlock[]>([
+    { id: generateId(), type: "paragraph", html: "" },
+  ]);
   const [focusedBlockId, setFocusedBlockId] = useState<string | null>(null);
   const [typeMenuOpenId, setTypeMenuOpenId] = useState<string | null>(null);
+  const [selBar, setSelBar] = useState<SelBar | null>(null);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
   const [isLoadingNote, setIsLoadingNote] = useState(false);
 
@@ -155,7 +279,7 @@ export default function NotesPage() {
   const blocksValRef = useRef(blocks);
   const selectedNoteIdRef = useRef(selectedNoteId);
   const saveTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const textareaRefs = useRef<Map<string, HTMLTextAreaElement>>(new Map());
+  const divRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const titleInputRef = useRef<HTMLTextAreaElement>(null);
   const isFirstLoadRef = useRef(true);
   const prevSelectedNoteId = useRef<number | null>(null);
@@ -164,7 +288,7 @@ export default function NotesPage() {
   useEffect(() => { blocksValRef.current = blocks; }, [blocks]);
   useEffect(() => { selectedNoteIdRef.current = selectedNoteId; }, [selectedNoteId]);
 
-  // Auto-resize title
+  // Auto-resize title textarea
   useEffect(() => {
     const el = titleInputRef.current;
     if (!el) return;
@@ -182,7 +306,10 @@ export default function NotesPage() {
       const token = getToken();
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/note/${noteId}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({
           title: titleValRef.current || "Sem título",
           content: JSON.stringify(blocksValRef.current),
@@ -191,7 +318,7 @@ export default function NotesPage() {
       if (res.ok) {
         setSaveStatus("saved");
         refresh();
-        setTimeout(() => setSaveStatus((s) => s === "saved" ? "idle" : s), 2000);
+        setTimeout(() => setSaveStatus((s) => (s === "saved" ? "idle" : s)), 2000);
       } else {
         setSaveStatus("error");
       }
@@ -200,7 +327,7 @@ export default function NotesPage() {
     }
   }, [refresh]);
 
-  // Debounced auto-save on content changes
+  // Debounced auto-save
   useEffect(() => {
     if (!selectedNoteId) return;
     if (isFirstLoadRef.current) { isFirstLoadRef.current = false; return; }
@@ -208,15 +335,15 @@ export default function NotesPage() {
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(() => saveNote(), 1500);
     return () => { if (saveTimerRef.current) clearTimeout(saveTimerRef.current); };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [title, blocks]);
 
-  // ── Load note when selectedNoteId changes ──────────────────────────────
+  // ── Load note when selection changes ──────────────────────────────────
 
   useEffect(() => {
     if (selectedNoteId === prevSelectedNoteId.current) return;
 
-    // Save previous note first
+    // Save previous note before switching
     if (prevSelectedNoteId.current && saveTimerRef.current) {
       clearTimeout(saveTimerRef.current);
       saveNote(prevSelectedNoteId.current);
@@ -226,7 +353,7 @@ export default function NotesPage() {
 
     if (!selectedNoteId) {
       setTitle("");
-      setBlocks([{ id: generateId(), type: "paragraph", content: "" }]);
+      setBlocks([{ id: generateId(), type: "paragraph", html: "" }]);
       setSaveStatus("idle");
       return;
     }
@@ -234,6 +361,7 @@ export default function NotesPage() {
     setIsLoadingNote(true);
     isFirstLoadRef.current = true;
     setSaveStatus("idle");
+    setFocusedBlockId(null);
 
     const token = getToken();
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/note/${selectedNoteId}`, {
@@ -246,35 +374,76 @@ export default function NotesPage() {
       })
       .catch(console.error)
       .finally(() => setIsLoadingNote(false));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedNoteId]);
 
-  // Close type menus on outside click
+  // ── Close menus on outside mousedown ──────────────────────────────────
+
   useEffect(() => {
-    function handle() { setTypeMenuOpenId(null); }
+    function handle() {
+      setTypeMenuOpenId(null);
+      setSelBar(null);
+    }
     document.addEventListener("mousedown", handle);
     return () => document.removeEventListener("mousedown", handle);
   }, []);
 
+  // ── Selection bar positioning ──────────────────────────────────────────
+
+  function handleSelectionChange() {
+    const sel = window.getSelection();
+    if (!sel || sel.isCollapsed || sel.rangeCount === 0) {
+      setSelBar(null);
+      return;
+    }
+    const rect = sel.getRangeAt(0).getBoundingClientRect();
+    if (rect.width === 0) { setSelBar(null); return; }
+
+    const barWidth = 160;
+    const left = Math.min(
+      Math.max(rect.left + rect.width / 2 - barWidth / 2, 8),
+      window.innerWidth - barWidth - 8,
+    );
+    setSelBar({ top: rect.top - 50 + window.scrollY, left });
+  }
+
+  // ── Formatting ─────────────────────────────────────────────────────────
+
+  function applyFormat(command: string) {
+    // execCommand applies bold/italic on the current selection within the
+    // focused contenteditable — onMouseDown preventDefault keeps focus/selection
+    document.execCommand(command, false);
+    if (focusedBlockId) {
+      const el = divRefs.current.get(focusedBlockId);
+      if (el) updateBlockHtml(focusedBlockId, el.innerHTML);
+    }
+    setSelBar(null);
+  }
+
   // ── Block helpers ──────────────────────────────────────────────────────
 
-  const focusBlock = useCallback((id: string) => {
-    setTimeout(() => {
-      const el = textareaRefs.current.get(id);
-      if (el) { el.focus(); const len = el.value.length; el.setSelectionRange(len, len); }
-    }, 0);
-  }, []);
-
-  function changeBlockContent(id: string, content: string) {
-    setBlocks((prev) => prev.map((b) => b.id === id ? { ...b, content } : b));
+  function updateBlockHtml(id: string, html: string) {
+    setBlocks((prev) => prev.map((b) => (b.id === id ? { ...b, html } : b)));
   }
 
   function changeBlockType(id: string, type: BlockType) {
-    setBlocks((prev) => prev.map((b) => b.id === id ? { ...b, type } : b));
+    setBlocks((prev) => prev.map((b) => (b.id === id ? { ...b, type } : b)));
+    // Re-focus after type change so user can keep typing
+    setTimeout(() => {
+      const el = divRefs.current.get(id);
+      if (el) { el.focus(); moveCursorToEnd(el); }
+    }, 0);
   }
 
+  const focusBlock = useCallback((id: string) => {
+    setTimeout(() => {
+      const el = divRefs.current.get(id);
+      if (el) { el.focus(); moveCursorToEnd(el); }
+    }, 0);
+  }, []);
+
   function addBlockAfter(id: string) {
-    const newBlock: NoteBlock = { id: generateId(), type: "paragraph", content: "" };
+    const newBlock: NoteBlock = { id: generateId(), type: "paragraph", html: "" };
     setBlocks((prev) => {
       const idx = prev.findIndex((b) => b.id === id);
       const next = [...prev];
@@ -295,7 +464,7 @@ export default function NotesPage() {
     });
   }
 
-  // ── Save status ────────────────────────────────────────────────────────
+  // ── Save status labels ─────────────────────────────────────────────────
 
   const statusMap: Record<SaveStatus, { label: string; color: string }> = {
     idle:    { label: "",               color: "transparent" },
@@ -306,7 +475,8 @@ export default function NotesPage() {
   };
 
   const wordCount = selectedNoteId
-    ? [title, ...blocks.map((b) => b.content)].join(" ").trim().split(/\s+/).filter(Boolean).length
+    ? [title, ...blocks.map((b) => b.html.replace(/<[^>]*>/g, ""))]
+        .join(" ").trim().split(/\s+/).filter(Boolean).length
     : 0;
 
   // ── Render ─────────────────────────────────────────────────────────────
@@ -340,7 +510,17 @@ export default function NotesPage() {
 
   return (
     <div className={styles.page}>
-      {/* Toolbar */}
+      {/* Floating selection toolbar */}
+      {selBar && (
+        <FormattingBar
+          top={selBar.top}
+          left={selBar.left}
+          onBold={() => applyFormat("bold")}
+          onItalic={() => applyFormat("italic")}
+        />
+      )}
+
+      {/* Top toolbar */}
       <div className={styles.toolbar}>
         <div className={styles.toolbarLeft} />
         <div className={styles.toolbarRight}>
@@ -350,10 +530,15 @@ export default function NotesPage() {
               {statusMap[saveStatus].label}
             </span>
           )}
-          <span className={styles.wordCount}>{wordCount} {wordCount === 1 ? "palavra" : "palavras"}</span>
-          <button className={styles.saveBtn} onClick={() => saveNote()} disabled={saveStatus === "saving"}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
-              fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <span className={styles.wordCount}>
+            {wordCount} {wordCount === 1 ? "palavra" : "palavras"}
+          </span>
+          <button
+            className={styles.saveBtn}
+            onClick={() => saveNote()}
+            disabled={saveStatus === "saving"}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M15.2 3a2 2 0 011.4.6l3.8 3.8a2 2 0 01.6 1.4V19a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z"/>
               <path d="M17 21v-7a1 1 0 00-1-1H8a1 1 0 00-1 1v7"/>
               <path d="M7 3v4a1 1 0 001 1h7"/>
@@ -389,22 +574,31 @@ export default function NotesPage() {
               isFocused={focusedBlockId === block.id}
               showTypeMenu={typeMenuOpenId === block.id}
               onFocus={() => setFocusedBlockId(block.id)}
-              onBlur={() => setFocusedBlockId(null)}
-              onTypeMenuToggle={() => setTypeMenuOpenId((prev) => (prev === block.id ? null : block.id))}
+              onBlur={(html) => {
+                setFocusedBlockId(null);
+                updateBlockHtml(block.id, html);
+              }}
+              onInput={(html) => updateBlockHtml(block.id, html)}
+              onTypeMenuToggle={() =>
+                setTypeMenuOpenId((prev) => (prev === block.id ? null : block.id))
+              }
               onTypeMenuClose={() => setTypeMenuOpenId(null)}
               onChangeType={(type) => changeBlockType(block.id, type)}
-              onContentChange={(content) => changeBlockContent(block.id, content)}
               onEnter={() => addBlockAfter(block.id)}
               onBackspaceEmpty={() => removeBlockIfEmpty(block.id)}
-              textareaRef={(el) => {
-                if (el) textareaRefs.current.set(block.id, el);
-                else textareaRefs.current.delete(block.id);
+              onSelectionChange={handleSelectionChange}
+              divRef={(el) => {
+                if (el) divRefs.current.set(block.id, el);
+                else divRefs.current.delete(block.id);
               }}
             />
           ))}
-          <button className={styles.addBlockBtn} onClick={() => addBlockAfter(blocks[blocks.length - 1].id)}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
-              fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+
+          <button
+            className={styles.addBlockBtn}
+            onClick={() => addBlockAfter(blocks[blocks.length - 1].id)}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M5 12h14"/><path d="M12 5v14"/>
             </svg>
             Novo bloco
