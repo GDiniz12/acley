@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { getToken } from "../../signin/auth";
 import NotesSidebarSection from "./NotesSideBarSection";
+import { useNotebookContext } from "../../content/NotebookContext";
 
 // ── Icons ──────────────────────────────────────────────────────────────────
 
@@ -90,7 +91,7 @@ const NotebookIcon = () => (
 const NAV_ITEMS = [
     { id: "profile",    label: "Perfil",       icon: <ProfileIcon />,    href: "/profile" },
     { id: "notes",      label: "Notas",         icon: <NotesIcon />,      href: "/content/notes" },
-    { id: "flashcards", label: "Flashcards",    icon: <FlashcardsIcon />, href: "/cards" },
+    { id: "flashcards", label: "Flashcards",    icon: <FlashcardsIcon />, href: "/content/cards" },
     { id: "ai-tutor",   label: "AI Tutor",      icon: <AITutorIcon />,    href: "/tutor" },
     { id: "settings",   label: "Configurações", icon: <SettingsIcon />,   href: "/settings" },
 ] as const;
@@ -109,8 +110,8 @@ interface SideBarGlassProps {
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
-function isNotebookRoute(pathname: string) {
-    return pathname.startsWith("/content/") && !pathname.startsWith("/content/notes");
+function isCardsRoute(pathname: string) {
+    return pathname === "/content/cards";
 }
 
 function isNotesRoute(pathname: string) {
@@ -139,13 +140,14 @@ export default function SideBarGlass({ isOpen: isOpenProp, onToggle }: SideBarGl
 
     const pathname = usePathname();
     const router   = useRouter();
-    const showNotebooks = isNotebookRoute(pathname);
+    const showNotebooks = isCardsRoute(pathname);
     const showNotes     = isNotesRoute(pathname);
+
+    const { selectedNotebookId, selectNotebook } = useNotebookContext();
 
     useEffect(() => {
         const match = NAV_ITEMS.find((item) => pathname.startsWith(item.href));
         if (match) setActiveId(match.id);
-        else if (isNotebookRoute(pathname)) setActiveId("flashcards");
     }, [pathname]);
 
     useEffect(() => {
@@ -169,12 +171,16 @@ export default function SideBarGlass({ isOpen: isOpenProp, onToggle }: SideBarGl
             if (!res.ok) throw new Error("Erro ao carregar notebooks");
             const data: Notebook[] = await res.json();
             setNotebooks(data);
+            // Auto-select first notebook if none selected
+            if (data.length > 0 && !selectedNotebookId) {
+                selectNotebook(data[0].id);
+            }
         } catch (err) {
             console.error(err);
         } finally {
             setNotebooksLoading(false);
         }
-    }, []);
+    }, [selectedNotebookId, selectNotebook]);
 
     useEffect(() => {
         if (showNotebooks) fetchNotebooks();
@@ -201,7 +207,8 @@ export default function SideBarGlass({ isOpen: isOpenProp, onToggle }: SideBarGl
             const data = await res.json();
             const newNotebook = Array.isArray(data) ? data[0] : data[0];
             setNotebooks((prev) => [...prev, newNotebook]);
-            router.push(`/content/${newNotebook.id}`);
+            selectNotebook(newNotebook.id);
+            router.push("/content/cards");
         } catch (err) {
             console.error(err);
             alert("Erro ao criar notebook!");
@@ -209,8 +216,6 @@ export default function SideBarGlass({ isOpen: isOpenProp, onToggle }: SideBarGl
             setCreatingNotebook(false);
         }
     }
-
-    const currentNotebookId = pathname.split("/content/")[1];
 
     return (
         <div className={`${styles.wrapper} ${sidebarOpen ? styles.wrapperOpen : styles.wrapperClosed}`}>
@@ -259,7 +264,7 @@ export default function SideBarGlass({ isOpen: isOpenProp, onToggle }: SideBarGl
                 {/* ── Sidebar body ── */}
                 <div className={styles.sidebarContent}>
 
-                    {/* NOTEBOOKS — only on /content/[id] routes */}
+                    {/* NOTEBOOKS — only on /content/cards */}
                     {showNotebooks && (
                         <div className={styles.section}>
                             <div className={styles.sectionHeader}>
@@ -280,18 +285,18 @@ export default function SideBarGlass({ isOpen: isOpenProp, onToggle }: SideBarGl
                                     <div className={styles.sectionEmpty}>Nenhum notebook ainda.</div>
                                 ) : (
                                     notebooks.map((nb) => {
-                                        const isActive = nb.id === currentNotebookId;
+                                        const isActive = nb.id === selectedNotebookId;
                                         return (
-                                            <Link
+                                            <button
                                                 key={nb.id}
-                                                href={`/content/${nb.id}`}
                                                 className={`${styles.notebookItem} ${isActive ? styles.notebookItemActive : ""}`}
+                                                onClick={() => selectNotebook(nb.id)}
                                             >
                                                 <span className={styles.notebookItemIcon}>
                                                     <NotebookIcon />
                                                 </span>
                                                 <span className={styles.notebookItemName}>{nb.name}</span>
-                                            </Link>
+                                            </button>
                                         );
                                     })
                                 )}

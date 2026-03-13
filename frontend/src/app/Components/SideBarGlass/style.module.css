@@ -267,17 +267,31 @@
     gap: 1px;
 }
 
+/* ── NOTEBOOK ITEM (button reset + dark styles) ──────────────────────────── */
 .notebookItem {
+    /* button reset */
+    appearance: none;
+    -webkit-appearance: none;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+
+    /* layout */
     display: flex;
     align-items: center;
     gap: 8px;
     width: 100%;
     padding: 6px 8px;
     border-radius: 7px;
-    text-decoration: none;
+
+    /* typography */
     color: rgba(232, 230, 227, 0.55);
     font-size: 0.83rem;
     font-weight: 400;
+
+    /* transitions */
     transition: background-color 0.15s, color 0.15s;
     box-sizing: border-box;
     overflow: hidden;

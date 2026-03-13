@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
 import MainDeck from "../../Components/MainDeck/MainDeck";
 import ProtectedRoute from "../../Components/ProtectedRoute";
 import CreateMatterModal from "../../Components/CreateMatterModal/CreateMatter";
 import CreateSubMatterModal from "../../Components/CreateSubMatter/Createsubmatter";
 import CreateCardModal from "../../Components/CreateCardModal/Createcardmodal";
+import { useNotebookContext } from "../NotebookContext";
 import styles from "./style.module.css";
 
 interface TypeCurrentNotebook {
@@ -14,20 +14,25 @@ interface TypeCurrentNotebook {
 }
 
 function PageContent() {
+    const { selectedNotebookId } = useNotebookContext();
+
     const [currentNotebook, setCurrentNotebook] = useState<TypeCurrentNotebook[]>([]);
     const [fetchLoaded, setFetchLoaded] = useState(false);
     const [showCreateMatterModal, setShowCreateMatterModal] = useState(false);
     const [showCreateSubMatterModal, setShowCreateSubMatterModal] = useState(false);
     const [showCreateCardModal, setShowCreateCardModal] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
-    const params = useParams();
-
-    const notebookId = params.id as string;
 
     useEffect(() => {
+        if (!selectedNotebookId) {
+            setCurrentNotebook([]);
+            setFetchLoaded(false);
+            return;
+        }
+
         const fetchCurrentNotebook = async () => {
             try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notebook/${notebookId}`);
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notebook/${selectedNotebookId}`);
                 if (!res.ok) throw new Error("Erro ao carregar notebook");
                 const result: TypeCurrentNotebook[] = await res.json();
                 setCurrentNotebook(result);
@@ -37,14 +42,16 @@ function PageContent() {
                 alert("Erro ao carregar o notebook!");
             }
         };
-        if (notebookId) fetchCurrentNotebook();
-    }, [notebookId]);
+
+        fetchCurrentNotebook();
+    }, [selectedNotebookId]);
 
     async function handleCreateMatter(matterName: string) {
+        if (!selectedNotebookId) return;
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/matter`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name: matterName, idNotebook: notebookId }),
+            body: JSON.stringify({ name: matterName, idNotebook: selectedNotebookId }),
         });
         if (!res.ok) throw new Error("Erro ao criar matéria");
         setRefreshTrigger((p) => p + 1);
@@ -75,13 +82,28 @@ function PageContent() {
         setRefreshTrigger((p) => p + 1);
     }
 
-    // Count total matters from MainDeck — we pass a callback for this via refreshTrigger
     const today = new Date().toLocaleDateString("pt-BR", {
         weekday: "long",
         day: "2-digit",
         month: "long",
         year: "numeric",
     });
+
+    // No notebook selected yet
+    if (!selectedNotebookId) {
+        return (
+            <div className={styles.page}>
+                <div className={styles.emptyState}>
+                    <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.09)" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M2 6h4"/><path d="M2 10h4"/><path d="M2 14h4"/><path d="M2 18h4"/>
+                        <rect width="16" height="20" x="4" y="2" rx="2"/>
+                    </svg>
+                    <p className={styles.emptyTitle}>Nenhum notebook selecionado</p>
+                    <p className={styles.emptySub}>Selecione ou crie um notebook na barra lateral.</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className={styles.page}>
@@ -118,7 +140,7 @@ function PageContent() {
 
             {/* ── Content ── */}
             <div className={styles.content}>
-                <MainDeck notebookId={notebookId} refreshTrigger={refreshTrigger} />
+                <MainDeck notebookId={selectedNotebookId} refreshTrigger={refreshTrigger} />
             </div>
 
             {/* ── Modals ── */}
@@ -131,19 +153,19 @@ function PageContent() {
                 showModal={showCreateSubMatterModal}
                 onClose={() => setShowCreateSubMatterModal(false)}
                 onConfirm={handleCreateSubMatter}
-                notebookId={notebookId}
+                notebookId={selectedNotebookId}
             />
             <CreateCardModal
                 showModal={showCreateCardModal}
                 onClose={() => setShowCreateCardModal(false)}
                 onConfirm={handleCreateCard}
-                notebookId={notebookId}
+                notebookId={selectedNotebookId}
             />
         </div>
     );
 }
 
-export default function PageContentProtected() {
+export default function CardsPage() {
     return (
         <ProtectedRoute>
             <PageContent />
