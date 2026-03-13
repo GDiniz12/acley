@@ -2,7 +2,7 @@
 
 import styles from "./signup.module.css";
 import Image from "next/image";
-import acleyLogo from "../assets/newAcleyLogo-removebg-preview.png";
+import acleyLogo from "../assets/acleylogo-remove-background.png";
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -59,7 +59,7 @@ export default function SignUp() {
             <div className={styles.card}>
                 {/* Logo */}
                 <div className={styles.logoWrap}>
-                    <Image src={acleyLogo} alt="Acley" width={56} height={56} className={styles.logo} />
+                    <Image src={acleyLogo} alt="Acley" width={80} height={80} className={styles.logo} />
                 </div>
 
                 {isDone ? (
