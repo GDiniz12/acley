@@ -86,6 +86,12 @@ const NotebookIcon = () => (
     </svg>
 );
 
+const DotsIcon = () => (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+        <circle cx="5" cy="12" r="2" /><circle cx="12" cy="12" r="2" /><circle cx="19" cy="12" r="2" />
+    </svg>
+);
+
 // ── Nav items ──────────────────────────────────────────────────────────────
 
 const NAV_ITEMS = [
@@ -138,6 +144,11 @@ export default function SideBarGlass({ isOpen: isOpenProp, onToggle }: SideBarGl
     const [notebooksLoading, setNotebooksLoading] = useState(false);
     const [creatingNotebook, setCreatingNotebook] = useState(false);
 
+    // ── Notebook action menu state ─────────────────────────────────────────
+    const [notebookMenu, setNotebookMenu]         = useState<string | null>(null); // notebook id
+    const [renamingNotebook, setRenamingNotebook] = useState<{ id: string; value: string } | null>(null);
+    const renameInputRef = useRef<HTMLInputElement>(null);
+
     const pathname = usePathname();
     const router   = useRouter();
     const showNotebooks = isCardsRoute(pathname);
@@ -150,6 +161,7 @@ export default function SideBarGlass({ isOpen: isOpenProp, onToggle }: SideBarGl
         if (match) setActiveId(match.id);
     }, [pathname]);
 
+    // Close tooltip on outside click
     useEffect(() => {
         function handleClickOutside(e: MouseEvent) {
             if (
@@ -161,6 +173,26 @@ export default function SideBarGlass({ isOpen: isOpenProp, onToggle }: SideBarGl
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
+    // Close notebook action menu on outside click
+    useEffect(() => {
+        function handleClickOutside(e: MouseEvent) {
+            const target = e.target as Element;
+            if (
+                !target.closest(`.${styles.notebookDotsBtn}`) &&
+                !target.closest(`.${styles.notebookActionMenu}`)
+            ) {
+                setNotebookMenu(null);
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    // Focus rename input when it appears
+    useEffect(() => {
+        if (renamingNotebook) setTimeout(() => renameInputRef.current?.focus(), 20);
+    }, [renamingNotebook]);
+
     const fetchNotebooks = useCallback(async () => {
         setNotebooksLoading(true);
         try {
@@ -171,7 +203,6 @@ export default function SideBarGlass({ isOpen: isOpenProp, onToggle }: SideBarGl
             if (!res.ok) throw new Error("Erro ao carregar notebooks");
             const data: Notebook[] = await res.json();
             setNotebooks(data);
-            // Auto-select first notebook if none selected
             if (data.length > 0 && !selectedNotebookId) {
                 selectNotebook(data[0].id);
             }
@@ -185,6 +216,8 @@ export default function SideBarGlass({ isOpen: isOpenProp, onToggle }: SideBarGl
     useEffect(() => {
         if (showNotebooks) fetchNotebooks();
     }, [showNotebooks, fetchNotebooks]);
+
+    // ── Notebook CRUD ──────────────────────────────────────────────────────
 
     async function handleCreateNotebook() {
         if (creatingNotebook) return;
@@ -215,6 +248,50 @@ export default function SideBarGlass({ isOpen: isOpenProp, onToggle }: SideBarGl
         } finally {
             setCreatingNotebook(false);
         }
+    }
+
+    async function handleRenameNotebook(id: string, newName: string) {
+        if (!newName.trim()) return;
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notebook/${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ newName: newName.trim() }),
+            });
+            if (!res.ok) throw new Error("Erro ao renomear notebook");
+            setNotebooks((prev) =>
+                prev.map((nb) => (nb.id === id ? { ...nb, name: newName.trim() } : nb))
+            );
+        } catch (err) {
+            console.error(err);
+            alert("Erro ao renomear notebook!");
+        } finally {
+            setRenamingNotebook(null);
+        }
+    }
+
+    async function handleDeleteNotebook(id: string) {
+        try {
+            const token = getToken();
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notebook/${id}`, {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" }
+            });
+            if (!res.ok) throw new Error("Erro ao excluir notebook");
+            setNotebooks((prev) => prev.filter((nb) => nb.id !== id));
+            if (selectedNotebookId === id) {
+                const remaining = notebooks.filter((nb) => nb.id !== id);
+                selectNotebook(remaining.length > 0 ? remaining[0].id : null);
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Erro ao excluir notebook!");
+        }
+    }
+
+    function submitRenameNotebook() {
+        if (!renamingNotebook) return;
+        handleRenameNotebook(renamingNotebook.id, renamingNotebook.value);
     }
 
     return (
@@ -286,17 +363,86 @@ export default function SideBarGlass({ isOpen: isOpenProp, onToggle }: SideBarGl
                                 ) : (
                                     notebooks.map((nb) => {
                                         const isActive = nb.id === selectedNotebookId;
+                                        const isRenaming = renamingNotebook?.id === nb.id;
+                                        const isMenuOpen = notebookMenu === nb.id;
+
                                         return (
-                                            <button
+                                            <div
                                                 key={nb.id}
                                                 className={`${styles.notebookItem} ${isActive ? styles.notebookItemActive : ""}`}
-                                                onClick={() => selectNotebook(nb.id)}
                                             >
-                                                <span className={styles.notebookItemIcon}>
-                                                    <NotebookIcon />
-                                                </span>
-                                                <span className={styles.notebookItemName}>{nb.name}</span>
-                                            </button>
+                                                {isRenaming ? (
+                                                    /* ── Inline rename input ── */
+                                                    <>
+                                                        <span className={styles.notebookItemIcon}>
+                                                            <NotebookIcon />
+                                                        </span>
+                                                        <input
+                                                            ref={renameInputRef}
+                                                            className={styles.notebookRenameInput}
+                                                            value={renamingNotebook.value}
+                                                            onChange={(e) =>
+                                                                setRenamingNotebook((p) =>
+                                                                    p ? { ...p, value: e.target.value } : null
+                                                                )
+                                                            }
+                                                            onKeyDown={(e) => {
+                                                                if (e.key === "Enter") submitRenameNotebook();
+                                                                if (e.key === "Escape") setRenamingNotebook(null);
+                                                            }}
+                                                            onBlur={submitRenameNotebook}
+                                                        />
+                                                    </>
+                                                ) : (
+                                                    /* ── Normal notebook row ── */
+                                                    <>
+                                                        <button
+                                                            className={styles.notebookItemBtn}
+                                                            onClick={() => selectNotebook(nb.id)}
+                                                        >
+                                                            <span className={styles.notebookItemIcon}>
+                                                                <NotebookIcon />
+                                                            </span>
+                                                            <span className={styles.notebookItemName}>{nb.name}</span>
+                                                        </button>
+
+                                                        {/* Dots menu */}
+                                                        <div className={styles.notebookMenuWrapper}>
+                                                            <button
+                                                                className={styles.notebookDotsBtn}
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    setNotebookMenu(isMenuOpen ? null : nb.id);
+                                                                }}
+                                                            >
+                                                                <DotsIcon />
+                                                            </button>
+                                                            {isMenuOpen && (
+                                                                <div className={styles.notebookActionMenu}>
+                                                                    <button
+                                                                        className={styles.notebookMenuItem}
+                                                                        onClick={() => {
+                                                                            setRenamingNotebook({ id: nb.id, value: nb.name });
+                                                                            setNotebookMenu(null);
+                                                                        }}
+                                                                    >
+                                                                        Renomear
+                                                                    </button>
+                                                                    <button
+                                                                        className={`${styles.notebookMenuItem} ${styles.notebookMenuItemDanger}`}
+                                                                        onClick={() => {
+                                                                            setNotebookMenu(null);
+                                                                            handleDeleteNotebook(nb.id);
+                                                                        }}
+                                                                    >
+                                                                        Excluir
+                                                                    </button>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </>
+                                                )}
+                                            </div>
                                         );
                                     })
                                 )}
