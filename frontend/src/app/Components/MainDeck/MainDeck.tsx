@@ -26,14 +26,14 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
     const [isLoading, setIsLoading] = useState(true);
     const [mattersWithSubMatters, setMattersWithSubMatters] = useState<Set<number>>(new Set());
     const [cardCounts, setCardCounts] = useState<Map<number, CardCounts>>(new Map());
-    
+
     const [showReviewModal, setShowReviewModal] = useState(false);
-    const [selectedMatterForReview, setSelectedMatterForReview] = useState<{ 
-        id: number, 
-        name: string,
-        isSubMatter: boolean 
+    const [selectedMatterForReview, setSelectedMatterForReview] = useState<{
+        id: number;
+        name: string;
+        isSubMatter: boolean;
     } | null>(null);
-    
+
     const [showModal, setShowModal] = useState(false);
     const [modalType, setModalType] = useState<'rename' | 'delete'>('rename');
     const [selectedMatter, setSelectedMatter] = useState<Matter | null>(null);
@@ -42,76 +42,47 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
     useEffect(() => {
         async function fetchMatters() {
             if (!notebookId) return;
-
             setIsLoading(true);
             try {
                 const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/matter/notebook/${notebookId}`);
-
-                if (!res.ok) {
-                    throw new Error('Erro ao carregar matérias');
-                }
-
+                if (!res.ok) throw new Error('Erro ao carregar matérias');
                 const data = await res.json();
                 setMatters(data || []);
-                
                 await checkMattersWithSubMatters(data || []);
                 await fetchCardCounts(data || []);
-            } catch(err) {
+            } catch (err) {
                 console.error("Erro ao buscar matérias:", err);
                 setMatters([]);
             } finally {
                 setIsLoading(false);
             }
         }
-
         fetchMatters();
     }, [notebookId, refreshTrigger]);
 
     async function fetchCardCounts(matters: Matter[]) {
         const countsMap = new Map<number, CardCounts>();
-        
         for (const matter of matters) {
             try {
                 const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/card/count/matter/${matter.id}`);
-                if (res.ok) {
-                    const counts = await res.json();
-                    countsMap.set(matter.id, counts);
-                }
-            } catch(err) {
-                console.error(`Erro ao buscar contagem de cards da matéria ${matter.id}:`, err);
-                countsMap.set(matter.id, { new: 0, learn: 0, review: 0 });
-            }
+                if (res.ok) countsMap.set(matter.id, await res.json());
+            } catch { countsMap.set(matter.id, { new: 0, learn: 0, review: 0 }); }
         }
-        
         setCardCounts(countsMap);
     }
 
     async function checkMattersWithSubMatters(matters: Matter[]) {
         const mattersWithSubs = new Set<number>();
-        
         for (const matter of matters) {
             try {
                 const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/submatter/parent/${matter.id}`);
                 if (res.ok) {
                     const subMatters = await res.json();
-                    if (subMatters && subMatters.length > 0) {
-                        mattersWithSubs.add(matter.id);
-                    }
+                    if (subMatters?.length > 0) mattersWithSubs.add(matter.id);
                 }
-            } catch(err) {
-                console.error(`Erro ao verificar submatérias da matéria ${matter.id}:`, err);
-            }
+            } catch { /* ignore */ }
         }
-        
         setMattersWithSubMatters(mattersWithSubs);
-    }
-
-    function handleSubMatterUpdate(parentMatterId: number) {
-        checkMattersWithSubMatters(matters);
-    }
-
-    function handleCardUpdate() {
-        fetchCardCounts(matters);
     }
 
     function handleOpenReview(matterId: number, matterName: string, isSubMatter: boolean = false) {
@@ -124,9 +95,9 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
         setSelectedMatterForReview(null);
     }
 
-    function handleReviewComplete() {
-        fetchCardCounts(matters);
-    }
+    function handleReviewComplete() { fetchCardCounts(matters); }
+    function handleSubMatterUpdate() { checkMattersWithSubMatters(matters); }
+    function handleCardUpdate() { fetchCardCounts(matters); }
 
     function handleOpenRenameModal(matter: Matter) {
         setSelectedMatter(matter);
@@ -148,81 +119,39 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
     }
 
     async function handleRenameMatter() {
-        if (!selectedMatter || !newName.trim()) {
-            alert("Por favor, insira um nome válido!");
-            return;
-        }
-
+        if (!selectedMatter || !newName.trim()) { alert("Nome inválido!"); return; }
         try {
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/matter`, {
                 method: "PUT",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    idMatter: selectedMatter.id,
-                    NewName: newName.trim()
-                })
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ idMatter: selectedMatter.id, NewName: newName.trim() }),
             });
-
-            if (!res.ok) {
-                throw new Error('Erro ao renomear matéria');
-            }
-
-            setMatters(prev => 
-                prev.map(m => 
-                    m.id === selectedMatter.id 
-                        ? { ...m, name: newName.trim() }
-                        : m
-                )
-            );
-
+            if (!res.ok) throw new Error();
+            setMatters(prev => prev.map(m => m.id === selectedMatter.id ? { ...m, name: newName.trim() } : m));
             handleCloseModal();
-        } catch(err) {
-            console.error(err);
-            alert("Erro ao renomear matéria!");
-        }
+        } catch { alert("Erro ao renomear matéria!"); }
     }
 
     async function handleDeleteMatter() {
         if (!selectedMatter) return;
-
         try {
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/matter`, {
                 method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    idMatter: selectedMatter.id
-                })
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ idMatter: selectedMatter.id }),
             });
-
-            if (!res.ok) {
-                throw new Error('Erro ao excluir matéria');
-            }
-
+            if (!res.ok) throw new Error();
             setMatters(prev => prev.filter(m => m.id !== selectedMatter.id));
-            setMattersWithSubMatters(prev => {
-                const newSet = new Set(prev);
-                newSet.delete(selectedMatter.id);
-                return newSet;
-            });
-            setCardCounts(prev => {
-                const newMap = new Map(prev);
-                newMap.delete(selectedMatter.id);
-                return newMap;
-            });
+            setMattersWithSubMatters(prev => { const s = new Set(prev); s.delete(selectedMatter.id); return s; });
+            setCardCounts(prev => { const m = new Map(prev); m.delete(selectedMatter.id); return m; });
             handleCloseModal();
-        } catch(err) {
-            console.error(err);
-            alert("Erro ao excluir matéria!");
-        }
+        } catch { alert("Erro ao excluir matéria!"); }
     }
 
     return (
         <>
             <div className={styles.container}>
+                {/* Header */}
                 <div className={styles.top}>
                     <span><h4>Matérias</h4></span>
                     <span className={styles.status}>
@@ -231,18 +160,20 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
                         <h5>Revisar</h5>
                     </span>
                 </div>
+
+                {/* List */}
                 <div className={styles.mattersContent}>
                     {isLoading ? (
-                        <div className={styles.loadingMessage}>Carregando matérias...</div>
+                        <div className={styles.loadingMessage}>Carregando matérias…</div>
                     ) : matters.length === 0 ? (
                         <div className={styles.emptyMessage}>
-                            Nenhuma matéria criada ainda. Clique em &quot;Criar matéria&quot; para começar!
+                            Nenhuma matéria ainda. Clique em &quot;+ Matéria&quot; para começar.
                         </div>
                     ) : (
                         matters.map((matter) => {
                             const counts = cardCounts.get(matter.id) || { new: 0, learn: 0, review: 0 };
                             return (
-                                <MatterCard 
+                                <MatterCard
                                     key={matter.id}
                                     id={matter.id}
                                     name={matter.name}
@@ -252,7 +183,7 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
                                     onRename={() => handleOpenRenameModal(matter)}
                                     onDelete={() => handleOpenDeleteModal(matter)}
                                     hasSubMatters={mattersWithSubMatters.has(matter.id)}
-                                    onSubMatterUpdate={() => handleSubMatterUpdate(matter.id)}
+                                    onSubMatterUpdate={handleSubMatterUpdate}
                                     onCardUpdate={handleCardUpdate}
                                     onOpenReview={handleOpenReview}
                                 />
@@ -262,8 +193,9 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
                 </div>
             </div>
 
+            {/* Review modal */}
             {showReviewModal && selectedMatterForReview && (
-                <ReviewModal 
+                <ReviewModal
                     showModal={showReviewModal}
                     onClose={handleCloseReview}
                     matterId={selectedMatterForReview.id}
@@ -273,78 +205,60 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
                 />
             )}
 
+            {/* Rename / Delete matter modal */}
             {showModal && (
                 <div style={{
-                    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-                    backgroundColor: 'rgba(0,0,0,0.7)', zIndex: 1000,
-                    display: 'flex', justifyContent: 'center', alignItems: 'center'
+                    position: 'fixed', inset: 0,
+                    backgroundColor: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)',
+                    zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center',
+                    padding: '1rem',
                 }} onClick={handleCloseModal}>
                     <div style={{
-                        backgroundColor: '#1e1e1e', padding: '2rem', borderRadius: '12px',
-                        width: '400px', maxWidth: '90%', border: '1px solid #333'
-                    }} onClick={(e) => e.stopPropagation()}>
+                        backgroundColor: '#1e1d1c', padding: '2rem', borderRadius: '14px',
+                        width: '420px', maxWidth: '100%',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        boxShadow: '0 24px 60px rgba(0,0,0,0.7)',
+                    }} onClick={e => e.stopPropagation()}>
                         {modalType === 'rename' ? (
                             <>
-                                <h2 style={{ marginBottom: '1rem', color: '#fff' }}>Renomear Matéria</h2>
-                                <p style={{ marginBottom: '1rem', color: '#aaa' }}>Digite o novo nome da matéria</p>
-                                <input 
-                                    type="text" 
+                                <h2 style={{ marginBottom: '0.5rem', color: '#fff', fontSize: '1.25rem', fontWeight: 700, letterSpacing: '-0.02em' }}>Renomear matéria</h2>
+                                <p style={{ marginBottom: '1.25rem', color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem' }}>Digite o novo nome</p>
+                                <input
+                                    type="text"
                                     value={newName}
-                                    onChange={(e) => setNewName(e.target.value)}
+                                    onChange={e => setNewName(e.target.value)}
                                     placeholder="Nome da matéria"
-                                    style={{
-                                        width: '100%', padding: '0.8rem', borderRadius: '6px',
-                                        border: '1px solid #444', backgroundColor: '#2d2d2d',
-                                        color: '#fff', marginBottom: '1.5rem'
-                                    }}
                                     autoFocus
+                                    style={{
+                                        width: '100%', padding: '0.7rem 0.85rem', borderRadius: '8px',
+                                        border: '1px solid rgba(255,255,255,0.1)', backgroundColor: 'rgba(0,0,0,0.2)',
+                                        color: '#e8e6e3', fontSize: '0.9rem', outline: 'none',
+                                        boxSizing: 'border-box', fontFamily: 'inherit',
+                                    }}
                                 />
-                                <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
-                                    <button 
-                                        onClick={handleRenameMatter}
-                                        style={{
-                                            padding: '0.6rem 1.2rem', borderRadius: '6px', border: 'none',
-                                            backgroundColor: '#fff', color: '#000', fontWeight: 'bold', cursor: 'pointer'
-                                        }}
-                                    >
+                                <div style={{ display: 'flex', gap: '0.65rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+                                    <button onClick={handleRenameMatter} style={{ padding: '0.55rem 1.25rem', borderRadius: '8px', border: '1px solid rgba(135,116,225,0.5)', backgroundColor: 'transparent', color: '#8774E1', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer', fontFamily: 'inherit' }}>
                                         Confirmar
                                     </button>
-                                    <button 
-                                        onClick={handleCloseModal}
-                                        style={{
-                                            padding: '0.6rem 1.2rem', borderRadius: '6px', border: '1px solid #555',
-                                            backgroundColor: 'transparent', color: '#fff', cursor: 'pointer'
-                                        }}
-                                    >
+                                    <button onClick={handleCloseModal} style={{ padding: '0.55rem 1.25rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.12)', backgroundColor: 'transparent', color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem', cursor: 'pointer', fontFamily: 'inherit' }}>
                                         Cancelar
                                     </button>
                                 </div>
                             </>
                         ) : (
                             <>
-                                <h2 style={{ marginBottom: '1rem', color: '#fff' }}>Excluir Matéria</h2>
-                                <p style={{ marginBottom: '1rem', color: '#aaa' }}>
-                                    Tem certeza que deseja excluir a matéria{' '}
-                                    <strong>&quot;{selectedMatter?.name}&quot;</strong>?
+                                <h2 style={{ marginBottom: '0.5rem', color: '#fff', fontSize: '1.25rem', fontWeight: 700, letterSpacing: '-0.02em' }}>Excluir matéria</h2>
+                                <p style={{ marginBottom: '0.5rem', color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem' }}>
+                                    Tem certeza que deseja excluir <strong style={{ color: 'rgba(255,255,255,0.7)' }}>&quot;{selectedMatter?.name}&quot;</strong>?
                                 </p>
-                                <p style={{ color: '#ff4444', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Esta ação não pode ser desfeita e todas as submatérias serão excluídas também.</p>
-                                <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
-                                    <button 
-                                        onClick={handleDeleteMatter}
-                                        style={{
-                                            padding: '0.6rem 1.2rem', borderRadius: '6px', border: 'none',
-                                            backgroundColor: '#ff4444', color: '#fff', fontWeight: 'bold', cursor: 'pointer'
-                                        }}
-                                    >
+                                <p style={{ color: 'rgba(246,95,84,0.75)', fontSize: '0.8rem', marginBottom: '1.5rem' }}>
+                                    Todas as submatérias serão excluídas. Essa ação não pode ser desfeita.
+                                </p>
+                                <div style={{ display: 'flex', gap: '0.65rem', justifyContent: 'flex-end' }}>
+                                    <button onClick={handleDeleteMatter} style={{ padding: '0.55rem 1.25rem', borderRadius: '8px', border: '1px solid rgba(246,95,84,0.4)', backgroundColor: 'transparent', color: '#f65f54', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer', fontFamily: 'inherit' }}>
                                         Excluir
                                     </button>
-                                    <button 
-                                        onClick={handleCloseModal}
-                                        style={{
-                                            padding: '0.6rem 1.2rem', borderRadius: '6px', border: '1px solid #555',
-                                            backgroundColor: 'transparent', color: '#fff', cursor: 'pointer'
-                                        }}
-                                    >
+                                    <button onClick={handleCloseModal} style={{ padding: '0.55rem 1.25rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.12)', backgroundColor: 'transparent', color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem', cursor: 'pointer', fontFamily: 'inherit' }}>
                                         Cancelar
                                     </button>
                                 </div>

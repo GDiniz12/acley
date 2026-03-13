@@ -32,7 +32,7 @@ export default function LandingPage() {
             {/* Header */}
             <header className={styles.header}>
                 <div className={styles.logo}>
-                    <Image src={acleyLogo} alt="Acley" width={60} height={60} />
+                    <Image src={acleyLogo} alt="Acley" width={80} height={80} />
                 </div>
                 <nav className={styles.nav}>
                     <Link href="/signin" className={styles.navLink}>

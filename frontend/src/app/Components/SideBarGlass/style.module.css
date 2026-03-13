@@ -1,0 +1,502 @@
+/* ── WRAPPER ─────────────────────────────────────────────────────────────── */
+.wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 999;
+    display: flex;
+    align-items: stretch;
+    transition: width 320ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.wrapperOpen  { width: 240px; }
+.wrapperClosed { width: 0px; }
+
+/* ── SIDEBAR ─────────────────────────────────────────────────────────────── */
+.containerSideBar {
+    height: 100vh;
+    background-color: #1D1C1B;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition:
+        width 320ms cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 220ms ease;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.sidebarOpen {
+    width: 240px;
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.sidebarClosed {
+    width: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* ── TOP BAR ─────────────────────────────────────────────────────────────── */
+.topBar {
+    width: 240px;
+    height: 52px;
+    padding: 5px 8px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 6px;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+/* ── MENU ICON ───────────────────────────────────────────────────────────── */
+.menuWrapper {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.menuIcon {
+    cursor: pointer;
+    border-radius: 7px;
+    padding: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 34px;
+    height: 34px;
+    transition: background-color 0.15s;
+}
+
+.menuIcon:hover,
+.menuIconActive {
+    background-color: rgba(255, 255, 255, 0.07);
+}
+
+/* ── SEARCH BAR ──────────────────────────────────────────────────────────── */
+.search {
+    flex: 1;
+    height: 30px;
+    border-radius: 6px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    margin-right: 4px;
+}
+
+.search > input {
+    width: 100%;
+    height: 100%;
+    border-radius: 6px;
+    background-color: transparent;
+    color: rgba(232, 230, 227, 0.6);
+    border: none;
+    outline: none;
+    box-sizing: border-box;
+    padding: 0 10px;
+    font-size: 0.78rem;
+    font-family: inherit;
+}
+
+.search > input:focus {
+    outline: 1.5px solid rgba(135, 116, 225, 0.5);
+    outline-offset: -1px;
+}
+
+.search > input::placeholder {
+    color: rgba(255, 255, 255, 0.2);
+}
+
+/* ── TOOLTIP DROPDOWN ────────────────────────────────────────────────────── */
+.tooltip {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    width: 200px;
+    background: #111110;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 6px;
+    z-index: 1000;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+    transition:
+        opacity 200ms ease,
+        transform 200ms ease,
+        visibility 200ms;
+    transform-origin: top left;
+}
+
+.tooltipShow {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+    visibility: visible;
+}
+
+.tooltipHide {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.97);
+    pointer-events: none;
+    visibility: hidden;
+}
+
+/* ── TOOLTIP ITEMS ───────────────────────────────────────────────────────── */
+.tooltipItem {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 9px 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 13.5px;
+    font-weight: 400;
+    transition: background-color 150ms, color 150ms;
+    cursor: pointer;
+    white-space: nowrap;
+    box-sizing: border-box;
+}
+
+.tooltipItem:hover {
+    background-color: rgba(135, 116, 225, 0.15);
+    color: #fff;
+}
+
+.tooltipItemActive {
+    background-color: rgba(135, 116, 225, 0.18);
+    color: #8774E1;
+    font-weight: 600;
+}
+
+.tooltipItemActive:hover {
+    background-color: rgba(135, 116, 225, 0.25);
+    color: #a896ef;
+}
+
+.tooltipIcon {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    opacity: 0.7;
+}
+
+.tooltipItemActive .tooltipIcon {
+    opacity: 1;
+}
+
+.tooltipLabel { flex: 1; }
+
+.activeDot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #8774E1;
+    flex-shrink: 0;
+}
+
+/* ── SIDEBAR BODY ────────────────────────────────────────────────────────── */
+.sidebarContent {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 8px 0;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(135, 116, 225, 0.2) transparent;
+}
+
+.sidebarContent::-webkit-scrollbar { width: 3px; }
+.sidebarContent::-webkit-scrollbar-thumb {
+    background: rgba(135, 116, 225, 0.25);
+    border-radius: 3px;
+}
+
+/* ── SECTION ─────────────────────────────────────────────────────────────── */
+.section {
+    padding: 0 8px;
+    margin-bottom: 4px;
+}
+
+.sectionHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 8px 4px 8px;
+    margin-bottom: 2px;
+}
+
+.sectionTitle {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.25);
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    user-select: none;
+}
+
+.sectionAction {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    border: none;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transition: background-color 0.15s, color 0.15s;
+    padding: 0;
+}
+
+.sectionAction:hover:not(:disabled) {
+    background-color: rgba(135, 116, 225, 0.15);
+    color: #8774E1;
+}
+
+.sectionAction:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* ── NOTEBOOK LIST ───────────────────────────────────────────────────────── */
+.notebookList {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+/* ── NOTEBOOK ITEM ───────────────────────────────────────────────────────── */
+/* Outer wrapper — holds the button + dots menu */
+.notebookItem {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    border-radius: 7px;
+    padding: 0 4px 0 0;
+    box-sizing: border-box;
+    transition: background-color 0.15s;
+    position: relative;
+}
+
+.notebookItem:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.notebookItem:hover .notebookDotsBtn {
+    opacity: 1;
+}
+
+.notebookItemActive {
+    background-color: rgba(135, 116, 225, 0.12);
+}
+
+.notebookItemActive:hover {
+    background-color: rgba(135, 116, 225, 0.18);
+}
+
+/* The clickable button part (icon + name) */
+.notebookItemBtn {
+    /* button reset */
+    appearance: none;
+    -webkit-appearance: none;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0 6px 8px;
+    color: rgba(232, 230, 227, 0.55);
+    font-size: 0.83rem;
+    font-weight: 400;
+    overflow: hidden;
+    white-space: nowrap;
+    box-sizing: border-box;
+    transition: color 0.15s;
+    min-width: 0;
+}
+
+.notebookItemBtn:hover {
+    color: rgba(232, 230, 227, 0.85);
+}
+
+.notebookItemActive .notebookItemBtn {
+    color: #c4b8f5;
+    font-weight: 500;
+}
+
+.notebookItemIcon {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    opacity: 0.45;
+}
+
+.notebookItemActive .notebookItemIcon {
+    opacity: 0.85;
+    color: #8774E1;
+}
+
+.notebookItemName {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    min-width: 0;
+}
+
+/* ── NOTEBOOK DOTS MENU ──────────────────────────────────────────────────── */
+.notebookMenuWrapper {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.notebookDotsBtn {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    color: rgba(255, 255, 255, 0.35);
+    cursor: pointer;
+    transition: all 0.12s;
+    padding: 0;
+    opacity: 0;
+    flex-shrink: 0;
+}
+
+.notebookDotsBtn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.notebookActionMenu {
+    position: absolute;
+    top: calc(100% + 3px);
+    right: 0;
+    width: 140px;
+    background: #111110;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 5px;
+    z-index: 1100;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.7);
+    animation: menuPop 0.13s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes menuPop {
+    from { opacity: 0; transform: scale(0.92) translateY(-4px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.notebookMenuItem {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0.45rem 0.6rem;
+    background: transparent;
+    border: none;
+    border-radius: 7px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.78rem;
+    font-weight: 400;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.1s;
+    font-family: inherit;
+}
+
+.notebookMenuItem:hover {
+    background: rgba(255, 255, 255, 0.07);
+    color: #fff;
+}
+
+.notebookMenuItemDanger {
+    color: rgba(248, 113, 113, 0.65);
+}
+
+.notebookMenuItemDanger:hover {
+    background: rgba(248, 113, 113, 0.1);
+    color: #f87171;
+}
+
+/* ── NOTEBOOK INLINE RENAME INPUT ────────────────────────────────────────── */
+.notebookRenameInput {
+    flex: 1;
+    background: rgba(135, 116, 225, 0.08);
+    border: 1px solid rgba(135, 116, 225, 0.35);
+    border-radius: 5px;
+    color: #fff;
+    font-size: 0.81rem;
+    font-weight: 400;
+    padding: 3px 7px;
+    outline: none;
+    font-family: inherit;
+    min-width: 0;
+    margin: 4px 4px 4px 6px;
+}
+
+.notebookRenameInput:focus {
+    border-color: #8774E1;
+    background: rgba(135, 116, 225, 0.12);
+}
+
+/* ── EMPTY / LOADING ─────────────────────────────────────────────────────── */
+.sectionLoading,
+.sectionEmpty {
+    padding: 8px 8px;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.18);
+    text-align: left;
+    user-select: none;
+}
+
+/* ── TOGGLE BUTTON ───────────────────────────────────────────────────────── */
+.toggleBtn {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 44px;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-left: none;
+    border-radius: 0 7px 7px 0;
+    background: #1D1C1B;
+    color: rgba(255, 255, 255, 0.25);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 0;
+    transition:
+        left 320ms cubic-bezier(0.4, 0, 0.2, 1),
+        color 200ms,
+        background-color 200ms;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.25);
+}
+
+.toggleBtnOpen   { left: 240px; }
+.toggleBtnClosed { left: 0; border-left: 1px solid rgba(255, 255, 255, 0.07); border-radius: 0 7px 7px 0; }
+
+.toggleBtn:hover {
+    background-color: #252422;
+    color: #8774E1;
+}
+
+/* ── RESPONSIVE ──────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .wrapperOpen  { width: 200px; }
+    .sidebarOpen  { width: 200px; }
+    .topBar       { width: 200px; }
+    .toggleBtnOpen { left: 200px; }
+}
