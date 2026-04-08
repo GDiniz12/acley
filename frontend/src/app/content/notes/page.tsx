@@ -208,7 +208,6 @@ function BlockEditor({
         className={`${styles.blockContent} ${blockClass}`}
         contentEditable
         suppressContentEditableWarning
-        data-placeholder={PLACEHOLDERS[block.type]}
         onFocus={onFocus}
         // FIX 1: trim whitespace on blur so spaces-only blocks become truly empty
         onBlur={() => {

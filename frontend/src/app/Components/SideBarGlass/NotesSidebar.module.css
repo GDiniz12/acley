@@ -21,12 +21,18 @@
   letter-spacing: 0.09em;
   text-transform: uppercase;
   user-select: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
 }
 
 .sectionHeaderActions {
   display: flex;
   align-items: center;
   gap: 2px;
+  flex-shrink: 0;
 }
 
 .sectionAction {
@@ -80,6 +86,39 @@
 
 .rowSelected .itemLabel {
   color: #c4b8f5 !important;
+}
+
+/* ── Folder selected state ───────────────────────────────────────────────── */
+.folderSelected {
+  background-color: rgba(135, 116, 225, 0.1) !important;
+}
+
+.folderSelected:hover {
+  background-color: rgba(135, 116, 225, 0.15) !important;
+}
+
+.folderSelected .itemLabel {
+  color: #c4b8f5;
+}
+
+/* ── Chevron standalone button ───────────────────────────────────────────── */
+.chevronBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.22);
+  cursor: pointer;
+  width: 16px;
+  height: 100%;
+  padding: 0;
+  flex-shrink: 0;
+  transition: color 0.12s;
+}
+
+.chevronBtn:hover {
+  color: rgba(255, 255, 255, 0.55);
 }
 
 /* ── Folder button ───────────────────────────────────────────────────────── */
@@ -161,6 +200,10 @@
   transition: opacity 0.12s;
   flex-shrink: 0;
   position: relative;
+}
+
+.row:hover .rowActions {
+  opacity: 1;
 }
 
 .dotsBtn,
