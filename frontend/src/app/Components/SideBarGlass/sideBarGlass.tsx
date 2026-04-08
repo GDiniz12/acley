@@ -92,6 +92,13 @@ const DotsIcon = () => (
     </svg>
 );
 
+const ClearIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+        fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+    </svg>
+);
+
 // ── Nav items ──────────────────────────────────────────────────────────────
 
 const NAV_ITEMS = [
@@ -124,6 +131,29 @@ function isNotesRoute(pathname: string) {
     return pathname.startsWith("/content/notes");
 }
 
+// ── Highlight helper ───────────────────────────────────────────────────────
+
+function HighlightedText({ text, query }: { text: string; query: string }) {
+    if (!query) return <>{text}</>;
+    const idx = text.toLowerCase().indexOf(query.toLowerCase());
+    if (idx === -1) return <>{text}</>;
+    return (
+        <>
+            {text.slice(0, idx)}
+            <mark style={{
+                background: "rgba(135,116,225,0.2)",
+                color: "#a896ef",
+                borderRadius: "2px",
+                padding: "0 1px",
+                fontWeight: 600,
+            }}>
+                {text.slice(idx, idx + query.length)}
+            </mark>
+            {text.slice(idx + query.length)}
+        </>
+    );
+}
+
 // ── Component ──────────────────────────────────────────────────────────────
 
 export default function SideBarGlass({ isOpen: isOpenProp, onToggle }: SideBarGlassProps) {
@@ -137,15 +167,16 @@ export default function SideBarGlass({ isOpen: isOpenProp, onToggle }: SideBarGl
 
     const [tooltipOpen, setTooltipOpen]   = useState(false);
     const [activeId, setActiveId]         = useState<string>("notes");
+    const [searchQuery, setSearchQuery]   = useState("");
     const tooltipRef     = useRef<HTMLDivElement>(null);
     const menuWrapperRef = useRef<HTMLDivElement>(null);
+    const searchInputRef = useRef<HTMLInputElement>(null);
 
     const [notebooks, setNotebooks]               = useState<Notebook[]>([]);
     const [notebooksLoading, setNotebooksLoading] = useState(false);
     const [creatingNotebook, setCreatingNotebook] = useState(false);
 
-    // ── Notebook action menu state ─────────────────────────────────────────
-    const [notebookMenu, setNotebookMenu]         = useState<string | null>(null); // notebook id
+    const [notebookMenu, setNotebookMenu]         = useState<string | null>(null);
     const [renamingNotebook, setRenamingNotebook] = useState<{ id: string; value: string } | null>(null);
     const renameInputRef = useRef<HTMLInputElement>(null);
 
@@ -156,12 +187,16 @@ export default function SideBarGlass({ isOpen: isOpenProp, onToggle }: SideBarGl
 
     const { selectedNotebookId, selectNotebook } = useNotebookContext();
 
+    // Clear search when route changes
+    useEffect(() => {
+        setSearchQuery("");
+    }, [pathname]);
+
     useEffect(() => {
         const match = NAV_ITEMS.find((item) => pathname.startsWith(item.href));
         if (match) setActiveId(match.id);
     }, [pathname]);
 
-    // Close tooltip on outside click
     useEffect(() => {
         function handleClickOutside(e: MouseEvent) {
             if (
@@ -173,22 +208,18 @@ export default function SideBarGlass({ isOpen: isOpenProp, onToggle }: SideBarGl
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    // Close notebook action menu on outside click
     useEffect(() => {
         function handleClickOutside(e: MouseEvent) {
             const target = e.target as Element;
             if (
                 !target.closest(`.${styles.notebookDotsBtn}`) &&
                 !target.closest(`.${styles.notebookActionMenu}`)
-            ) {
-                setNotebookMenu(null);
-            }
+            ) setNotebookMenu(null);
         }
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    // Focus rename input when it appears
     useEffect(() => {
         if (renamingNotebook) setTimeout(() => renameInputRef.current?.focus(), 20);
     }, [renamingNotebook]);
@@ -272,10 +303,9 @@ export default function SideBarGlass({ isOpen: isOpenProp, onToggle }: SideBarGl
 
     async function handleDeleteNotebook(id: string) {
         try {
-            const token = getToken();
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notebook/${id}`, {
                 method: "DELETE",
-                headers: { "Content-Type": "application/json" }
+                headers: { "Content-Type": "application/json" },
             });
             if (!res.ok) throw new Error("Erro ao excluir notebook");
             setNotebooks((prev) => prev.filter((nb) => nb.id !== id));
@@ -293,6 +323,14 @@ export default function SideBarGlass({ isOpen: isOpenProp, onToggle }: SideBarGl
         if (!renamingNotebook) return;
         handleRenameNotebook(renamingNotebook.id, renamingNotebook.value);
     }
+
+    // ── Filtered notebooks ─────────────────────────────────────────────────
+
+    const filteredNotebooks = searchQuery
+        ? notebooks.filter((nb) => nb.name.toLowerCase().includes(searchQuery.toLowerCase()))
+        : notebooks;
+
+    // ── Render ─────────────────────────────────────────────────────────────
 
     return (
         <div className={`${styles.wrapper} ${sidebarOpen ? styles.wrapperOpen : styles.wrapperClosed}`}>
@@ -333,8 +371,28 @@ export default function SideBarGlass({ isOpen: isOpenProp, onToggle }: SideBarGl
                         </div>
                     </div>
 
+                    {/* Search bar */}
                     <div className={styles.search}>
-                        <input type="text" placeholder="Pesquisar" />
+                        <input
+                            ref={searchInputRef}
+                            type="text"
+                            placeholder={
+                                showNotebooks ? "Pesquisar notebooks…"
+                                : showNotes   ? "Pesquisar notas…"
+                                : "Pesquisar…"
+                            }
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                        {searchQuery && (
+                            <button
+                                className={styles.searchClear}
+                                onClick={() => { setSearchQuery(""); searchInputRef.current?.focus(); }}
+                                tabIndex={-1}
+                            >
+                                <ClearIcon />
+                            </button>
+                        )}
                     </div>
                 </div>
 
@@ -358,13 +416,15 @@ export default function SideBarGlass({ isOpen: isOpenProp, onToggle }: SideBarGl
                             <div className={styles.notebookList}>
                                 {notebooksLoading ? (
                                     <div className={styles.sectionLoading}>Carregando…</div>
-                                ) : notebooks.length === 0 ? (
-                                    <div className={styles.sectionEmpty}>Nenhum notebook ainda.</div>
+                                ) : filteredNotebooks.length === 0 ? (
+                                    <div className={styles.sectionEmpty}>
+                                        {searchQuery ? "Nenhum resultado." : "Nenhum notebook ainda."}
+                                    </div>
                                 ) : (
-                                    notebooks.map((nb) => {
-                                        const isActive = nb.id === selectedNotebookId;
-                                        const isRenaming = renamingNotebook?.id === nb.id;
-                                        const isMenuOpen = notebookMenu === nb.id;
+                                    filteredNotebooks.map((nb) => {
+                                        const isActive    = nb.id === selectedNotebookId;
+                                        const isRenaming  = renamingNotebook?.id === nb.id;
+                                        const isMenuOpen  = notebookMenu === nb.id;
 
                                         return (
                                             <div
@@ -372,7 +432,6 @@ export default function SideBarGlass({ isOpen: isOpenProp, onToggle }: SideBarGl
                                                 className={`${styles.notebookItem} ${isActive ? styles.notebookItemActive : ""}`}
                                             >
                                                 {isRenaming ? (
-                                                    /* ── Inline rename input ── */
                                                     <>
                                                         <span className={styles.notebookItemIcon}>
                                                             <NotebookIcon />
@@ -394,7 +453,6 @@ export default function SideBarGlass({ isOpen: isOpenProp, onToggle }: SideBarGl
                                                         />
                                                     </>
                                                 ) : (
-                                                    /* ── Normal notebook row ── */
                                                     <>
                                                         <button
                                                             className={styles.notebookItemBtn}
@@ -403,10 +461,11 @@ export default function SideBarGlass({ isOpen: isOpenProp, onToggle }: SideBarGl
                                                             <span className={styles.notebookItemIcon}>
                                                                 <NotebookIcon />
                                                             </span>
-                                                            <span className={styles.notebookItemName}>{nb.name}</span>
+                                                            <span className={styles.notebookItemName}>
+                                                                <HighlightedText text={nb.name} query={searchQuery} />
+                                                            </span>
                                                         </button>
 
-                                                        {/* Dots menu */}
                                                         <div className={styles.notebookMenuWrapper}>
                                                             <button
                                                                 className={styles.notebookDotsBtn}
@@ -451,7 +510,7 @@ export default function SideBarGlass({ isOpen: isOpenProp, onToggle }: SideBarGl
                     )}
 
                     {/* NOTES — only on /content/notes */}
-                    {showNotes && <NotesSidebarSection />}
+                    {showNotes && <NotesSidebarSection searchQuery={searchQuery} />}
 
                 </div>
             </aside>
