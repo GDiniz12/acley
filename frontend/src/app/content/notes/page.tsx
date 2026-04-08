@@ -44,7 +44,6 @@ function parseBlocks(content: string | null | undefined): NoteBlock[] {
       return parsed.map((b: any) => ({
         id: b.id ?? generateId(),
         type: (b.type as BlockType) ?? "paragraph",
-        // support old format (content) and new format (html)
         html: b.html ?? b.content ?? "",
       }));
     }
@@ -66,7 +65,6 @@ const TYPE_LABELS: Record<BlockType, string> = {
   paragraph: "Parágrafo",
 };
 
-// Move cursor to end of a contenteditable element
 function moveCursorToEnd(el: HTMLElement) {
   const range = document.createRange();
   const sel = window.getSelection();
@@ -112,7 +110,6 @@ function BlockEditor({
   const localRef = useRef<HTMLDivElement>(null);
 
   // Only sync innerHTML from state when the block is NOT focused.
-  // This prevents React from resetting the cursor while the user is typing.
   useEffect(() => {
     const el = localRef.current;
     if (!el || isFocused) return;
@@ -128,27 +125,23 @@ function BlockEditor({
     : styles.blockParagraph;
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
-    // Ctrl/Cmd + B → bold
     if ((e.ctrlKey || e.metaKey) && e.key === "b") {
       e.preventDefault();
       document.execCommand("bold", false);
       onInput(localRef.current?.innerHTML ?? "");
       return;
     }
-    // Ctrl/Cmd + I → italic
     if ((e.ctrlKey || e.metaKey) && e.key === "i") {
       e.preventDefault();
       document.execCommand("italic", false);
       onInput(localRef.current?.innerHTML ?? "");
       return;
     }
-    // Enter → new block (no shift)
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       onEnter();
       return;
     }
-    // Backspace on empty block → remove block
     if (e.key === "Backspace") {
       const el = localRef.current;
       if (!el) return;
@@ -168,7 +161,6 @@ function BlockEditor({
       <div className={styles.blockLeft}>
         <button
           className={`${styles.typeBadge} ${showTypeMenu ? styles.typeBadgeActive : ""}`}
-          // preventDefault keeps focus in the contenteditable
           onMouseDown={(e) => { e.stopPropagation(); e.preventDefault(); }}
           onClick={(e) => { e.stopPropagation(); onTypeMenuToggle(); }}
           tabIndex={-1}
@@ -176,17 +168,26 @@ function BlockEditor({
           {block.type === "paragraph" ? "¶" : block.type.toUpperCase()}
         </button>
 
+        {/* FIX 2: data-typemenu attribute so the global mousedown handler
+            skips this element and doesn't close the menu before click fires */}
         {showTypeMenu && (
           <div
             className={styles.typeMenu}
+            data-typemenu="true"
             onMouseDown={(e) => e.stopPropagation()}
           >
             {(["h1", "h2", "h3", "paragraph"] as BlockType[]).map((t) => (
               <button
                 key={t}
                 className={`${styles.typeMenuItem} ${block.type === t ? styles.typeMenuItemActive : ""}`}
-                onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                onClick={() => { onChangeType(t); onTypeMenuClose(); }}
+                // Use onMouseDown instead of onClick so the action fires
+                // before the document mousedown handler can close the menu
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onChangeType(t);
+                  onTypeMenuClose();
+                }}
               >
                 <span className={styles.typeMenuIcon}>
                   {t === "paragraph" ? "¶" : t.toUpperCase()}
@@ -207,9 +208,19 @@ function BlockEditor({
         className={`${styles.blockContent} ${blockClass}`}
         contentEditable
         suppressContentEditableWarning
-        data-placeholder={PLACEHOLDERS[block.type]}
         onFocus={onFocus}
-        onBlur={() => onBlur(localRef.current?.innerHTML ?? "")}
+        // FIX 1: trim whitespace on blur so spaces-only blocks become truly empty
+        onBlur={() => {
+          const el = localRef.current;
+          if (!el) return;
+          const text = el.textContent ?? "";
+          if (!text.trim()) {
+            el.innerHTML = "";
+            onBlur("");
+          } else {
+            onBlur(el.innerHTML);
+          }
+        }}
         onInput={() => onInput(localRef.current?.innerHTML ?? "")}
         onKeyDown={handleKeyDown}
         onKeyUp={onSelectionChange}
@@ -234,15 +245,18 @@ function FormattingBar({
   onItalic: () => void;
 }) {
   return (
+    // FIX 3: data-fmtbar attribute + onMouseDown preventDefault on each button
+    // so the global handler skips this element and selection is preserved
     <div
       className={styles.formattingBar}
       style={{ top, left }}
-      // Prevent mousedown from clearing the selection
+      data-fmtbar="true"
       onMouseDown={(e) => e.preventDefault()}
     >
       <button
         className={styles.formattingBtn}
         title="Negrito (Ctrl+B)"
+        onMouseDown={(e) => e.preventDefault()}
         onClick={onBold}
       >
         <strong>B</strong>
@@ -250,6 +264,7 @@ function FormattingBar({
       <button
         className={styles.formattingBtn}
         title="Itálico (Ctrl+I)"
+        onMouseDown={(e) => e.preventDefault()}
         onClick={onItalic}
       >
         <em>I</em>
@@ -343,7 +358,6 @@ export default function NotesPage() {
   useEffect(() => {
     if (selectedNoteId === prevSelectedNoteId.current) return;
 
-    // Save previous note before switching
     if (prevSelectedNoteId.current && saveTimerRef.current) {
       clearTimeout(saveTimerRef.current);
       saveNote(prevSelectedNoteId.current);
@@ -378,9 +392,12 @@ export default function NotesPage() {
   }, [selectedNoteId]);
 
   // ── Close menus on outside mousedown ──────────────────────────────────
+  // FIX 2 & 3: skip closing when clicking inside a type menu or formatting bar
 
   useEffect(() => {
-    function handle() {
+    function handle(e: MouseEvent) {
+      const target = e.target as Element;
+      if (target.closest("[data-typemenu]") || target.closest("[data-fmtbar]")) return;
       setTypeMenuOpenId(null);
       setSelBar(null);
     }
@@ -410,8 +427,6 @@ export default function NotesPage() {
   // ── Formatting ─────────────────────────────────────────────────────────
 
   function applyFormat(command: string) {
-    // execCommand applies bold/italic on the current selection within the
-    // focused contenteditable — onMouseDown preventDefault keeps focus/selection
     document.execCommand(command, false);
     if (focusedBlockId) {
       const el = divRefs.current.get(focusedBlockId);
@@ -428,7 +443,6 @@ export default function NotesPage() {
 
   function changeBlockType(id: string, type: BlockType) {
     setBlocks((prev) => prev.map((b) => (b.id === id ? { ...b, type } : b)));
-    // Re-focus after type change so user can keep typing
     setTimeout(() => {
       const el = divRefs.current.get(id);
       if (el) { el.focus(); moveCursorToEnd(el); }
@@ -510,7 +524,6 @@ export default function NotesPage() {
 
   return (
     <div className={styles.page}>
-      {/* Floating selection toolbar */}
       {selBar && (
         <FormattingBar
           top={selBar.top}
@@ -520,7 +533,6 @@ export default function NotesPage() {
         />
       )}
 
-      {/* Top toolbar */}
       <div className={styles.toolbar}>
         <div className={styles.toolbarLeft} />
         <div className={styles.toolbarRight}>
@@ -548,7 +560,6 @@ export default function NotesPage() {
         </div>
       </div>
 
-      {/* Editor */}
       <div className={styles.editor}>
         <div className={styles.titleWrapper}>
           <textarea
