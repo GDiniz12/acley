@@ -1,134 +1,89 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
-import styles from "./style.module.css";
+import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+import styles from "./NotesSidebar.module.css";
+import { useNotesContext, type NoteFolder, type NoteItem } from "../../content/NotesContext";
 import { getToken } from "../../signin/auth";
-
-// ── Types ──────────────────────────────────────────────────────────────────
-
-interface Folder {
-  id: number;
-  name: string;
-  parent_folder: number | null;
-  created_at: string;
-}
-
-interface NoteItem {
-  id: number;
-  title: string;
-  folder_id: number | null;
-  updated_at: string;
-}
-
-interface NoteSidebarProps {
-  selectedNoteId: number | null;
-  onSelectNote: (note: NoteItem) => void;
-  onNoteDeleted: (id: number) => void;
-  refreshKey: number;
-  onRefreshRequest: () => void;
-}
 
 // ── Icons ──────────────────────────────────────────────────────────────────
 
 const FolderIcon = ({ open }: { open: boolean }) => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" opacity={open ? 1 : 0.75}>
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" opacity={open ? 1 : 0.7}>
     <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 2h9a2 2 0 012 2z" />
   </svg>
 );
 
 const NoteIcon = () => (
-  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
     <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
     <polyline points="14,2 14,8 20,8" />
     <line x1="16" y1="13" x2="8" y2="13" />
     <line x1="16" y1="17" x2="8" y2="17" />
-    <polyline points="10,9 9,9 8,9" />
   </svg>
 );
 
 const ChevronIcon = ({ open }: { open: boolean }) => (
   <svg
-    width="10"
-    height="10"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    style={{ transform: open ? "rotate(90deg)" : "rotate(0deg)", transition: "transform 0.18s cubic-bezier(.4,0,.2,1)" }}
+    width="9" height="9" viewBox="0 0 24 24"
+    fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+    style={{ transform: open ? "rotate(90deg)" : "rotate(0deg)", transition: "transform 0.16s ease" }}
   >
     <polyline points="9 18 15 12 9 6" />
   </svg>
 );
 
+const DotsIcon = () => (
+  <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
+    <circle cx="5" cy="12" r="2" /><circle cx="12" cy="12" r="2" /><circle cx="19" cy="12" r="2" />
+  </svg>
+);
+
 const NewFolderIcon = () => (
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 2h9a2 2 0 012 2z" />
-    <line x1="12" y1="11" x2="12" y2="17" />
-    <line x1="9" y1="14" x2="15" y2="14" />
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 2h9a2 2 0 012 2z"/>
+    <line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/>
   </svg>
 );
 
 const NewNoteIcon = () => (
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
-    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
   </svg>
 );
 
-// ── Main Component ─────────────────────────────────────────────────────────
+const HomeIcon = () => (
+  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+    <polyline points="9,22 9,12 15,12 15,22"/>
+  </svg>
+);
 
-export default function NoteSidebar({
-  selectedNoteId,
-  onSelectNote,
-  onNoteDeleted,
-  refreshKey,
-  onRefreshRequest,
-}: NoteSidebarProps) {
-  const [folders, setFolders] = useState<Folder[]>([]);
-  const [notes, setNotes] = useState<NoteItem[]>([]);
+// ── Types ──────────────────────────────────────────────────────────────────
+
+type CreatingState = { type: "folder" | "note"; parentFolderId: number | null; value: string } | null;
+type RenamingState = { type: "folder" | "note"; id: number; value: string } | null;
+type ActionMenu = { type: "folder" | "note"; id: number } | null;
+
+// ── Component ──────────────────────────────────────────────────────────────
+
+export default function NotesSidebarSection() {
+  const { folders, notes, selectedNoteId, selectNote, refresh } = useNotesContext();
+  const router = useRouter();
+
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
-  const [actionMenu, setActionMenu] = useState<{ type: "folder" | "note"; id: number } | null>(null);
-  const [renaming, setRenaming] = useState<{ type: "folder" | "note"; id: number; value: string } | null>(null);
-  const [creating, setCreating] = useState<{ type: "folder" | "note"; parentFolderId: number | null; value: string } | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  // Which folder is "active context" for creating new items
+  const [selectedFolderId, setSelectedFolderId] = useState<number | null>(null);
+  const [creating, setCreating] = useState<CreatingState>(null);
+  const [renaming, setRenaming] = useState<RenamingState>(null);
+  const [actionMenu, setActionMenu] = useState<ActionMenu>(null);
 
-  const renameInputRef = useRef<HTMLInputElement>(null);
-  const createInputRef = useRef<HTMLInputElement>(null);
+  const renameRef = useRef<HTMLInputElement>(null);
+  const createRef = useRef<HTMLInputElement>(null);
 
-  // ── Data fetching ──────────────────────────────────────────────────────
-
-  const fetchData = useCallback(async () => {
-    try {
-      const token = getToken();
-      const headers = { Authorization: `Bearer ${token}` };
-
-      const [fRes, nRes] = await Promise.all([
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/note-folder`, { headers }),
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/note`, { headers }),
-      ]);
-
-      if (fRes.ok) setFolders(await fRes.json());
-      if (nRes.ok) setNotes(await nRes.json());
-    } catch (err) {
-      console.error("Error fetching sidebar data:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData, refreshKey]);
-
-  // Focus inputs when they appear
-  useEffect(() => {
-    if (renaming) setTimeout(() => renameInputRef.current?.focus(), 30);
-  }, [renaming]);
-  useEffect(() => {
-    if (creating) setTimeout(() => createInputRef.current?.focus(), 30);
-  }, [creating]);
+  useEffect(() => { if (renaming) setTimeout(() => renameRef.current?.focus(), 20); }, [renaming]);
+  useEffect(() => { if (creating) setTimeout(() => createRef.current?.focus(), 20); }, [creating]);
 
   // Close action menu on outside click
   useEffect(() => {
@@ -142,124 +97,123 @@ export default function NoteSidebar({
     return () => document.removeEventListener("mousedown", handle);
   }, []);
 
-  // ── CRUD operations ────────────────────────────────────────────────────
+  // ── API helpers ────────────────────────────────────────────────────────
 
-  async function createFolder(name: string, parentFolderId: number | null) {
-    const token = getToken();
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/note-folder`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ name, parentFolder: parentFolderId }),
-    });
-    if (res.ok) {
-      await fetchData();
-      if (parentFolderId) setExpanded((p) => new Set([...p, parentFolderId]));
-    }
+  function authHeaders() {
+    return { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` };
   }
 
-  async function createNote(title: string, folderId: number | null) {
-    const token = getToken();
+  async function apiCreateFolder(name: string, parentFolderId: number | null) {
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/note-folder`, {
+      method: "POST", headers: authHeaders(),
+      body: JSON.stringify({ name, parentFolder: parentFolderId }),
+    });
+    refresh();
+    if (parentFolderId) setExpanded((p) => new Set([...p, parentFolderId]));
+  }
+
+  async function apiCreateNote(title: string, folderId: number | null) {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/note`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      method: "POST", headers: authHeaders(),
       body: JSON.stringify({ title, folderId }),
     });
     if (res.ok) {
       const note = await res.json();
-      await fetchData();
+      refresh();
       if (folderId) setExpanded((p) => new Set([...p, folderId]));
-      onSelectNote(note);
+      selectNote(note.id);
+      router.push("/content/notes");
     }
   }
 
-  async function renameFolder(id: number, name: string) {
-    const token = getToken();
+  async function apiRenameFolder(id: number, name: string) {
     await fetch(`${process.env.NEXT_PUBLIC_API_URL}/note-folder/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ name }),
+      method: "PUT", headers: authHeaders(), body: JSON.stringify({ name }),
     });
-    await fetchData();
+    refresh();
   }
 
-  async function renameNote(id: number, title: string) {
-    const token = getToken();
+  async function apiRenameNote(id: number, title: string) {
     await fetch(`${process.env.NEXT_PUBLIC_API_URL}/note/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ title }),
+      method: "PUT", headers: authHeaders(), body: JSON.stringify({ title }),
     });
-    await fetchData();
-    onRefreshRequest();
+    refresh();
   }
 
-  async function deleteFolder(id: number) {
-    const token = getToken();
+  async function apiDeleteFolder(id: number) {
     await fetch(`${process.env.NEXT_PUBLIC_API_URL}/note-folder/${id}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
+      method: "DELETE", headers: { Authorization: `Bearer ${getToken()}` },
     });
-    await fetchData();
+    if (selectedFolderId === id) setSelectedFolderId(null);
+    refresh();
   }
 
-  async function deleteNote(id: number) {
-    const token = getToken();
+  async function apiDeleteNote(id: number) {
     await fetch(`${process.env.NEXT_PUBLIC_API_URL}/note/${id}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
+      method: "DELETE", headers: { Authorization: `Bearer ${getToken()}` },
     });
-    await fetchData();
-    onNoteDeleted(id);
+    if (id === selectedNoteId) selectNote(null);
+    refresh();
+  }
+
+  // ── Folder selection ───────────────────────────────────────────────────
+
+  function handleFolderSelect(folderId: number) {
+    if (selectedFolderId === folderId) {
+      // Clicking selected folder deselects it
+      setSelectedFolderId(null);
+    } else {
+      setSelectedFolderId(folderId);
+      // Auto-expand so user can see the folder contents
+      setExpanded((p) => new Set([...p, folderId]));
+    }
   }
 
   // ── Submit handlers ────────────────────────────────────────────────────
-
-  function submitRename() {
-    if (!renaming) return;
-    const val = renaming.value.trim();
-    if (val) {
-      if (renaming.type === "folder") renameFolder(renaming.id, val);
-      else renameNote(renaming.id, val);
-    }
-    setRenaming(null);
-  }
 
   function submitCreate() {
     if (!creating) return;
     const val = creating.value.trim();
     if (val) {
-      if (creating.type === "folder") createFolder(val, creating.parentFolderId);
-      else createNote(val, creating.parentFolderId);
+      if (creating.type === "folder") apiCreateFolder(val, creating.parentFolderId);
+      else apiCreateNote(val, creating.parentFolderId);
     }
     setCreating(null);
   }
 
+  function submitRename() {
+    if (!renaming) return;
+    const val = renaming.value.trim();
+    if (val) {
+      if (renaming.type === "folder") apiRenameFolder(renaming.id, val);
+      else apiRenameNote(renaming.id, val);
+    }
+    setRenaming(null);
+  }
+
   // ── Render helpers ─────────────────────────────────────────────────────
 
-  function renderCreateInput(parentFolderId: number | null, depth = 0) {
+  function renderCreateInput(parentFolderId: number | null, depth: number) {
     if (!creating || creating.parentFolderId !== parentFolderId) return null;
     return (
-      <div className={styles.createRow} style={{ paddingLeft: `${16 + depth * 16}px` }}>
-        <span className={styles.createIcon}>
+      <div className={styles.createRow} style={{ paddingLeft: `${12 + depth * 14}px` }}>
+        <span className={styles.rowIcon} style={{ color: "rgba(135,116,225,0.6)" }}>
           {creating.type === "note" ? <NoteIcon /> : <FolderIcon open={false} />}
         </span>
         <input
-          ref={createInputRef}
+          ref={createRef}
           className={styles.inlineInput}
           placeholder={creating.type === "note" ? "Nome da nota…" : "Nome da pasta…"}
           value={creating.value}
           onChange={(e) => setCreating((p) => p ? { ...p, value: e.target.value } : null)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") submitCreate();
-            if (e.key === "Escape") setCreating(null);
-          }}
-          onBlur={() => { if (!creating.value.trim()) setCreating(null); else submitCreate(); }}
+          onKeyDown={(e) => { if (e.key === "Enter") submitCreate(); if (e.key === "Escape") setCreating(null); }}
+          onBlur={() => { if (!creating?.value.trim()) setCreating(null); else submitCreate(); }}
         />
       </div>
     );
   }
 
-  function renderNoteRow(note: NoteItem, depth = 0) {
+  function renderNoteRow(note: NoteItem, depth: number) {
     const isSelected = selectedNoteId === note.id;
     const isRenaming = renaming?.type === "note" && renaming.id === note.id;
     const isMenuOpen = actionMenu?.type === "note" && actionMenu.id === note.id;
@@ -267,25 +221,29 @@ export default function NoteSidebar({
     return (
       <div
         key={note.id}
-        className={`${styles.itemRow} ${isSelected ? styles.itemSelected : ""}`}
-        style={{ paddingLeft: `${16 + depth * 16}px` }}
+        className={`${styles.row} ${isSelected ? styles.rowSelected : ""}`}
+        style={{ paddingLeft: `${20 + depth * 14}px` }}
+        onClick={(e) => e.stopPropagation()}
       >
         {isRenaming ? (
-          <div className={styles.renameRow}>
-            <span className={styles.rowIcon} style={{ color: "rgba(135,116,225,0.7)" }}><NoteIcon /></span>
+          <>
+            <span className={styles.rowIcon} style={{ color: "rgba(135,116,225,0.6)" }}><NoteIcon /></span>
             <input
-              ref={renameInputRef}
+              ref={renameRef}
               className={styles.inlineInput}
               value={renaming.value}
               onChange={(e) => setRenaming((p) => p ? { ...p, value: e.target.value } : null)}
               onKeyDown={(e) => { if (e.key === "Enter") submitRename(); if (e.key === "Escape") setRenaming(null); }}
               onBlur={submitRename}
             />
-          </div>
+          </>
         ) : (
           <>
-            <button className={styles.itemBtn} onClick={() => onSelectNote(note)}>
-              <span className={styles.rowIcon} style={{ color: isSelected ? "#8774E1" : "rgba(255,255,255,0.35)" }}>
+            <button
+              className={styles.itemBtn}
+              onClick={() => { selectNote(note.id); router.push("/content/notes"); }}
+            >
+              <span className={styles.rowIcon} style={{ color: isSelected ? "#8774E1" : "rgba(255,255,255,0.3)" }}>
                 <NoteIcon />
               </span>
               <span className={styles.itemLabel}>{note.title || "Sem título"}</span>
@@ -295,18 +253,14 @@ export default function NoteSidebar({
                 className={styles.dotsBtn}
                 onClick={(e) => { e.stopPropagation(); setActionMenu(isMenuOpen ? null : { type: "note", id: note.id }); }}
               >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                  <circle cx="5" cy="12" r="2" /><circle cx="12" cy="12" r="2" /><circle cx="19" cy="12" r="2" />
-                </svg>
+                <DotsIcon />
               </button>
               {isMenuOpen && (
                 <div className={styles.actionMenu}>
                   <button className={styles.menuItem} onClick={() => { setRenaming({ type: "note", id: note.id, value: note.title }); setActionMenu(null); }}>
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                     Renomear
                   </button>
-                  <button className={`${styles.menuItem} ${styles.menuItemDanger}`} onClick={() => { deleteNote(note.id); setActionMenu(null); }}>
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+                  <button className={`${styles.menuItem} ${styles.menuItemDanger}`} onClick={() => { apiDeleteNote(note.id); setActionMenu(null); }}>
                     Excluir
                   </button>
                 </div>
@@ -318,8 +272,9 @@ export default function NoteSidebar({
     );
   }
 
-  function renderFolderRow(folder: Folder, depth = 0) {
+  function renderFolderRow(folder: NoteFolder, depth: number) {
     const isOpen = expanded.has(folder.id);
+    const isFolderSelected = selectedFolderId === folder.id;
     const childFolders = folders.filter((f) => f.parent_folder === folder.id);
     const childNotes = notes.filter((n) => n.folder_id === folder.id);
     const isRenaming = renaming?.type === "folder" && renaming.id === folder.id;
@@ -328,57 +283,72 @@ export default function NoteSidebar({
     return (
       <div key={folder.id}>
         <div
-          className={styles.folderRow}
-          style={{ paddingLeft: `${8 + depth * 16}px` }}
+          className={`${styles.row} ${isFolderSelected ? styles.folderSelected : ""}`}
+          style={{ paddingLeft: `${4 + depth * 14}px` }}
+          onClick={(e) => e.stopPropagation()}
         >
           {isRenaming ? (
-            <div className={styles.renameRow}>
-              <span className={styles.chevronWrap}><ChevronIcon open={isOpen} /></span>
+            <>
+              {/* Chevron even when renaming */}
+              <button
+                className={styles.chevronBtn}
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={(e) => { e.stopPropagation(); setExpanded((p) => { const n = new Set(p); n.has(folder.id) ? n.delete(folder.id) : n.add(folder.id); return n; }); }}
+              >
+                <ChevronIcon open={isOpen} />
+              </button>
               <span className={styles.rowIcon} style={{ color: "#8774E1" }}><FolderIcon open={isOpen} /></span>
               <input
-                ref={renameInputRef}
+                ref={renameRef}
                 className={styles.inlineInput}
                 value={renaming.value}
                 onChange={(e) => setRenaming((p) => p ? { ...p, value: e.target.value } : null)}
                 onKeyDown={(e) => { if (e.key === "Enter") submitRename(); if (e.key === "Escape") setRenaming(null); }}
                 onBlur={submitRename}
               />
-            </div>
+            </>
           ) : (
             <>
-              <button className={styles.folderBtn} onClick={() => setExpanded((p) => { const n = new Set(p); n.has(folder.id) ? n.delete(folder.id) : n.add(folder.id); return n; })}>
-                <span className={styles.chevronWrap}><ChevronIcon open={isOpen} /></span>
-                <span className={styles.rowIcon} style={{ color: "#8774E1" }}><FolderIcon open={isOpen} /></span>
+              {/* Chevron — expand/collapse only */}
+              <button
+                className={styles.chevronBtn}
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setExpanded((p) => { const n = new Set(p); n.has(folder.id) ? n.delete(folder.id) : n.add(folder.id); return n; });
+                }}
+              >
+                <ChevronIcon open={isOpen} />
+              </button>
+
+              {/* Folder name — select/deselect */}
+              <button
+                className={styles.folderBtn}
+                onClick={(e) => { e.stopPropagation(); handleFolderSelect(folder.id); }}
+              >
+                <span className={styles.rowIcon} style={{ color: isFolderSelected ? "#8774E1" : "rgba(135,116,225,0.65)" }}>
+                  <FolderIcon open={isOpen} />
+                </span>
                 <span className={styles.itemLabel}>{folder.name}</span>
               </button>
+
+              {/* Actions (dots menu) */}
               <div className={styles.rowActions}>
-                <button
-                  className={styles.addInFolderBtn}
-                  title="Nova nota nesta pasta"
-                  onClick={() => { setCreating({ type: "note", parentFolderId: folder.id, value: "" }); setExpanded((p) => new Set([...p, folder.id])); }}
-                >
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                </button>
                 <button
                   className={styles.dotsBtn}
                   onClick={(e) => { e.stopPropagation(); setActionMenu(isMenuOpen ? null : { type: "folder", id: folder.id }); }}
                 >
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                    <circle cx="5" cy="12" r="2" /><circle cx="12" cy="12" r="2" /><circle cx="19" cy="12" r="2" />
-                  </svg>
+                  <DotsIcon />
                 </button>
                 {isMenuOpen && (
                   <div className={styles.actionMenu}>
                     <button className={styles.menuItem} onClick={() => { setCreating({ type: "folder", parentFolderId: folder.id, value: "" }); setExpanded((p) => new Set([...p, folder.id])); setActionMenu(null); }}>
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 2h9a2 2 0 012 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
                       Nova subpasta
                     </button>
                     <button className={styles.menuItem} onClick={() => { setRenaming({ type: "folder", id: folder.id, value: folder.name }); setActionMenu(null); }}>
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                       Renomear
                     </button>
-                    <button className={`${styles.menuItem} ${styles.menuItemDanger}`} onClick={() => { deleteFolder(folder.id); setActionMenu(null); }}>
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+                    <button className={`${styles.menuItem} ${styles.menuItemDanger}`} onClick={() => { apiDeleteFolder(folder.id); setActionMenu(null); }}>
                       Excluir pasta
                     </button>
                   </div>
@@ -399,64 +369,62 @@ export default function NoteSidebar({
     );
   }
 
-  // ── Build tree ─────────────────────────────────────────────────────────
-
   const rootFolders = folders.filter((f) => f.parent_folder === null);
   const rootNotes = notes.filter((n) => n.folder_id === null);
-  const isEmpty = folders.length === 0 && notes.length === 0 && !creating;
 
   return (
-    <aside className={styles.sidebar}>
-      {/* Header */}
-      <div className={styles.header}>
-        <span className={styles.headerTitle}>Notas</span>
-        <div className={styles.headerActions}>
+    <div className={styles.section}>
+      {/* Header — buttons use selectedFolderId as context */}
+      <div className={styles.sectionHeader}>
+        <span className={styles.sectionTitle}>NOTAS</span>
+        <div className={styles.sectionHeaderActions}>
           <button
-            className={styles.headerBtn}
-            title="Nova pasta"
-            onClick={() => setCreating({ type: "folder", parentFolderId: null, value: "" })}
+            className={styles.sectionAction}
+            title={selectedFolderId
+              ? `Nova pasta em "${folders.find(f => f.id === selectedFolderId)?.name}"`
+              : "Nova pasta na raiz"}
+            onClick={() => {
+              setCreating({ type: "folder", parentFolderId: selectedFolderId, value: "" });
+              if (selectedFolderId) setExpanded((p) => new Set([...p, selectedFolderId]));
+            }}
           >
             <NewFolderIcon />
           </button>
           <button
-            className={styles.headerBtn}
-            title="Nova nota"
-            onClick={() => setCreating({ type: "note", parentFolderId: null, value: "" })}
+            className={styles.sectionAction}
+            title={selectedFolderId
+              ? `Nova nota em "${folders.find(f => f.id === selectedFolderId)?.name}"`
+              : "Nova nota na raiz"}
+            onClick={() => {
+              setCreating({ type: "note", parentFolderId: selectedFolderId, value: "" });
+              if (selectedFolderId) setExpanded((p) => new Set([...p, selectedFolderId]));
+            }}
           >
             <NewNoteIcon />
           </button>
         </div>
       </div>
 
-      {/* Divider */}
-      <div className={styles.divider} />
+      {/* Tree — clicking the container background deselects all folders */}
+      <div className={styles.tree} onClick={() => setSelectedFolderId(null)}>
 
-      {/* Tree */}
-      <div className={styles.tree}>
-        {isLoading ? (
-          <div className={styles.loadingWrap}>
-            <div className={styles.loadingDots}>
-              <span /><span /><span />
-            </div>
-          </div>
-        ) : (
-          <>
-            {rootFolders.map((f) => renderFolderRow(f, 0))}
-            {rootNotes.map((n) => renderNoteRow(n, 0))}
-            {renderCreateInput(null, 0)}
-            {isEmpty && (
-              <div className={styles.emptyState}>
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5">
-                  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
-                  <polyline points="14,2 14,8 20,8"/>
-                </svg>
-                <p>Nenhuma nota ainda</p>
-                <span>Use os botões acima para criar</span>
-              </div>
-            )}
-          </>
+        {/* Root row — always visible, click to deselect folder */}
+        <div
+          className={`${styles.rootRow} ${selectedFolderId === null ? styles.rootRowActive : ""}`}
+          onClick={(e) => { e.stopPropagation(); setSelectedFolderId(null); }}
+        >
+          <HomeIcon />
+          <span>Raiz</span>
+        </div>
+
+        {rootFolders.map((f) => renderFolderRow(f, 0))}
+        {rootNotes.map((n) => renderNoteRow(n, 0))}
+        {renderCreateInput(null, 0)}
+
+        {folders.length === 0 && notes.length === 0 && !creating && (
+          <div className={styles.empty}>Nenhuma nota ainda.</div>
         )}
       </div>
-    </aside>
+    </div>
   );
 }
