@@ -20,8 +20,8 @@
     height: 700px;
     background: radial-gradient(
         circle,
-        rgba(255, 255, 255, 0.9) 0%,
-        rgba(255, 255, 255, 0.35) 40%,
+        rgba(255, 255, 255, 0.06) 0%,
+        rgba(255, 255, 255, 0.02) 40%,
         transparent 70%
     );
     pointer-events: none;
@@ -58,8 +58,7 @@
 
 .logo {
     object-fit: contain;
-    /* source artwork is white — invert to black for the light theme */
-    filter: invert(1) drop-shadow(0 6px 16px rgba(10, 10, 11, 0.18));
+    filter: drop-shadow(0 6px 16px rgba(255, 255, 255, 0.12));
 }
 
 /* ── Heading ──────────────────────────────────────────────────────────────── */
@@ -123,7 +122,7 @@
 .input {
     width: 100%;
     padding: 0.75rem 0.9rem 0.75rem 2.5rem;
-    background: rgba(255, 255, 255, 0.55);
+    background: var(--input-bg);
     border: 1px solid var(--glass-border-soft);
     border-radius: 12px;
     color: var(--text-primary);
@@ -140,8 +139,8 @@
 
 .input:focus {
     border-color: var(--accent-border);
-    background: rgba(255, 255, 255, 0.85);
-    box-shadow: 0 0 0 3px rgba(10, 10, 11, 0.06);
+    background: var(--input-bg-focus);
+    box-shadow: 0 0 0 3px rgba(242, 242, 245, 0.06);
 }
 
 .inputWrap:focus-within .inputIcon {

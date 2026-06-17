@@ -1,65 +1,73 @@
 /* ===========================================================================
-   ACLEY · Liquid Glass Design System  (white-primary / black accents)
+   ACLEY · Liquid Glass Design System  (black-primary / white accents)
    --------------------------------------------------------------------------
-   A light, translucent material language: frosted glass surfaces that blur
-   and refract the ambient light behind them, hairline highlights, soft
-   depth shadows, and black used as the single prominent accent/action color.
+   A dark, translucent material language: frosted glass surfaces that blur
+   and refract the ambient depth behind them, hairline highlights, deep
+   shadows, and white used as the single prominent accent/action color.
    =========================================================================== */
 
 :root {
     /* ── Canvas ───────────────────────────────────────────────────────── */
-    --bg-base: #eceef2;
-    --bg-base-2: #f6f7f9;
+    --bg-base: #0e0e10;
+    --bg-base-2: #161618;
 
-    /* ── Text (black-on-light) ────────────────────────────────────────── */
-    --text-primary: #0a0a0b;
-    --text-secondary: rgba(10, 10, 11, 0.62);
-    --text-tertiary: rgba(10, 10, 11, 0.42);
-    --text-faint: rgba(10, 10, 11, 0.26);
-    --text-ghost: rgba(10, 10, 11, 0.14);
-    --on-accent: #ffffff;
+    /* ── Text (white-on-dark) ─────────────────────────────────────────── */
+    --text-primary: #f2f2f5;
+    --text-secondary: rgba(242, 242, 245, 0.65);
+    --text-tertiary: rgba(242, 242, 245, 0.42);
+    --text-faint: rgba(242, 242, 245, 0.26);
+    --text-ghost: rgba(242, 242, 245, 0.14);
+    --on-accent: #0e0e10;
 
-    /* ── Liquid glass surfaces ────────────────────────────────────────── */
-    --glass-bg: rgba(255, 255, 255, 0.55);
-    --glass-bg-strong: rgba(255, 255, 255, 0.74);
-    --glass-bg-subtle: rgba(255, 255, 255, 0.36);
-    --glass-bg-faint: rgba(255, 255, 255, 0.22);
+    /* ── Liquid glass surfaces (dark tinted) ──────────────────────────── */
+    --glass-bg: rgba(255, 255, 255, 0.07);
+    --glass-bg-strong: rgba(255, 255, 255, 0.11);
+    --glass-bg-subtle: rgba(255, 255, 255, 0.04);
+    --glass-bg-faint: rgba(255, 255, 255, 0.025);
 
-    --glass-border: rgba(255, 255, 255, 0.7);
-    --glass-border-soft: rgba(10, 10, 11, 0.08);
-    --glass-hairline: rgba(10, 10, 11, 0.06);
+    --glass-border: rgba(255, 255, 255, 0.14);
+    --glass-border-soft: rgba(255, 255, 255, 0.08);
+    --glass-hairline: rgba(255, 255, 255, 0.06);
 
     --glass-blur: blur(22px) saturate(180%);
     --glass-blur-strong: blur(34px) saturate(190%);
 
-    /* highlight = top inner sheen, shadow = floating depth */
-    --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.9),
-                       inset 0 0 0 1px rgba(255, 255, 255, 0.18);
-    --glass-shadow: 0 10px 34px rgba(10, 10, 20, 0.10),
-                    0 2px 8px rgba(10, 10, 20, 0.06);
-    --glass-shadow-lg: 0 28px 70px rgba(10, 10, 20, 0.18),
-                       0 8px 24px rgba(10, 10, 20, 0.10);
+    /* highlight = top inner sheen, shadow = deep floating depth */
+    --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.12),
+                       inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+    --glass-shadow: 0 10px 34px rgba(0, 0, 0, 0.45),
+                    0 2px 8px rgba(0, 0, 0, 0.30);
+    --glass-shadow-lg: 0 28px 70px rgba(0, 0, 0, 0.65),
+                       0 8px 24px rgba(0, 0, 0, 0.45);
 
-    /* ── Black accent (prominent / interactive) ───────────────────────── */
-    --accent: #0a0a0b;
-    --accent-hover: #232326;
-    --accent-soft: rgba(10, 10, 11, 0.055);
-    --accent-soft-hover: rgba(10, 10, 11, 0.1);
-    --accent-border: rgba(10, 10, 11, 0.16);
-    --accent-glow: 0 8px 24px rgba(10, 10, 11, 0.28);
+    /* ── White accent (prominent / interactive) ───────────────────────── */
+    --accent: #f2f2f5;
+    --accent-hover: rgba(242, 242, 245, 0.85);
+    --accent-soft: rgba(242, 242, 245, 0.07);
+    --accent-soft-hover: rgba(242, 242, 245, 0.13);
+    --accent-border: rgba(242, 242, 245, 0.22);
+    --accent-glow: 0 8px 24px rgba(242, 242, 245, 0.18);
 
     /* ── Interaction surfaces ─────────────────────────────────────────── */
-    --hover-surface: rgba(10, 10, 11, 0.045);
-    --hover-surface-strong: rgba(10, 10, 11, 0.08);
-    --selected-surface: rgba(10, 10, 11, 0.07);
+    --hover-surface: rgba(255, 255, 255, 0.05);
+    --hover-surface-strong: rgba(255, 255, 255, 0.09);
+    --selected-surface: rgba(255, 255, 255, 0.10);
 
-    /* ── Semantic (kept minimal & desaturated for meaning) ────────────── */
-    --danger: #c0392b;
-    --danger-soft: rgba(192, 57, 43, 0.1);
-    --danger-border: rgba(192, 57, 43, 0.28);
-    --tone-a: #3a3a3d;   /* "new"      */
-    --tone-b: #6b6b70;   /* "learning" */
-    --tone-c: #0a0a0b;   /* "review"   */
+    /* ── Semantic (kept readable on dark bg) ─────────────────────────── */
+    --danger: #ff6b6b;
+    --danger-soft: rgba(255, 107, 107, 0.12);
+    --danger-border: rgba(255, 107, 107, 0.30);
+    --tone-a: rgba(242, 242, 245, 0.75);   /* "new"      */
+    --tone-b: rgba(242, 242, 245, 0.45);   /* "learning" */
+    --tone-c: rgba(242, 242, 245, 0.90);   /* "review"   */
+
+    /* ── Input field backgrounds (dark glass) ─────────────────────────── */
+    --input-bg: rgba(255, 255, 255, 0.07);
+    --input-bg-focus: rgba(255, 255, 255, 0.12);
+
+    /* ── Cancel button background ─────────────────────────────────────── */
+    --cancel-bg: rgba(255, 255, 255, 0.07);
+    --cancel-bg-hover: rgba(255, 255, 255, 0.13);
 
     --radius: 16px;
     --radius-sm: 10px;
@@ -76,21 +84,20 @@ html, body {
     color: var(--text-primary);
 }
 
-/* Ambient light field — gives the glass something to refract.
-   Kept monochrome (soft greys/whites) to stay within the white/black palette. */
+/* Ambient depth field — dark edition with subtle warm/cool tones for glass refraction */
 body {
     position: relative;
     min-height: 100vh;
     background-image:
-        radial-gradient(60rem 60rem at 12% -10%, rgba(255, 255, 255, 0.95), transparent 55%),
-        radial-gradient(50rem 50rem at 100% 0%, rgba(180, 184, 195, 0.45), transparent 55%),
-        radial-gradient(55rem 55rem at 85% 105%, rgba(150, 154, 168, 0.4), transparent 55%),
-        radial-gradient(45rem 45rem at 0% 100%, rgba(200, 204, 214, 0.5), transparent 55%),
+        radial-gradient(60rem 60rem at 12% -10%, rgba(30, 30, 40, 0.9), transparent 55%),
+        radial-gradient(50rem 50rem at 100% 0%, rgba(20, 20, 35, 0.6), transparent 55%),
+        radial-gradient(55rem 55rem at 85% 105%, rgba(15, 15, 28, 0.7), transparent 55%),
+        radial-gradient(45rem 45rem at 0% 100%, rgba(25, 25, 38, 0.6), transparent 55%),
         linear-gradient(180deg, var(--bg-base-2), var(--bg-base));
     background-attachment: fixed;
 }
 
 ::selection {
-    background: rgba(10, 10, 11, 0.85);
-    color: #fff;
+    background: rgba(242, 242, 245, 0.85);
+    color: #0e0e10;
 }

@@ -73,9 +73,8 @@
     transform: scale(1.05);
 }
 
-/* source artwork is white — invert to black for the light theme */
 .logo img {
-    filter: invert(1);
+    filter: drop-shadow(0 2px 8px rgba(255, 255, 255, 0.15));
 }
 
 .nav {
