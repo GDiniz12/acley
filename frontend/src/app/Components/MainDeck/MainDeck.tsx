@@ -209,7 +209,7 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
             {showModal && (
                 <div style={{
                     position: 'fixed', inset: 0,
-                    backgroundColor: 'rgba(10,10,20,0.28)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
+                    backgroundColor: 'rgba(0,0,0,0.60)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
                     zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center',
                     padding: '1rem',
                 }} onClick={handleCloseModal}>
@@ -232,7 +232,7 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
                                     autoFocus
                                     style={{
                                         width: '100%', padding: '0.7rem 0.85rem', borderRadius: '8px',
-                                        border: '1px solid var(--glass-border-soft)', backgroundColor: 'rgba(255,255,255,0.6)',
+                                        border: '1px solid var(--glass-border-soft)', backgroundColor: 'var(--input-bg)',
                                         color: 'var(--text-primary)', fontSize: '0.9rem', outline: 'none',
                                         boxSizing: 'border-box', fontFamily: 'inherit',
                                     }}
@@ -241,7 +241,7 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
                                     <button onClick={handleRenameMatter} style={{ padding: '0.55rem 1.25rem', borderRadius: '10px', border: '1px solid var(--accent)', backgroundColor: 'var(--accent)', color: 'var(--on-accent)', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer', fontFamily: 'inherit' }}>
                                         Confirmar
                                     </button>
-                                    <button onClick={handleCloseModal} style={{ padding: '0.55rem 1.25rem', borderRadius: '10px', border: '1px solid var(--glass-border-soft)', backgroundColor: 'rgba(255,255,255,0.6)', color: 'var(--text-secondary)', fontSize: '0.85rem', cursor: 'pointer', fontFamily: 'inherit' }}>
+                                    <button onClick={handleCloseModal} style={{ padding: '0.55rem 1.25rem', borderRadius: '10px', border: '1px solid var(--glass-border-soft)', backgroundColor: 'var(--input-bg)', color: 'var(--text-secondary)', fontSize: '0.85rem', cursor: 'pointer', fontFamily: 'inherit' }}>
                                         Cancelar
                                     </button>
                                 </div>
@@ -259,7 +259,7 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
                                     <button onClick={handleDeleteMatter} style={{ padding: '0.55rem 1.25rem', borderRadius: '10px', border: '1px solid var(--danger)', backgroundColor: 'var(--danger)', color: '#fff', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer', fontFamily: 'inherit' }}>
                                         Excluir
                                     </button>
-                                    <button onClick={handleCloseModal} style={{ padding: '0.55rem 1.25rem', borderRadius: '10px', border: '1px solid var(--glass-border-soft)', backgroundColor: 'rgba(255,255,255,0.6)', color: 'var(--text-secondary)', fontSize: '0.85rem', cursor: 'pointer', fontFamily: 'inherit' }}>
+                                    <button onClick={handleCloseModal} style={{ padding: '0.55rem 1.25rem', borderRadius: '10px', border: '1px solid var(--glass-border-soft)', backgroundColor: 'var(--input-bg)', color: 'var(--text-secondary)', fontSize: '0.85rem', cursor: 'pointer', fontFamily: 'inherit' }}>
                                         Cancelar
                                     </button>
                                 </div>

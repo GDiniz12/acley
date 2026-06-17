@@ -1,7 +1,7 @@
 .modalOverlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(10, 10, 20, 0.32);
+  background-color: rgba(0, 0, 0, 0.65);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -54,7 +54,7 @@
   position: absolute;
   top: 1rem;
   right: 1rem;
-  background: rgba(255, 255, 255, 0.5);
+  background: var(--glass-bg);
   border: 1px solid var(--glass-border-soft);
   color: var(--text-tertiary);
   font-size: 1.1rem;
@@ -70,7 +70,7 @@
 }
 
 .closeButton:hover {
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: var(--hover-surface-strong);
   color: var(--text-primary);
   border-color: var(--accent-border);
 }
@@ -133,7 +133,7 @@
 
 .backButton {
   padding: 0.6rem 1.5rem;
-  background: rgba(255, 255, 255, 0.5);
+  background: var(--glass-bg);
   border: 1px solid var(--glass-border-soft);
   border-radius: 10px;
   color: var(--text-secondary);
@@ -145,7 +145,7 @@
 }
 
 .backButton:hover {
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--glass-bg-strong);
   border-color: var(--accent-border);
   color: var(--text-primary);
 }
@@ -201,7 +201,7 @@
   justify-content: center;
   text-align: center;
   padding: 1rem;
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: var(--glass-bg);
   border: 1px solid var(--glass-hairline);
   border-radius: 12px;
   min-height: 130px;
@@ -264,7 +264,7 @@
   color: var(--tone-b);
 }
 .difficultyButton.easy:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.85);
+  background: var(--glass-bg);
   border-color: var(--tone-b);
   color: var(--text-primary);
 }
@@ -273,7 +273,7 @@
   color: var(--tone-a);
 }
 .difficultyButton.medium:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.85);
+  background: var(--glass-bg);
   border-color: var(--tone-a);
   color: var(--text-primary);
 }
@@ -303,13 +303,13 @@
 }
 
 .status-new {
-  background-color: rgba(10, 10, 11, 0.05);
+  background-color: var(--hover-surface);
   color: var(--tone-a);
   border: 1px solid var(--glass-border-soft);
 }
 
 .status-learn {
-  background-color: rgba(10, 10, 11, 0.05);
+  background-color: var(--hover-surface);
   color: var(--tone-b);
   border: 1px solid var(--glass-border-soft);
 }
