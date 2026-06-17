@@ -164,7 +164,7 @@ export default function ReviewModal({
                 </button>
 
                 <div className={styles.header}>
-                    <h2>{matterName} {isSubMatter && <span style={{fontSize: '0.8em', color: '#888'}}>(Submatéria)</span>}</h2>
+                    <h2>{matterName} {isSubMatter && <span style={{fontSize: '0.8em', color: 'var(--text-tertiary)'}}>(Submatéria)</span>}</h2>
                     <div className={styles.progressBar}>
                         <div 
                             className={styles.progressFill} 

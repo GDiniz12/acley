@@ -398,49 +398,51 @@ export default function MatterCard({
                 <div 
                     style={{
                         position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-                        backgroundColor: 'rgba(0,0,0,0.7)', zIndex: 1000,
+                        backgroundColor: 'rgba(10,10,20,0.28)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', zIndex: 1000,
                         display: 'flex', justifyContent: 'center', alignItems: 'center'
-                    }} 
+                    }}
                     onClick={handleCloseSubMatterModal}
                 >
-                    <div 
+                    <div
                         style={{
-                            backgroundColor: '#1e1e1e', padding: '2rem', borderRadius: '12px',
-                            width: '400px', maxWidth: '90%', border: '1px solid #333'
-                        }} 
+                            background: 'var(--glass-bg-strong)', backdropFilter: 'var(--glass-blur-strong)', WebkitBackdropFilter: 'var(--glass-blur-strong)',
+                            padding: '2rem', borderRadius: '20px',
+                            width: '400px', maxWidth: '90%', border: '1px solid var(--glass-border)',
+                            boxShadow: 'var(--glass-shadow-lg), var(--glass-highlight)'
+                        }}
                         onClick={(e) => e.stopPropagation()}
                     >
                         {subMatterModalType === 'rename' ? (
                             <>
-                                <h2 style={{ marginBottom: '1rem', color: '#fff' }}>Renomear Submatéria</h2>
-                                <p style={{ marginBottom: '1rem', color: '#aaa' }}>Digite o novo nome da submatéria</p>
-                                <input 
-                                    type="text" 
+                                <h2 style={{ marginBottom: '1rem', color: 'var(--text-primary)' }}>Renomear Submatéria</h2>
+                                <p style={{ marginBottom: '1rem', color: 'var(--text-tertiary)' }}>Digite o novo nome da submatéria</p>
+                                <input
+                                    type="text"
                                     value={newSubMatterName}
                                     onChange={(e) => setNewSubMatterName(e.target.value)}
                                     placeholder="Nome da submatéria"
                                     style={{
-                                        width: '100%', padding: '0.8rem', borderRadius: '6px',
-                                        border: '1px solid #444', backgroundColor: '#2d2d2d',
-                                        color: '#fff', marginBottom: '1.5rem'
+                                        width: '100%', padding: '0.8rem', borderRadius: '10px',
+                                        border: '1px solid var(--glass-border-soft)', backgroundColor: 'rgba(255,255,255,0.6)',
+                                        color: 'var(--text-primary)', marginBottom: '1.5rem', outline: 'none'
                                     }}
                                     autoFocus
                                 />
                                 <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
-                                    <button 
+                                    <button
                                         onClick={handleRenameSubMatter}
                                         style={{
-                                            padding: '0.6rem 1.2rem', borderRadius: '6px', border: 'none',
-                                            backgroundColor: '#fff', color: '#000', fontWeight: 'bold', cursor: 'pointer'
+                                            padding: '0.6rem 1.2rem', borderRadius: '10px', border: 'none',
+                                            backgroundColor: 'var(--accent)', color: 'var(--on-accent)', fontWeight: 'bold', cursor: 'pointer'
                                         }}
                                     >
                                         Confirmar
                                     </button>
-                                    <button 
+                                    <button
                                         onClick={handleCloseSubMatterModal}
                                         style={{
-                                            padding: '0.6rem 1.2rem', borderRadius: '6px', border: '1px solid #555',
-                                            backgroundColor: 'transparent', color: '#fff', cursor: 'pointer'
+                                            padding: '0.6rem 1.2rem', borderRadius: '10px', border: '1px solid var(--glass-border-soft)',
+                                            backgroundColor: 'rgba(255,255,255,0.6)', color: 'var(--text-secondary)', cursor: 'pointer'
                                         }}
                                     >
                                         Cancelar
@@ -449,28 +451,28 @@ export default function MatterCard({
                             </>
                         ) : (
                             <>
-                                <h2 style={{ marginBottom: '1rem', color: '#fff' }}>Excluir Submatéria</h2>
-                                <p style={{ marginBottom: '1rem', color: '#aaa' }}>
-                                    Tem certeza que deseja excluir a submatéria "<strong>{selectedSubMatter?.name}</strong>"?
+                                <h2 style={{ marginBottom: '1rem', color: 'var(--text-primary)' }}>Excluir Submatéria</h2>
+                                <p style={{ marginBottom: '1rem', color: 'var(--text-tertiary)' }}>
+                                    Tem certeza que deseja excluir a submatéria "<strong style={{ color: 'var(--text-secondary)' }}>{selectedSubMatter?.name}</strong>"?
                                 </p>
-                                <p style={{ color: '#ff4444', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
+                                <p style={{ color: 'var(--danger)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
                                     Esta ação não pode ser desfeita.
                                 </p>
                                 <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
-                                    <button 
+                                    <button
                                         onClick={handleDeleteSubMatter}
                                         style={{
-                                            padding: '0.6rem 1.2rem', borderRadius: '6px', border: 'none',
-                                            backgroundColor: '#ff4444', color: '#fff', fontWeight: 'bold', cursor: 'pointer'
+                                            padding: '0.6rem 1.2rem', borderRadius: '10px', border: 'none',
+                                            backgroundColor: 'var(--danger)', color: '#fff', fontWeight: 'bold', cursor: 'pointer'
                                         }}
                                     >
                                         Excluir
                                     </button>
-                                    <button 
+                                    <button
                                         onClick={handleCloseSubMatterModal}
                                         style={{
-                                            padding: '0.6rem 1.2rem', borderRadius: '6px', border: '1px solid #555',
-                                            backgroundColor: 'transparent', color: '#fff', cursor: 'pointer'
+                                            padding: '0.6rem 1.2rem', borderRadius: '10px', border: '1px solid var(--glass-border-soft)',
+                                            backgroundColor: 'rgba(255,255,255,0.6)', color: 'var(--text-secondary)', cursor: 'pointer'
                                         }}
                                     >
                                         Cancelar
