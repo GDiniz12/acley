@@ -4,7 +4,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #0f0e0d;
+    background: transparent;
     position: relative;
     overflow: hidden;
     padding: 1.5rem;
@@ -16,12 +16,12 @@
     top: -20%;
     left: 50%;
     transform: translateX(-50%);
-    width: 600px;
-    height: 600px;
+    width: 700px;
+    height: 700px;
     background: radial-gradient(
         circle,
-        rgba(135, 116, 225, 0.12) 0%,
-        rgba(135, 116, 225, 0.04) 45%,
+        rgba(255, 255, 255, 0.9) 0%,
+        rgba(255, 255, 255, 0.35) 40%,
         transparent 70%
     );
     pointer-events: none;
@@ -34,14 +34,13 @@
     z-index: 1;
     width: 100%;
     max-width: 400px;
-    background: #1a1918;
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    border-radius: 18px;
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur-strong);
+    -webkit-backdrop-filter: var(--glass-blur-strong);
+    border: 1px solid var(--glass-border);
+    border-radius: 22px;
     padding: 2.5rem 2.25rem;
-    box-shadow:
-        0 0 0 1px rgba(135, 116, 225, 0.06),
-        0 32px 80px rgba(0, 0, 0, 0.6),
-        0 8px 24px rgba(0, 0, 0, 0.4);
+    box-shadow: var(--glass-shadow-lg), var(--glass-highlight);
     animation: cardIn 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -59,7 +58,8 @@
 
 .logo {
     object-fit: contain;
-    filter: drop-shadow(0 0 16px rgba(135, 116, 225, 0.25));
+    /* source artwork is white — invert to black for the light theme */
+    filter: invert(1) drop-shadow(0 6px 16px rgba(10, 10, 11, 0.18));
 }
 
 /* ── Heading ──────────────────────────────────────────────────────────────── */
@@ -71,14 +71,14 @@
 .title {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #f0ede8;
+    color: var(--text-primary);
     letter-spacing: -0.025em;
     margin: 0 0 0.4rem 0;
 }
 
 .subtitle {
     font-size: 0.83rem;
-    color: rgba(255, 255, 255, 0.3);
+    color: var(--text-tertiary);
     margin: 0;
     font-weight: 400;
 }
@@ -99,7 +99,7 @@
 .label {
     font-size: 0.75rem;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.4);
+    color: var(--text-tertiary);
     letter-spacing: 0.04em;
     text-transform: uppercase;
 }
@@ -114,7 +114,7 @@
 .inputIcon {
     position: absolute;
     left: 0.85rem;
-    color: rgba(255, 255, 255, 0.2);
+    color: var(--text-faint);
     pointer-events: none;
     flex-shrink: 0;
     transition: color 0.2s;
@@ -123,28 +123,29 @@
 .input {
     width: 100%;
     padding: 0.75rem 0.9rem 0.75rem 2.5rem;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 10px;
-    color: #e8e6e3;
+    background: rgba(255, 255, 255, 0.55);
+    border: 1px solid var(--glass-border-soft);
+    border-radius: 12px;
+    color: var(--text-primary);
     font-size: 0.9rem;
     font-family: inherit;
     outline: none;
-    transition: border-color 0.2s, background 0.2s;
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
     box-sizing: border-box;
 }
 
 .input::placeholder {
-    color: rgba(255, 255, 255, 0.18);
+    color: var(--text-faint);
 }
 
 .input:focus {
-    border-color: rgba(135, 116, 225, 0.6);
-    background: rgba(135, 116, 225, 0.05);
+    border-color: var(--accent-border);
+    background: rgba(255, 255, 255, 0.85);
+    box-shadow: 0 0 0 3px rgba(10, 10, 11, 0.06);
 }
 
 .inputWrap:focus-within .inputIcon {
-    color: rgba(135, 116, 225, 0.6);
+    color: var(--text-secondary);
 }
 
 /* ── Submit button ────────────────────────────────────────────────────────── */
@@ -152,10 +153,10 @@
     margin-top: 0.4rem;
     width: 100%;
     padding: 0.8rem 1.25rem;
-    background: #8774E1;
+    background: var(--accent);
     border: none;
-    border-radius: 10px;
-    color: #fff;
+    border-radius: 12px;
+    color: var(--on-accent);
     font-size: 0.9rem;
     font-weight: 700;
     font-family: inherit;
@@ -169,9 +170,9 @@
 }
 
 .submitBtn:hover:not(:disabled) {
-    background: #9b8ae8;
+    background: var(--accent-hover);
     transform: translateY(-1px);
-    box-shadow: 0 8px 24px rgba(135, 116, 225, 0.35);
+    box-shadow: var(--accent-glow);
 }
 
 .submitBtn:active:not(:disabled) {
@@ -187,7 +188,7 @@
 .spinner {
     width: 16px;
     height: 16px;
-    border: 2px solid rgba(255, 255, 255, 0.25);
+    border: 2px solid rgba(255, 255, 255, 0.35);
     border-top-color: #fff;
     border-radius: 50%;
     animation: spin 0.65s linear infinite;
@@ -215,25 +216,26 @@
     width: 56px;
     height: 56px;
     border-radius: 50%;
-    background: rgba(92, 194, 96, 0.12);
-    border: 1px solid rgba(92, 194, 96, 0.3);
-    color: #5cc260;
+    background: var(--accent);
+    border: 1px solid var(--accent);
+    color: var(--on-accent);
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: var(--accent-glow);
 }
 
 .successTitle {
     font-size: 1.25rem;
     font-weight: 700;
-    color: #f0ede8;
+    color: var(--text-primary);
     margin: 0;
     letter-spacing: -0.02em;
 }
 
 .successSub {
     font-size: 0.82rem;
-    color: rgba(255, 255, 255, 0.3);
+    color: var(--text-tertiary);
     margin: 0;
 }
 
@@ -242,25 +244,26 @@
     margin-top: 1.75rem;
     text-align: center;
     font-size: 0.82rem;
-    color: rgba(255, 255, 255, 0.25);
+    color: var(--text-tertiary);
 }
 
 .footerLink {
-    color: #8774E1;
+    color: var(--accent);
     text-decoration: none;
-    font-weight: 600;
+    font-weight: 700;
     transition: color 0.15s;
 }
 
 .footerLink:hover {
-    color: #a896ef;
+    color: var(--accent-hover);
+    text-decoration: underline;
 }
 
 /* ── Responsive ───────────────────────────────────────────────────────────── */
 @media (max-width: 480px) {
     .card {
         padding: 2rem 1.5rem;
-        border-radius: 14px;
+        border-radius: 18px;
     }
 
     .title {
