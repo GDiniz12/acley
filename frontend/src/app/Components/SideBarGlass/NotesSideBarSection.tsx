@@ -236,7 +236,7 @@ export default function NotesSidebarSection({ searchQuery = "" }: Props) {
               setExpanded((p) => new Set([...p, folder.id]));
             }}
           >
-            <span className={styles.searchResultIcon} style={{ color: "#8774E1" }}>
+            <span className={styles.searchResultIcon} style={{ color: "var(--accent)" }}>
               <FolderIcon open={false} />
             </span>
             <div className={styles.searchResultText}>
@@ -258,7 +258,7 @@ export default function NotesSidebarSection({ searchQuery = "" }: Props) {
               className={`${styles.searchResultRow} ${isActive ? styles.searchResultActive : ""}`}
               onClick={() => { selectNote(note.id); router.push("/content/notes"); }}
             >
-              <span className={styles.searchResultIcon} style={{ color: isActive ? "#8774E1" : "rgba(255,255,255,0.3)" }}>
+              <span className={styles.searchResultIcon} style={{ color: isActive ? "var(--accent)" : "var(--text-faint)" }}>
                 <NoteIcon />
               </span>
               <div className={styles.searchResultText}>
@@ -282,7 +282,7 @@ export default function NotesSidebarSection({ searchQuery = "" }: Props) {
     if (!creating || creating.parentFolderId !== parentFolderId) return null;
     return (
       <div className={styles.createRow} style={{ paddingLeft: `${12 + depth * 14}px` }}>
-        <span className={styles.rowIcon} style={{ color: "rgba(135,116,225,0.6)" }}>
+        <span className={styles.rowIcon} style={{ color: "var(--text-tertiary)" }}>
           {creating.type === "note" ? <NoteIcon /> : <FolderIcon open={false} />}
         </span>
         <input
@@ -314,7 +314,7 @@ export default function NotesSidebarSection({ searchQuery = "" }: Props) {
       >
         {isRenaming ? (
           <>
-            <span className={styles.rowIcon} style={{ color: "rgba(135,116,225,0.6)" }}><NoteIcon /></span>
+            <span className={styles.rowIcon} style={{ color: "var(--text-tertiary)" }}><NoteIcon /></span>
             <input
               ref={renameRef}
               className={styles.inlineInput}
@@ -330,7 +330,7 @@ export default function NotesSidebarSection({ searchQuery = "" }: Props) {
               className={styles.itemBtn}
               onClick={() => { selectNote(note.id); router.push("/content/notes"); }}
             >
-              <span className={styles.rowIcon} style={{ color: isSelected ? "#8774E1" : "rgba(255,255,255,0.3)" }}>
+              <span className={styles.rowIcon} style={{ color: isSelected ? "var(--accent)" : "var(--text-faint)" }}>
                 <NoteIcon />
               </span>
               <span className={styles.itemLabel}>{note.title || "Sem título"}</span>
@@ -382,7 +382,7 @@ export default function NotesSidebarSection({ searchQuery = "" }: Props) {
               >
                 <ChevronIcon open={isOpen} />
               </button>
-              <span className={styles.rowIcon} style={{ color: "#8774E1" }}><FolderIcon open={isOpen} /></span>
+              <span className={styles.rowIcon} style={{ color: "var(--accent)" }}><FolderIcon open={isOpen} /></span>
               <input
                 ref={renameRef}
                 className={styles.inlineInput}
@@ -413,7 +413,7 @@ export default function NotesSidebarSection({ searchQuery = "" }: Props) {
                   setExpanded((p) => new Set([...p, folder.id]));
                 }}
               >
-                <span className={styles.rowIcon} style={{ color: isFolderSelected ? "#8774E1" : "rgba(135,116,225,0.65)" }}>
+                <span className={styles.rowIcon} style={{ color: isFolderSelected ? "var(--accent)" : "var(--text-tertiary)" }}>
                   <FolderIcon open={isOpen} />
                 </span>
                 <span className={styles.itemLabel}>{folder.name}</span>

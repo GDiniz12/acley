@@ -1,4 +1,4 @@
-/* Reuses the host app's established design tokens */
+/* Liquid-glass note tree (sidebar variant) — uses global design tokens */
 
 .section {
   padding: 0 8px;
@@ -17,7 +17,7 @@
 .sectionTitle {
   font-size: 0.65rem;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.25);
+  color: var(--text-tertiary);
   letter-spacing: 0.09em;
   text-transform: uppercase;
   user-select: none;
@@ -41,18 +41,18 @@
   justify-content: center;
   width: 20px;
   height: 20px;
-  border-radius: 5px;
+  border-radius: 6px;
   border: none;
   background: transparent;
-  color: rgba(255, 255, 255, 0.3);
+  color: var(--text-tertiary);
   cursor: pointer;
   transition: background-color 0.15s, color 0.15s;
   padding: 0;
 }
 
 .sectionAction:hover {
-  background-color: rgba(135, 116, 225, 0.15);
-  color: #8774E1;
+  background-color: var(--hover-surface-strong);
+  color: var(--text-primary);
 }
 
 /* ── Tree ────────────────────────────────────────────────────────────────── */
@@ -67,13 +67,13 @@
   display: flex;
   align-items: center;
   height: 28px;
-  border-radius: 7px;
+  border-radius: 8px;
   position: relative;
   padding-right: 4px;
 }
 
 .row:hover {
-  background-color: rgba(255, 255, 255, 0.04);
+  background-color: var(--hover-surface);
 }
 
 .row:hover .rowActions {
@@ -81,24 +81,24 @@
 }
 
 .rowSelected {
-  background-color: rgba(135, 116, 225, 0.12) !important;
+  background-color: var(--selected-surface) !important;
 }
 
 .rowSelected .itemLabel {
-  color: #c4b8f5 !important;
+  color: var(--text-primary) !important;
 }
 
 /* ── Folder selected state ───────────────────────────────────────────────── */
 .folderSelected {
-  background-color: rgba(135, 116, 225, 0.1) !important;
+  background-color: var(--selected-surface) !important;
 }
 
 .folderSelected:hover {
-  background-color: rgba(135, 116, 225, 0.15) !important;
+  background-color: var(--hover-surface-strong) !important;
 }
 
 .folderSelected .itemLabel {
-  color: #c4b8f5;
+  color: var(--text-primary);
 }
 
 /* ── Chevron standalone button ───────────────────────────────────────────── */
@@ -108,7 +108,7 @@
   justify-content: center;
   background: transparent;
   border: none;
-  color: rgba(255, 255, 255, 0.22);
+  color: var(--text-faint);
   cursor: pointer;
   width: 16px;
   height: 100%;
@@ -118,7 +118,7 @@
 }
 
 .chevronBtn:hover {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--text-secondary);
 }
 
 /* ── Folder button ───────────────────────────────────────────────────────── */
@@ -129,7 +129,7 @@
   gap: 5px;
   background: transparent;
   border: none;
-  color: rgba(232, 230, 227, 0.6);
+  color: var(--text-secondary);
   cursor: pointer;
   padding: 0;
   height: 100%;
@@ -140,7 +140,7 @@
 }
 
 .folderBtn:hover {
-  color: rgba(232, 230, 227, 0.9);
+  color: var(--text-primary);
 }
 
 /* ── Note item button ────────────────────────────────────────────────────── */
@@ -151,7 +151,7 @@
   gap: 5px;
   background: transparent;
   border: none;
-  color: rgba(232, 230, 227, 0.55);
+  color: var(--text-secondary);
   cursor: pointer;
   padding: 0;
   height: 100%;
@@ -162,7 +162,7 @@
 }
 
 .itemBtn:hover {
-  color: rgba(232, 230, 227, 0.85);
+  color: var(--text-primary);
 }
 
 /* ── Shared pieces ───────────────────────────────────────────────────────── */
@@ -203,8 +203,8 @@
   justify-content: center;
   background: transparent;
   border: none;
-  border-radius: 4px;
-  color: rgba(255, 255, 255, 0.35);
+  border-radius: 5px;
+  color: var(--text-tertiary);
   cursor: pointer;
   transition: all 0.12s;
   padding: 0;
@@ -212,13 +212,13 @@
 }
 
 .dotsBtn:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.8);
+  background: var(--hover-surface-strong);
+  color: var(--text-primary);
 }
 
 .addInFolderBtn:hover {
-  background: rgba(135, 116, 225, 0.18);
-  color: #8774E1;
+  background: var(--hover-surface-strong);
+  color: var(--accent);
 }
 
 /* ── Action dropdown ─────────────────────────────────────────────────────── */
@@ -227,12 +227,14 @@
   top: calc(100% + 3px);
   right: 0;
   width: 155px;
-  background: #111110;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
+  background: var(--glass-bg-strong);
+  backdrop-filter: var(--glass-blur-strong);
+  -webkit-backdrop-filter: var(--glass-blur-strong);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
   padding: 5px;
   z-index: 1100;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.7);
+  box-shadow: var(--glass-shadow-lg), var(--glass-highlight);
   animation: menuPop 0.13s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -249,8 +251,8 @@
   padding: 0.45rem 0.6rem;
   background: transparent;
   border: none;
-  border-radius: 7px;
-  color: rgba(255, 255, 255, 0.6);
+  border-radius: 8px;
+  color: var(--text-secondary);
   font-size: 0.78rem;
   font-weight: 400;
   cursor: pointer;
@@ -260,17 +262,17 @@
 }
 
 .menuItem:hover {
-  background: rgba(255, 255, 255, 0.07);
-  color: #fff;
+  background: var(--hover-surface-strong);
+  color: var(--text-primary);
 }
 
 .menuItemDanger {
-  color: rgba(248, 113, 113, 0.65);
+  color: var(--danger);
 }
 
 .menuItemDanger:hover {
-  background: rgba(248, 113, 113, 0.1);
-  color: #f87171;
+  background: var(--danger-soft);
+  color: var(--danger);
 }
 
 /* ── Inline input ────────────────────────────────────────────────────────── */
@@ -284,10 +286,10 @@
 
 .inlineInput {
   flex: 1;
-  background: rgba(135, 116, 225, 0.08);
-  border: 1px solid rgba(135, 116, 225, 0.3);
-  border-radius: 5px;
-  color: #fff;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--accent-border);
+  border-radius: 6px;
+  color: var(--text-primary);
   font-size: 0.79rem;
   padding: 2px 6px;
   outline: none;
@@ -296,14 +298,14 @@
 }
 
 .inlineInput:focus {
-  border-color: #8774E1;
+  border-color: var(--accent);
 }
 
 /* ── Empty state ─────────────────────────────────────────────────────────── */
 .empty {
   padding: 8px 8px;
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.18);
+  color: var(--text-faint);
   text-align: left;
   user-select: none;
 }
@@ -321,17 +323,17 @@
   align-items: center;
   gap: 8px;
   padding: 6px 8px;
-  border-radius: 7px;
+  border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.12s;
 }
 
 .searchResultRow:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: var(--hover-surface);
 }
 
 .searchResultActive {
-  background-color: rgba(135, 116, 225, 0.12) !important;
+  background-color: var(--selected-surface) !important;
 }
 
 .searchResultIcon {
@@ -352,19 +354,19 @@
 .searchResultTitle {
   font-size: 0.81rem;
   font-weight: 400;
-  color: rgba(232, 230, 227, 0.8);
+  color: var(--text-secondary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .searchResultActive .searchResultTitle {
-  color: #c4b8f5;
+  color: var(--text-primary);
 }
 
 .searchResultMeta {
   font-size: 0.68rem;
-  color: rgba(255, 255, 255, 0.2);
+  color: var(--text-faint);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -372,9 +374,9 @@
 
 /* ── Search highlight ────────────────────────────────────────────────────── */
 .highlight {
-  color: #8774E1;
-  font-weight: 600;
-  background: rgba(135, 116, 225, 0.15);
-  border-radius: 2px;
+  color: var(--text-primary);
+  font-weight: 700;
+  background: rgba(10, 10, 11, 0.1);
+  border-radius: 3px;
   padding: 0 1px;
 }

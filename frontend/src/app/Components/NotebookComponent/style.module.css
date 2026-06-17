@@ -8,12 +8,12 @@
     justify-content: space-between;
     gap: 0.5rem;
     position: relative;
-    border-radius: 10px;
+    border-radius: 12px;
     transition: background-color 0.3s;
 }
 
 .container:hover {
-    background-color: #3a3a3a;
+    background-color: var(--hover-surface);
 }
 
 .container > p {
@@ -23,7 +23,7 @@
 }
 
 .container > p > a {
-    color: #fff;
+    color: var(--text-primary);
     text-decoration: none;
     font-weight: 600;
     font-size: large;
@@ -45,18 +45,18 @@
     gap: 2px;
     cursor: pointer;
     padding: 0.25rem 0.5rem;
-    border-radius: 6px;
+    border-radius: 7px;
     transition: background-color 0.3s;
     user-select: none;
     flex-shrink: 0;
 }
 
 .dotsMenu:hover {
-    background-color: #4a4a4a;
+    background-color: var(--hover-surface-strong);
 }
 
 .dotsMenu span {
-    color: #fff;
+    color: var(--text-secondary);
     font-size: 1.2rem;
     line-height: 0.2rem;
     font-weight: bold;
@@ -67,10 +67,12 @@
     right: 0;
     top: 100%;
     margin-top: 0.25rem;
-    background-color: #2d2d2d;
-    border: 2px solid #444;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    background: var(--glass-bg-strong);
+    backdrop-filter: var(--glass-blur-strong);
+    -webkit-backdrop-filter: var(--glass-blur-strong);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    box-shadow: var(--glass-shadow-lg), var(--glass-highlight);
     z-index: 100;
     min-width: 150px;
     overflow: hidden;
@@ -93,7 +95,7 @@
     padding: 0.75rem 1rem;
     background: none;
     border: none;
-    color: #fff;
+    color: var(--text-secondary);
     text-align: left;
     cursor: pointer;
     display: flex;
@@ -101,15 +103,17 @@
     gap: 0.5rem;
     font-size: 0.95rem;
     font-weight: 500;
-    transition: background-color 0.2s;
+    transition: background-color 0.2s, color 0.2s;
 }
 
 .optionButton:hover {
-    background-color: #3a3a3a;
+    background-color: var(--hover-surface-strong);
+    color: var(--text-primary);
 }
 
 .optionButton:last-child:hover {
-    background-color: #5a2020;
+    background-color: var(--danger-soft);
+    color: var(--danger);
 }
 
 .icon {
