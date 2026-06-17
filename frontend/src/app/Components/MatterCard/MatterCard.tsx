@@ -398,7 +398,7 @@ export default function MatterCard({
                 <div 
                     style={{
                         position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-                        backgroundColor: 'rgba(10,10,20,0.28)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', zIndex: 1000,
+                        backgroundColor: 'rgba(0,0,0,0.60)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', zIndex: 1000,
                         display: 'flex', justifyContent: 'center', alignItems: 'center'
                     }}
                     onClick={handleCloseSubMatterModal}
@@ -423,7 +423,7 @@ export default function MatterCard({
                                     placeholder="Nome da submatéria"
                                     style={{
                                         width: '100%', padding: '0.8rem', borderRadius: '10px',
-                                        border: '1px solid var(--glass-border-soft)', backgroundColor: 'rgba(255,255,255,0.6)',
+                                        border: '1px solid var(--glass-border-soft)', backgroundColor: 'var(--input-bg)',
                                         color: 'var(--text-primary)', marginBottom: '1.5rem', outline: 'none'
                                     }}
                                     autoFocus
@@ -442,7 +442,7 @@ export default function MatterCard({
                                         onClick={handleCloseSubMatterModal}
                                         style={{
                                             padding: '0.6rem 1.2rem', borderRadius: '10px', border: '1px solid var(--glass-border-soft)',
-                                            backgroundColor: 'rgba(255,255,255,0.6)', color: 'var(--text-secondary)', cursor: 'pointer'
+                                            backgroundColor: 'var(--cancel-bg)', color: 'var(--text-secondary)', cursor: 'pointer'
                                         }}
                                     >
                                         Cancelar
@@ -472,7 +472,7 @@ export default function MatterCard({
                                         onClick={handleCloseSubMatterModal}
                                         style={{
                                             padding: '0.6rem 1.2rem', borderRadius: '10px', border: '1px solid var(--glass-border-soft)',
-                                            backgroundColor: 'rgba(255,255,255,0.6)', color: 'var(--text-secondary)', cursor: 'pointer'
+                                            backgroundColor: 'var(--cancel-bg)', color: 'var(--text-secondary)', cursor: 'pointer'
                                         }}
                                     >
                                         Cancelar

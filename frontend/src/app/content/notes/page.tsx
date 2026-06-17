@@ -482,9 +482,9 @@ export default function NotesPage() {
 
   const statusMap: Record<SaveStatus, { label: string; color: string }> = {
     idle:    { label: "",               color: "transparent" },
-    unsaved: { label: "Não salvo",      color: "rgba(10,10,11,0.45)" },
-    saving:  { label: "Salvando…",      color: "rgba(10,10,11,0.55)" },
-    saved:   { label: "Salvo",          color: "rgba(10,10,11,0.8)" },
+    unsaved: { label: "Não salvo",      color: "rgba(242,242,245,0.42)" },
+    saving:  { label: "Salvando…",      color: "rgba(242,242,245,0.55)" },
+    saved:   { label: "Salvo",          color: "rgba(242,242,245,0.80)" },
     error:   { label: "Erro ao salvar", color: "#c0392b" },
   };
 

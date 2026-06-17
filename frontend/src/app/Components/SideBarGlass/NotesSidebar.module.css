@@ -286,7 +286,7 @@
 
 .inlineInput {
   flex: 1;
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--input-bg);
   border: 1px solid var(--accent-border);
   border-radius: 6px;
   color: var(--text-primary);
@@ -376,7 +376,7 @@
 .highlight {
   color: var(--text-primary);
   font-weight: 700;
-  background: rgba(10, 10, 11, 0.1);
+  background: rgba(242, 242, 245, 0.15);
   border-radius: 3px;
   padding: 0 1px;
 }
