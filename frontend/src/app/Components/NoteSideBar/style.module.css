@@ -308,7 +308,7 @@
 
 .inlineInput {
   flex: 1;
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--input-bg);
   border: 1px solid var(--accent-border);
   border-radius: 6px;
   color: var(--text-primary);

@@ -75,7 +75,7 @@
 }
 
 .mattersContent::-webkit-scrollbar-thumb:hover {
-  background: rgba(10, 10, 11, 0.3);
+  background: rgba(242, 242, 245, 0.3);
 }
 
 /* ── Empty / loading states ──────────────────────────────────────────── */

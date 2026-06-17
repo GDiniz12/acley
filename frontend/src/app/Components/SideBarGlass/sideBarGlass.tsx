@@ -141,7 +141,7 @@ function HighlightedText({ text, query }: { text: string; query: string }) {
         <>
             {text.slice(0, idx)}
             <mark style={{
-                background: "rgba(10,10,11,0.1)",
+                background: "rgba(242,242,245,0.15)",
                 color: "var(--text-primary)",
                 borderRadius: "3px",
                 padding: "0 1px",
