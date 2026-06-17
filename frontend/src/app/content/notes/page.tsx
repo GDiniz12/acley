@@ -482,10 +482,10 @@ export default function NotesPage() {
 
   const statusMap: Record<SaveStatus, { label: string; color: string }> = {
     idle:    { label: "",               color: "transparent" },
-    unsaved: { label: "Não salvo",      color: "rgba(255,200,80,0.75)" },
-    saving:  { label: "Salvando…",      color: "rgba(135,116,225,0.75)" },
-    saved:   { label: "Salvo",          color: "rgba(74,222,128,0.75)" },
-    error:   { label: "Erro ao salvar", color: "rgba(248,113,113,0.75)" },
+    unsaved: { label: "Não salvo",      color: "rgba(10,10,11,0.45)" },
+    saving:  { label: "Salvando…",      color: "rgba(10,10,11,0.55)" },
+    saved:   { label: "Salvo",          color: "rgba(10,10,11,0.8)" },
+    error:   { label: "Erro ao salvar", color: "#c0392b" },
   };
 
   const wordCount = selectedNoteId

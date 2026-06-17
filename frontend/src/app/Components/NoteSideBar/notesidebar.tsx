@@ -197,7 +197,7 @@ export default function NotesSidebarSection() {
     if (!creating || creating.parentFolderId !== parentFolderId) return null;
     return (
       <div className={styles.createRow} style={{ paddingLeft: `${12 + depth * 14}px` }}>
-        <span className={styles.rowIcon} style={{ color: "rgba(135,116,225,0.6)" }}>
+        <span className={styles.rowIcon} style={{ color: "var(--text-tertiary)" }}>
           {creating.type === "note" ? <NoteIcon /> : <FolderIcon open={false} />}
         </span>
         <input
@@ -227,7 +227,7 @@ export default function NotesSidebarSection() {
       >
         {isRenaming ? (
           <>
-            <span className={styles.rowIcon} style={{ color: "rgba(135,116,225,0.6)" }}><NoteIcon /></span>
+            <span className={styles.rowIcon} style={{ color: "var(--text-tertiary)" }}><NoteIcon /></span>
             <input
               ref={renameRef}
               className={styles.inlineInput}
@@ -243,7 +243,7 @@ export default function NotesSidebarSection() {
               className={styles.itemBtn}
               onClick={() => { selectNote(note.id); router.push("/content/notes"); }}
             >
-              <span className={styles.rowIcon} style={{ color: isSelected ? "#8774E1" : "rgba(255,255,255,0.3)" }}>
+              <span className={styles.rowIcon} style={{ color: isSelected ? "var(--accent)" : "var(--text-faint)" }}>
                 <NoteIcon />
               </span>
               <span className={styles.itemLabel}>{note.title || "Sem título"}</span>
@@ -297,7 +297,7 @@ export default function NotesSidebarSection() {
               >
                 <ChevronIcon open={isOpen} />
               </button>
-              <span className={styles.rowIcon} style={{ color: "#8774E1" }}><FolderIcon open={isOpen} /></span>
+              <span className={styles.rowIcon} style={{ color: "var(--accent)" }}><FolderIcon open={isOpen} /></span>
               <input
                 ref={renameRef}
                 className={styles.inlineInput}
@@ -326,7 +326,7 @@ export default function NotesSidebarSection() {
                 className={styles.folderBtn}
                 onClick={(e) => { e.stopPropagation(); handleFolderSelect(folder.id); }}
               >
-                <span className={styles.rowIcon} style={{ color: isFolderSelected ? "#8774E1" : "rgba(135,116,225,0.65)" }}>
+                <span className={styles.rowIcon} style={{ color: isFolderSelected ? "var(--accent)" : "var(--text-tertiary)" }}>
                   <FolderIcon open={isOpen} />
                 </span>
                 <span className={styles.itemLabel}>{folder.name}</span>

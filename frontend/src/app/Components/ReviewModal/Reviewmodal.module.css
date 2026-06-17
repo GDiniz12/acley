@@ -1,12 +1,13 @@
 .modalOverlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.88);
+  background-color: rgba(10, 10, 20, 0.32);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 2000;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   animation: fadeIn 0.2s ease-out;
   padding: 1rem;
 }
@@ -17,14 +18,16 @@
 }
 
 .modalContent {
-  background: #1e1d1c;
+  background: var(--glass-bg-strong);
+  backdrop-filter: var(--glass-blur-strong);
+  -webkit-backdrop-filter: var(--glass-blur-strong);
   padding: 2.25rem;
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 22px;
+  border: 1px solid var(--glass-border);
   width: 90%;
   max-width: 680px;
   max-height: 88vh;
-  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.8);
+  box-shadow: var(--glass-shadow-lg), var(--glass-highlight);
   position: relative;
   display: flex;
   flex-direction: column;
@@ -32,12 +35,12 @@
   animation: slideUp 0.25s ease-out;
   overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: rgba(135, 116, 225, 0.3) transparent;
+  scrollbar-color: var(--accent-border) transparent;
 }
 
 .modalContent::-webkit-scrollbar { width: 4px; }
 .modalContent::-webkit-scrollbar-thumb {
-  background: rgba(135, 116, 225, 0.3);
+  background: var(--accent-border);
   border-radius: 4px;
 }
 
@@ -51,9 +54,9 @@
   position: absolute;
   top: 1rem;
   right: 1rem;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid var(--glass-border-soft);
+  color: var(--text-tertiary);
   font-size: 1.1rem;
   cursor: pointer;
   width: 32px;
@@ -61,15 +64,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
+  border-radius: 10px;
   transition: all 0.2s;
   z-index: 10;
 }
 
 .closeButton:hover {
-  background-color: rgba(255, 255, 255, 0.07);
-  color: rgba(255, 255, 255, 0.75);
-  border-color: rgba(255, 255, 255, 0.18);
+  background-color: rgba(255, 255, 255, 0.9);
+  color: var(--text-primary);
+  border-color: var(--accent-border);
 }
 
 /* ── Header ───────────────────────────────────────────────────────────── */
@@ -81,7 +84,7 @@
 }
 
 .header h2 {
-  color: #fff;
+  color: var(--text-primary);
   margin: 0;
   font-size: 1.45rem;
   font-weight: 700;
@@ -90,21 +93,21 @@
 
 .progressBar {
   width: 100%;
-  height: 3px;
-  background-color: rgba(255, 255, 255, 0.06);
+  height: 4px;
+  background-color: var(--glass-hairline);
   border-radius: 10px;
   overflow: hidden;
 }
 
 .progressFill {
   height: 100%;
-  background: linear-gradient(90deg, #8774E1 0%, #a896ef 100%);
+  background: var(--accent);
   transition: width 0.35s ease;
   border-radius: 10px;
 }
 
 .progressText {
-  color: rgba(255, 255, 255, 0.25);
+  color: var(--text-tertiary);
   margin: 0;
   font-size: 0.75rem;
   font-weight: 500;
@@ -119,7 +122,7 @@
   align-items: center;
   justify-content: center;
   padding: 3rem;
-  color: rgba(255, 255, 255, 0.3);
+  color: var(--text-tertiary);
   gap: 1.25rem;
 }
 
@@ -130,10 +133,10 @@
 
 .backButton {
   padding: 0.6rem 1.5rem;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 8px;
-  color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid var(--glass-border-soft);
+  border-radius: 10px;
+  color: var(--text-secondary);
   font-size: 0.88rem;
   font-weight: 500;
   cursor: pointer;
@@ -142,9 +145,9 @@
 }
 
 .backButton:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.3);
-  color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.9);
+  border-color: var(--accent-border);
+  color: var(--text-primary);
 }
 
 /* ── Card container ───────────────────────────────────────────────────── */
@@ -157,9 +160,9 @@
 
 /* ── Flashcard ────────────────────────────────────────────────────────── */
 .card {
-  background-color: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.45);
+  border: 1px solid var(--glass-border-soft);
+  border-radius: 16px;
   padding: 2rem;
   display: flex;
   flex-direction: column;
@@ -169,7 +172,7 @@
 }
 
 .card:hover {
-  border-color: rgba(135, 116, 225, 0.2);
+  border-color: var(--accent-border);
 }
 
 .cardSide {
@@ -180,7 +183,7 @@
 }
 
 .sideLabel {
-  color: rgba(255, 255, 255, 0.25);
+  color: var(--text-tertiary);
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -189,7 +192,7 @@
 }
 
 .cardContent {
-  color: #e8e6e3;
+  color: var(--text-primary);
   font-size: 1.2rem;
   line-height: 1.65;
   flex: 1;
@@ -198,8 +201,9 @@
   justify-content: center;
   text-align: center;
   padding: 1rem;
-  background-color: rgba(0, 0, 0, 0.15);
-  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.5);
+  border: 1px solid var(--glass-hairline);
+  border-radius: 12px;
   min-height: 130px;
   word-break: break-word;
 }
@@ -208,10 +212,10 @@
 .showAnswerButton {
   width: 100%;
   padding: 0.85rem;
-  background: transparent;
-  border: 1px solid rgba(135, 116, 225, 0.4);
-  border-radius: 10px;
-  color: #8774E1;
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  color: var(--on-accent);
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
@@ -220,8 +224,8 @@
 }
 
 .showAnswerButton:hover {
-  background: rgba(135, 116, 225, 0.1);
-  border-color: #8774E1;
+  background: var(--accent-hover);
+  box-shadow: var(--accent-glow);
 }
 
 /* ── Difficulty buttons ───────────────────────────────────────────────── */
@@ -233,8 +237,8 @@
 
 .difficultyButton {
   padding: 0.85rem 0.5rem;
-  border: 1px solid;
-  border-radius: 10px;
+  border: 1px solid var(--glass-border-soft);
+  border-radius: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
@@ -242,7 +246,8 @@
   flex-direction: column;
   gap: 0.35rem;
   align-items: center;
-  background-color: transparent;
+  background-color: rgba(255, 255, 255, 0.45);
+  color: var(--text-secondary);
   font-family: inherit;
 }
 
@@ -254,31 +259,32 @@
 .buttonLabel { font-size: 0.9rem; }
 .buttonTime  { font-size: 0.7rem; opacity: 0.65; font-weight: 400; }
 
+/* Tonal hierarchy: easy = lightest, hard = darkest (black) */
 .difficultyButton.easy {
-  border-color: rgba(92, 194, 96, 0.35);
-  color: #5cc260;
+  color: var(--tone-b);
 }
 .difficultyButton.easy:hover:not(:disabled) {
-  background: rgba(92, 194, 96, 0.1);
-  border-color: #5cc260;
+  background: rgba(255, 255, 255, 0.85);
+  border-color: var(--tone-b);
+  color: var(--text-primary);
 }
 
 .difficultyButton.medium {
-  border-color: rgba(255, 152, 0, 0.35);
-  color: #FF9800;
+  color: var(--tone-a);
 }
 .difficultyButton.medium:hover:not(:disabled) {
-  background: rgba(255, 152, 0, 0.1);
-  border-color: #FF9800;
+  background: rgba(255, 255, 255, 0.85);
+  border-color: var(--tone-a);
+  color: var(--text-primary);
 }
 
 .difficultyButton.hard {
-  border-color: rgba(246, 95, 84, 0.35);
-  color: #f65f54;
+  color: var(--text-primary);
 }
 .difficultyButton.hard:hover:not(:disabled) {
-  background: rgba(246, 95, 84, 0.1);
-  border-color: #f65f54;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
 }
 
 /* ── Status badge ─────────────────────────────────────────────────────── */
@@ -297,21 +303,21 @@
 }
 
 .status-new {
-  background-color: rgba(173, 70, 192, 0.12);
-  color: #ad46c0;
-  border: 1px solid rgba(173, 70, 192, 0.3);
+  background-color: rgba(10, 10, 11, 0.05);
+  color: var(--tone-a);
+  border: 1px solid var(--glass-border-soft);
 }
 
 .status-learn {
-  background-color: rgba(246, 95, 84, 0.12);
-  color: #f65f54;
-  border: 1px solid rgba(246, 95, 84, 0.3);
+  background-color: rgba(10, 10, 11, 0.05);
+  color: var(--tone-b);
+  border: 1px solid var(--glass-border-soft);
 }
 
 .status-review {
-  background-color: rgba(92, 194, 96, 0.12);
-  color: #5cc260;
-  border: 1px solid rgba(92, 194, 96, 0.3);
+  background-color: var(--accent);
+  color: var(--on-accent);
+  border: 1px solid var(--accent);
 }
 
 /* ── Responsive ───────────────────────────────────────────────────────── */
@@ -319,7 +325,7 @@
   .modalContent {
     padding: 1.75rem;
     gap: 1.5rem;
-    border-radius: 14px;
+    border-radius: 18px;
   }
 
   .header h2 { font-size: 1.25rem; }

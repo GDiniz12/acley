@@ -8,7 +8,7 @@
   align-items: center;
   gap: 1rem;
   background-color: transparent;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid var(--glass-hairline);
   cursor: pointer;
   transition: background-color 0.15s ease;
   box-sizing: border-box;
@@ -20,7 +20,7 @@
 }
 
 .matterCard:hover {
-  background-color: rgba(255, 255, 255, 0.03);
+  background-color: var(--hover-surface);
 }
 
 /* ── Left side ───────────────────────────────────────────────────────── */
@@ -37,10 +37,10 @@
   width: 22px;
   height: 22px;
   min-width: 22px;
-  background: rgba(135, 116, 225, 0.1);
-  border: 1px solid rgba(135, 116, 225, 0.25);
-  border-radius: 5px;
-  color: #8774E1;
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-border);
+  border-radius: 6px;
+  color: var(--accent);
   font-size: 1rem;
   font-weight: 600;
   display: flex;
@@ -53,12 +53,12 @@
 }
 
 .expandButton:hover {
-  background: rgba(135, 116, 225, 0.2);
-  border-color: #8774E1;
+  background: var(--accent-soft-hover);
+  border-color: var(--accent);
 }
 
 .matterName {
-  color: #e8e6e3;
+  color: var(--text-primary);
   font-size: 0.95rem;
   font-weight: 500;
   text-overflow: ellipsis;
@@ -82,14 +82,14 @@
 
 .matterStats > span {
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: 700;
   width: 60px;
   text-align: center;
 }
 
-.statNew      { color: #ad46c0; }
-.statLearning { color: #f65f54; }
-.statReview   { color: #5cc260; }
+.statNew      { color: var(--tone-a); }
+.statLearning { color: var(--tone-b); }
+.statReview   { color: var(--tone-c); }
 
 /* ── Dots menu ───────────────────────────────────────────────────────── */
 .menuWrapper {
@@ -109,7 +109,7 @@
   cursor: pointer;
   width: 28px;
   height: 28px;
-  border-radius: 6px;
+  border-radius: 7px;
   transition: background-color 0.15s ease;
   opacity: 0;
 }
@@ -120,18 +120,18 @@
 }
 
 .dotsMenu:hover {
-  background-color: rgba(255, 255, 255, 0.07);
+  background-color: var(--hover-surface-strong);
 }
 
 .dot {
   width: 3px;
   height: 3px;
-  background-color: rgba(255, 255, 255, 0.45);
+  background-color: var(--text-tertiary);
   border-radius: 50%;
 }
 
 .dotsMenu:hover .dot {
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: var(--text-primary);
 }
 
 .optionsMenu {
@@ -139,10 +139,12 @@
   right: 0;
   top: 100%;
   margin-top: 4px;
-  background-color: #1e1d1c;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+  background: var(--glass-bg-strong);
+  backdrop-filter: var(--glass-blur-strong);
+  -webkit-backdrop-filter: var(--glass-blur-strong);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  box-shadow: var(--glass-shadow-lg), var(--glass-highlight);
   z-index: 100;
   min-width: 130px;
   overflow: hidden;
@@ -159,7 +161,7 @@
   padding: 0.55rem 0.85rem;
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--text-secondary);
   text-align: left;
   cursor: pointer;
   font-size: 0.85rem;
@@ -169,20 +171,20 @@
 }
 
 .optionButton:hover {
-  background-color: rgba(255, 255, 255, 0.06);
-  color: #fff;
+  background-color: var(--hover-surface-strong);
+  color: var(--text-primary);
 }
 
 .optionButton.delete:hover {
-  background-color: rgba(244, 67, 54, 0.12);
-  color: #f65f54;
+  background-color: var(--danger-soft);
+  color: var(--danger);
 }
 
 /* ── Submatters ──────────────────────────────────────────────────────── */
 .subMattersContainer {
   width: 100%;
-  background-color: rgba(0, 0, 0, 0.15);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  background-color: rgba(10, 10, 11, 0.03);
+  border-bottom: 1px solid var(--glass-hairline);
   animation: slideDown 0.18s ease-out;
 }
 
@@ -201,7 +203,7 @@
   gap: 1rem;
   cursor: pointer;
   transition: background-color 0.15s;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid var(--glass-hairline);
   box-sizing: border-box;
   position: relative;
 }
@@ -211,11 +213,11 @@
 }
 
 .subMatterCard:hover {
-  background-color: rgba(255, 255, 255, 0.02);
+  background-color: var(--hover-surface);
 }
 
 .subMatterName {
-  color: rgba(232, 230, 227, 0.55);
+  color: var(--text-secondary);
   font-size: 0.88rem;
   font-weight: 400;
   text-overflow: ellipsis;
@@ -257,7 +259,7 @@
 .loadingSubMatters,
 .noSubMatters {
   padding: 1.25rem 3rem;
-  color: rgba(255, 255, 255, 0.2);
+  color: var(--text-faint);
   font-size: 0.82rem;
   text-align: center;
 }

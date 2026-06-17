@@ -18,10 +18,11 @@
     align-items: center;
     width: 10%;
     height: 40%;
+    color: var(--text-secondary);
 }
 
 .menuIcon:hover {
-    background-color: #4141418c;
+    background-color: var(--hover-surface-strong);
 }
 
 .search {
@@ -29,8 +30,8 @@
     height: 50%;
     margin-right: 5%;
     border-radius: 50px;
-    border: solid transparent;
-    background-color: #4141418c;
+    border: 1px solid var(--glass-border-soft);
+    background-color: rgba(255, 255, 255, 0.5);
 }
 
 .search > input {
@@ -38,7 +39,7 @@
     height: 100%;
     border-radius: 30px;
     background-color: transparent;
-    color: #dedbdbcd;
+    color: var(--text-primary);
     border: solid 3px transparent;
     outline: none;
     box-sizing: border-box;
@@ -46,5 +47,5 @@
 }
 
 .search > input:focus {
-    border: solid 3px #8774E1;
+    border: solid 3px var(--accent);
 }

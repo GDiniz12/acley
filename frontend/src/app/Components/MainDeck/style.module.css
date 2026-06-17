@@ -3,9 +3,12 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 12px;
-  background-color: #1e1d1c;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-shadow), var(--glass-highlight);
   overflow: hidden;
   box-sizing: border-box;
 }
@@ -17,7 +20,7 @@
   align-items: center;
   padding: 0 1.25rem;
   height: 3rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--glass-hairline);
   flex-shrink: 0;
   box-sizing: border-box;
 }
@@ -26,7 +29,7 @@
   margin: 0;
   font-size: 0.78rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.3);
+  color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
@@ -43,7 +46,7 @@
   font-weight: 600;
   width: 60px;
   text-align: center;
-  color: rgba(255, 255, 255, 0.25);
+  color: var(--text-faint);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -55,7 +58,7 @@
   overflow-x: hidden;
   max-height: 480px;
   scrollbar-width: thin;
-  scrollbar-color: rgba(135, 116, 225, 0.3) transparent;
+  scrollbar-color: var(--accent-border) transparent;
 }
 
 .mattersContent::-webkit-scrollbar {
@@ -67,17 +70,17 @@
 }
 
 .mattersContent::-webkit-scrollbar-thumb {
-  background: rgba(135, 116, 225, 0.3);
+  background: var(--accent-border);
   border-radius: 4px;
 }
 
 .mattersContent::-webkit-scrollbar-thumb:hover {
-  background: rgba(135, 116, 225, 0.5);
+  background: rgba(10, 10, 11, 0.3);
 }
 
 /* ── Empty / loading states ──────────────────────────────────────────── */
 .emptyMessage {
-  color: rgba(255, 255, 255, 0.25);
+  color: var(--text-tertiary);
   text-align: center;
   padding: 3rem 2rem;
   font-size: 0.9rem;
@@ -85,7 +88,7 @@
 }
 
 .loadingMessage {
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--text-secondary);
   text-align: center;
   padding: 3rem 2rem;
   font-size: 0.9rem;

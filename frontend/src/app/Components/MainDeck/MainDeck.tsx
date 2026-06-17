@@ -209,20 +209,21 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
             {showModal && (
                 <div style={{
                     position: 'fixed', inset: 0,
-                    backgroundColor: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)',
+                    backgroundColor: 'rgba(10,10,20,0.28)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
                     zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center',
                     padding: '1rem',
                 }} onClick={handleCloseModal}>
                     <div style={{
-                        backgroundColor: '#1e1d1c', padding: '2rem', borderRadius: '14px',
+                        background: 'var(--glass-bg-strong)', backdropFilter: 'var(--glass-blur-strong)', WebkitBackdropFilter: 'var(--glass-blur-strong)',
+                        padding: '2rem', borderRadius: '20px',
                         width: '420px', maxWidth: '100%',
-                        border: '1px solid rgba(255,255,255,0.1)',
-                        boxShadow: '0 24px 60px rgba(0,0,0,0.7)',
+                        border: '1px solid var(--glass-border)',
+                        boxShadow: 'var(--glass-shadow-lg), var(--glass-highlight)',
                     }} onClick={e => e.stopPropagation()}>
                         {modalType === 'rename' ? (
                             <>
-                                <h2 style={{ marginBottom: '0.5rem', color: '#fff', fontSize: '1.25rem', fontWeight: 700, letterSpacing: '-0.02em' }}>Renomear matéria</h2>
-                                <p style={{ marginBottom: '1.25rem', color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem' }}>Digite o novo nome</p>
+                                <h2 style={{ marginBottom: '0.5rem', color: 'var(--text-primary)', fontSize: '1.25rem', fontWeight: 700, letterSpacing: '-0.02em' }}>Renomear matéria</h2>
+                                <p style={{ marginBottom: '1.25rem', color: 'var(--text-tertiary)', fontSize: '0.85rem' }}>Digite o novo nome</p>
                                 <input
                                     type="text"
                                     value={newName}
@@ -231,34 +232,34 @@ export default function MainDeck({ notebookId, refreshTrigger }: MainDeckProps) 
                                     autoFocus
                                     style={{
                                         width: '100%', padding: '0.7rem 0.85rem', borderRadius: '8px',
-                                        border: '1px solid rgba(255,255,255,0.1)', backgroundColor: 'rgba(0,0,0,0.2)',
-                                        color: '#e8e6e3', fontSize: '0.9rem', outline: 'none',
+                                        border: '1px solid var(--glass-border-soft)', backgroundColor: 'rgba(255,255,255,0.6)',
+                                        color: 'var(--text-primary)', fontSize: '0.9rem', outline: 'none',
                                         boxSizing: 'border-box', fontFamily: 'inherit',
                                     }}
                                 />
                                 <div style={{ display: 'flex', gap: '0.65rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
-                                    <button onClick={handleRenameMatter} style={{ padding: '0.55rem 1.25rem', borderRadius: '8px', border: '1px solid rgba(135,116,225,0.5)', backgroundColor: 'transparent', color: '#8774E1', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer', fontFamily: 'inherit' }}>
+                                    <button onClick={handleRenameMatter} style={{ padding: '0.55rem 1.25rem', borderRadius: '10px', border: '1px solid var(--accent)', backgroundColor: 'var(--accent)', color: 'var(--on-accent)', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer', fontFamily: 'inherit' }}>
                                         Confirmar
                                     </button>
-                                    <button onClick={handleCloseModal} style={{ padding: '0.55rem 1.25rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.12)', backgroundColor: 'transparent', color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem', cursor: 'pointer', fontFamily: 'inherit' }}>
+                                    <button onClick={handleCloseModal} style={{ padding: '0.55rem 1.25rem', borderRadius: '10px', border: '1px solid var(--glass-border-soft)', backgroundColor: 'rgba(255,255,255,0.6)', color: 'var(--text-secondary)', fontSize: '0.85rem', cursor: 'pointer', fontFamily: 'inherit' }}>
                                         Cancelar
                                     </button>
                                 </div>
                             </>
                         ) : (
                             <>
-                                <h2 style={{ marginBottom: '0.5rem', color: '#fff', fontSize: '1.25rem', fontWeight: 700, letterSpacing: '-0.02em' }}>Excluir matéria</h2>
-                                <p style={{ marginBottom: '0.5rem', color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem' }}>
-                                    Tem certeza que deseja excluir <strong style={{ color: 'rgba(255,255,255,0.7)' }}>&quot;{selectedMatter?.name}&quot;</strong>?
+                                <h2 style={{ marginBottom: '0.5rem', color: 'var(--text-primary)', fontSize: '1.25rem', fontWeight: 700, letterSpacing: '-0.02em' }}>Excluir matéria</h2>
+                                <p style={{ marginBottom: '0.5rem', color: 'var(--text-tertiary)', fontSize: '0.85rem' }}>
+                                    Tem certeza que deseja excluir <strong style={{ color: 'var(--text-secondary)' }}>&quot;{selectedMatter?.name}&quot;</strong>?
                                 </p>
-                                <p style={{ color: 'rgba(246,95,84,0.75)', fontSize: '0.8rem', marginBottom: '1.5rem' }}>
+                                <p style={{ color: 'var(--danger)', fontSize: '0.8rem', marginBottom: '1.5rem' }}>
                                     Todas as submatérias serão excluídas. Essa ação não pode ser desfeita.
                                 </p>
                                 <div style={{ display: 'flex', gap: '0.65rem', justifyContent: 'flex-end' }}>
-                                    <button onClick={handleDeleteMatter} style={{ padding: '0.55rem 1.25rem', borderRadius: '8px', border: '1px solid rgba(246,95,84,0.4)', backgroundColor: 'transparent', color: '#f65f54', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer', fontFamily: 'inherit' }}>
+                                    <button onClick={handleDeleteMatter} style={{ padding: '0.55rem 1.25rem', borderRadius: '10px', border: '1px solid var(--danger)', backgroundColor: 'var(--danger)', color: '#fff', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer', fontFamily: 'inherit' }}>
                                         Excluir
                                     </button>
-                                    <button onClick={handleCloseModal} style={{ padding: '0.55rem 1.25rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.12)', backgroundColor: 'transparent', color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem', cursor: 'pointer', fontFamily: 'inherit' }}>
+                                    <button onClick={handleCloseModal} style={{ padding: '0.55rem 1.25rem', borderRadius: '10px', border: '1px solid var(--glass-border-soft)', backgroundColor: 'rgba(255,255,255,0.6)', color: 'var(--text-secondary)', fontSize: '0.85rem', cursor: 'pointer', fontFamily: 'inherit' }}>
                                         Cancelar
                                     </button>
                                 </div>

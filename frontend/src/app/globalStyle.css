@@ -1,5 +1,96 @@
-body {
-    background-color: #000;
+/* ===========================================================================
+   ACLEY · Liquid Glass Design System  (white-primary / black accents)
+   --------------------------------------------------------------------------
+   A light, translucent material language: frosted glass surfaces that blur
+   and refract the ambient light behind them, hairline highlights, soft
+   depth shadows, and black used as the single prominent accent/action color.
+   =========================================================================== */
+
+:root {
+    /* ── Canvas ───────────────────────────────────────────────────────── */
+    --bg-base: #eceef2;
+    --bg-base-2: #f6f7f9;
+
+    /* ── Text (black-on-light) ────────────────────────────────────────── */
+    --text-primary: #0a0a0b;
+    --text-secondary: rgba(10, 10, 11, 0.62);
+    --text-tertiary: rgba(10, 10, 11, 0.42);
+    --text-faint: rgba(10, 10, 11, 0.26);
+    --text-ghost: rgba(10, 10, 11, 0.14);
+    --on-accent: #ffffff;
+
+    /* ── Liquid glass surfaces ────────────────────────────────────────── */
+    --glass-bg: rgba(255, 255, 255, 0.55);
+    --glass-bg-strong: rgba(255, 255, 255, 0.74);
+    --glass-bg-subtle: rgba(255, 255, 255, 0.36);
+    --glass-bg-faint: rgba(255, 255, 255, 0.22);
+
+    --glass-border: rgba(255, 255, 255, 0.7);
+    --glass-border-soft: rgba(10, 10, 11, 0.08);
+    --glass-hairline: rgba(10, 10, 11, 0.06);
+
+    --glass-blur: blur(22px) saturate(180%);
+    --glass-blur-strong: blur(34px) saturate(190%);
+
+    /* highlight = top inner sheen, shadow = floating depth */
+    --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.9),
+                       inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+    --glass-shadow: 0 10px 34px rgba(10, 10, 20, 0.10),
+                    0 2px 8px rgba(10, 10, 20, 0.06);
+    --glass-shadow-lg: 0 28px 70px rgba(10, 10, 20, 0.18),
+                       0 8px 24px rgba(10, 10, 20, 0.10);
+
+    /* ── Black accent (prominent / interactive) ───────────────────────── */
+    --accent: #0a0a0b;
+    --accent-hover: #232326;
+    --accent-soft: rgba(10, 10, 11, 0.055);
+    --accent-soft-hover: rgba(10, 10, 11, 0.1);
+    --accent-border: rgba(10, 10, 11, 0.16);
+    --accent-glow: 0 8px 24px rgba(10, 10, 11, 0.28);
+
+    /* ── Interaction surfaces ─────────────────────────────────────────── */
+    --hover-surface: rgba(10, 10, 11, 0.045);
+    --hover-surface-strong: rgba(10, 10, 11, 0.08);
+    --selected-surface: rgba(10, 10, 11, 0.07);
+
+    /* ── Semantic (kept minimal & desaturated for meaning) ────────────── */
+    --danger: #c0392b;
+    --danger-soft: rgba(192, 57, 43, 0.1);
+    --danger-border: rgba(192, 57, 43, 0.28);
+    --tone-a: #3a3a3d;   /* "new"      */
+    --tone-b: #6b6b70;   /* "learning" */
+    --tone-c: #0a0a0b;   /* "review"   */
+
+    --radius: 16px;
+    --radius-sm: 10px;
+}
+
+* {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+}
+
+/* Ambient light field — gives the glass something to refract.
+   Kept monochrome (soft greys/whites) to stay within the white/black palette. */
+body {
+    position: relative;
+    min-height: 100vh;
+    background-image:
+        radial-gradient(60rem 60rem at 12% -10%, rgba(255, 255, 255, 0.95), transparent 55%),
+        radial-gradient(50rem 50rem at 100% 0%, rgba(180, 184, 195, 0.45), transparent 55%),
+        radial-gradient(55rem 55rem at 85% 105%, rgba(150, 154, 168, 0.4), transparent 55%),
+        radial-gradient(45rem 45rem at 0% 100%, rgba(200, 204, 214, 0.5), transparent 55%),
+        linear-gradient(180deg, var(--bg-base-2), var(--bg-base));
+    background-attachment: fixed;
+}
+
+::selection {
+    background: rgba(10, 10, 11, 0.85);
+    color: #fff;
 }

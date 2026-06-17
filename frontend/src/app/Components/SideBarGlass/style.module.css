@@ -16,14 +16,17 @@
 /* ── SIDEBAR ─────────────────────────────────────────────────────────────── */
 .containerSideBar {
     height: 100vh;
-    background-color: #1D1C1B;
+    background: var(--glass-bg-strong);
+    backdrop-filter: var(--glass-blur-strong);
+    -webkit-backdrop-filter: var(--glass-blur-strong);
     display: flex;
     flex-direction: column;
     overflow: hidden;
     transition:
         width 320ms cubic-bezier(0.4, 0, 0.2, 1),
         opacity 220ms ease;
-    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    border-right: 1px solid var(--glass-hairline);
+    box-shadow: 1px 0 0 rgba(255, 255, 255, 0.5) inset;
 }
 
 .sidebarOpen {
@@ -49,7 +52,7 @@
     gap: 6px;
     box-sizing: border-box;
     flex-shrink: 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    border-bottom: 1px solid var(--glass-hairline);
 }
 
 /* ── MENU ICON ───────────────────────────────────────────────────────────── */
@@ -60,37 +63,39 @@
 
 .menuIcon {
     cursor: pointer;
-    border-radius: 7px;
+    border-radius: 9px;
     padding: 5px;
     display: flex;
     justify-content: center;
     align-items: center;
     width: 34px;
     height: 34px;
-    transition: background-color 0.15s;
+    color: var(--text-secondary);
+    transition: background-color 0.15s, color 0.15s;
 }
 
 .menuIcon:hover,
 .menuIconActive {
-    background-color: rgba(255, 255, 255, 0.07);
+    background-color: var(--hover-surface-strong);
+    color: var(--text-primary);
 }
 
 /* ── SEARCH BAR ──────────────────────────────────────────────────────────── */
 .search {
     flex: 1;
     height: 30px;
-    border-radius: 6px;
-    background-color: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 9px;
+    background-color: rgba(255, 255, 255, 0.5);
+    border: 1px solid var(--glass-border-soft);
     margin-right: 4px;
 }
 
 .search > input {
     width: 100%;
     height: 100%;
-    border-radius: 6px;
+    border-radius: 9px;
     background-color: transparent;
-    color: rgba(232, 230, 227, 0.6);
+    color: var(--text-primary);
     border: none;
     outline: none;
     box-sizing: border-box;
@@ -100,12 +105,12 @@
 }
 
 .search > input:focus {
-    outline: 1.5px solid rgba(135, 116, 225, 0.5);
+    outline: 1.5px solid var(--accent-border);
     outline-offset: -1px;
 }
 
 .search > input::placeholder {
-    color: rgba(255, 255, 255, 0.2);
+    color: var(--text-faint);
 }
 
 /* ── TOOLTIP DROPDOWN ────────────────────────────────────────────────────── */
@@ -114,12 +119,14 @@
     top: calc(100% + 8px);
     left: 0;
     width: 200px;
-    background: #111110;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
+    background: var(--glass-bg-strong);
+    backdrop-filter: var(--glass-blur-strong);
+    -webkit-backdrop-filter: var(--glass-blur-strong);
+    border: 1px solid var(--glass-border);
+    border-radius: 14px;
     padding: 6px;
     z-index: 1000;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+    box-shadow: var(--glass-shadow-lg), var(--glass-highlight);
     transition:
         opacity 200ms ease,
         transform 200ms ease,
@@ -148,9 +155,9 @@
     gap: 10px;
     width: 100%;
     padding: 9px 12px;
-    border-radius: 8px;
+    border-radius: 10px;
     text-decoration: none;
-    color: rgba(255, 255, 255, 0.5);
+    color: var(--text-secondary);
     font-size: 13.5px;
     font-weight: 400;
     transition: background-color 150ms, color 150ms;
@@ -160,19 +167,19 @@
 }
 
 .tooltipItem:hover {
-    background-color: rgba(135, 116, 225, 0.15);
-    color: #fff;
+    background-color: var(--hover-surface-strong);
+    color: var(--text-primary);
 }
 
 .tooltipItemActive {
-    background-color: rgba(135, 116, 225, 0.18);
-    color: #8774E1;
+    background-color: var(--accent);
+    color: var(--on-accent);
     font-weight: 600;
 }
 
 .tooltipItemActive:hover {
-    background-color: rgba(135, 116, 225, 0.25);
-    color: #a896ef;
+    background-color: var(--accent-hover);
+    color: var(--on-accent);
 }
 
 .tooltipIcon {
@@ -192,7 +199,7 @@
     width: 5px;
     height: 5px;
     border-radius: 50%;
-    background: #8774E1;
+    background: currentColor;
     flex-shrink: 0;
 }
 
@@ -203,12 +210,12 @@
     overflow-x: hidden;
     padding: 8px 0;
     scrollbar-width: thin;
-    scrollbar-color: rgba(135, 116, 225, 0.2) transparent;
+    scrollbar-color: var(--accent-border) transparent;
 }
 
 .sidebarContent::-webkit-scrollbar { width: 3px; }
 .sidebarContent::-webkit-scrollbar-thumb {
-    background: rgba(135, 116, 225, 0.25);
+    background: var(--accent-border);
     border-radius: 3px;
 }
 
@@ -229,7 +236,7 @@
 .sectionTitle {
     font-size: 0.65rem;
     font-weight: 700;
-    color: rgba(255, 255, 255, 0.25);
+    color: var(--text-tertiary);
     letter-spacing: 0.09em;
     text-transform: uppercase;
     user-select: none;
@@ -241,18 +248,18 @@
     justify-content: center;
     width: 20px;
     height: 20px;
-    border-radius: 5px;
+    border-radius: 6px;
     border: none;
     background: transparent;
-    color: rgba(255, 255, 255, 0.3);
+    color: var(--text-tertiary);
     cursor: pointer;
     transition: background-color 0.15s, color 0.15s;
     padding: 0;
 }
 
 .sectionAction:hover:not(:disabled) {
-    background-color: rgba(135, 116, 225, 0.15);
-    color: #8774E1;
+    background-color: var(--hover-surface-strong);
+    color: var(--text-primary);
 }
 
 .sectionAction:disabled {
@@ -268,12 +275,11 @@
 }
 
 /* ── NOTEBOOK ITEM ───────────────────────────────────────────────────────── */
-/* Outer wrapper — holds the button + dots menu */
 .notebookItem {
     display: flex;
     align-items: center;
     width: 100%;
-    border-radius: 7px;
+    border-radius: 9px;
     padding: 0 4px 0 0;
     box-sizing: border-box;
     transition: background-color 0.15s;
@@ -281,7 +287,7 @@
 }
 
 .notebookItem:hover {
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: var(--hover-surface);
 }
 
 .notebookItem:hover .notebookDotsBtn {
@@ -289,16 +295,14 @@
 }
 
 .notebookItemActive {
-    background-color: rgba(135, 116, 225, 0.12);
+    background-color: var(--selected-surface);
 }
 
 .notebookItemActive:hover {
-    background-color: rgba(135, 116, 225, 0.18);
+    background-color: var(--hover-surface-strong);
 }
 
-/* The clickable button part (icon + name) */
 .notebookItemBtn {
-    /* button reset */
     appearance: none;
     -webkit-appearance: none;
     border: none;
@@ -312,7 +316,7 @@
     align-items: center;
     gap: 8px;
     padding: 6px 0 6px 8px;
-    color: rgba(232, 230, 227, 0.55);
+    color: var(--text-secondary);
     font-size: 0.83rem;
     font-weight: 400;
     overflow: hidden;
@@ -323,12 +327,12 @@
 }
 
 .notebookItemBtn:hover {
-    color: rgba(232, 230, 227, 0.85);
+    color: var(--text-primary);
 }
 
 .notebookItemActive .notebookItemBtn {
-    color: #c4b8f5;
-    font-weight: 500;
+    color: var(--text-primary);
+    font-weight: 600;
 }
 
 .notebookItemIcon {
@@ -339,8 +343,8 @@
 }
 
 .notebookItemActive .notebookItemIcon {
-    opacity: 0.85;
-    color: #8774E1;
+    opacity: 1;
+    color: var(--accent);
 }
 
 .notebookItemName {
@@ -365,8 +369,8 @@
     justify-content: center;
     background: transparent;
     border: none;
-    border-radius: 4px;
-    color: rgba(255, 255, 255, 0.35);
+    border-radius: 5px;
+    color: var(--text-tertiary);
     cursor: pointer;
     transition: all 0.12s;
     padding: 0;
@@ -375,8 +379,8 @@
 }
 
 .notebookDotsBtn:hover {
-    background: rgba(255, 255, 255, 0.08);
-    color: rgba(255, 255, 255, 0.8);
+    background: var(--hover-surface-strong);
+    color: var(--text-primary);
 }
 
 .notebookActionMenu {
@@ -384,12 +388,14 @@
     top: calc(100% + 3px);
     right: 0;
     width: 140px;
-    background: #111110;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
+    background: var(--glass-bg-strong);
+    backdrop-filter: var(--glass-blur-strong);
+    -webkit-backdrop-filter: var(--glass-blur-strong);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
     padding: 5px;
     z-index: 1100;
-    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.7);
+    box-shadow: var(--glass-shadow-lg), var(--glass-highlight);
     animation: menuPop 0.13s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -405,8 +411,8 @@
     padding: 0.45rem 0.6rem;
     background: transparent;
     border: none;
-    border-radius: 7px;
-    color: rgba(255, 255, 255, 0.6);
+    border-radius: 8px;
+    color: var(--text-secondary);
     font-size: 0.78rem;
     font-weight: 400;
     cursor: pointer;
@@ -416,26 +422,26 @@
 }
 
 .notebookMenuItem:hover {
-    background: rgba(255, 255, 255, 0.07);
-    color: #fff;
+    background: var(--hover-surface-strong);
+    color: var(--text-primary);
 }
 
 .notebookMenuItemDanger {
-    color: rgba(248, 113, 113, 0.65);
+    color: var(--danger);
 }
 
 .notebookMenuItemDanger:hover {
-    background: rgba(248, 113, 113, 0.1);
-    color: #f87171;
+    background: var(--danger-soft);
+    color: var(--danger);
 }
 
 /* ── NOTEBOOK INLINE RENAME INPUT ────────────────────────────────────────── */
 .notebookRenameInput {
     flex: 1;
-    background: rgba(135, 116, 225, 0.08);
-    border: 1px solid rgba(135, 116, 225, 0.35);
-    border-radius: 5px;
-    color: #fff;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid var(--accent-border);
+    border-radius: 7px;
+    color: var(--text-primary);
     font-size: 0.81rem;
     font-weight: 400;
     padding: 3px 7px;
@@ -446,8 +452,8 @@
 }
 
 .notebookRenameInput:focus {
-    border-color: #8774E1;
-    background: rgba(135, 116, 225, 0.12);
+    border-color: var(--accent);
+    background: rgba(255, 255, 255, 0.95);
 }
 
 /* ── EMPTY / LOADING ─────────────────────────────────────────────────────── */
@@ -455,7 +461,7 @@
 .sectionEmpty {
     padding: 8px 8px;
     font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.18);
+    color: var(--text-faint);
     text-align: left;
     user-select: none;
 }
@@ -467,11 +473,13 @@
     transform: translateY(-50%);
     width: 18px;
     height: 44px;
-    border: 1px solid rgba(255, 255, 255, 0.07);
+    border: 1px solid var(--glass-border-soft);
     border-left: none;
-    border-radius: 0 7px 7px 0;
-    background: #1D1C1B;
-    color: rgba(255, 255, 255, 0.25);
+    border-radius: 0 9px 9px 0;
+    background: var(--glass-bg-strong);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    color: var(--text-tertiary);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -482,15 +490,15 @@
         left 320ms cubic-bezier(0.4, 0, 0.2, 1),
         color 200ms,
         background-color 200ms;
-    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.25);
+    box-shadow: var(--glass-shadow);
 }
 
 .toggleBtnOpen   { left: 240px; }
-.toggleBtnClosed { left: 0; border-left: 1px solid rgba(255, 255, 255, 0.07); border-radius: 0 7px 7px 0; }
+.toggleBtnClosed { left: 0; border-left: 1px solid var(--glass-border-soft); border-radius: 0 9px 9px 0; }
 
 .toggleBtn:hover {
-    background-color: #252422;
-    color: #8774E1;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: var(--accent);
 }
 
 /* ── RESPONSIVE ──────────────────────────────────────────────────────────── */
